@@ -1,0 +1,37 @@
+.background{
+  background: #383D3E;
+  color: #FFFFFF;
+}
+
+.card{
+  border-radius: 10px;
+}
+
+.btn-primary{
+  background: #FFEC00;
+  border-radius: 30px;
+  border: transparent;
+  color: #383D3E;
+}
+
+.btn-primary:hover{
+  background: #FFF358;
+  color: #383D3E;
+}
+
+.btn-primary:focus{
+  background: #FFEC00;
+  color: #383D3E;
+}
+
+.link{
+  color: #FFEC00;
+}
+
+.link:hover{
+  color: #f5ED8F;
+}
+
+#cardCont{
+  width: 27rem;
+}
