@@ -1,0 +1,48 @@
+
+<nav class="navbar navbar-expand-lg navbar-dark background mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="../Images/Logo.png" alt="" height="30">
+    </a>
+    <div class="collapse navbar-collapse" id="navbarScroll">
+      <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+      <li class="nav-item">
+      <% if (ventana === "CALENDARIO") { %>
+        <a class="nav-link active" href="/Calendario">Calendario</a>
+      <% } else { %>
+        <a class="nav-link" href="/Calendario">Calendario</a>
+      <% } %>
+      </li>
+      <li class="nav-item">
+        <% if (ventana === "INSTRUCTORES") { %>
+          <a class="nav-link active" href="/Instructores">Instructores</a>
+        <% } else { %>
+          <a class="nav-link" href="/Instructores">Instructores</a>
+        <% } %>
+      </li>
+      <li class="nav-item">
+        <% if (ventana === "CLIENTES") { %>
+          <a class="nav-link active" href="/Clientes">Clientes</a>
+        <% } else { %>
+          <a class="nav-link" href="/Clientes">Clientes</a>
+        <% } %>
+      </li>
+      <li class="nav-item">
+        <% if (ventana === "SERVICIOS") { %>
+          <a class="nav-link active" href="/Servicios">Servicios</a>
+        <% } else { %>
+          <a class="nav-link" href="/Servicios">Servicios</a>
+        <% } %>
+      </li>
+      <li class="nav-item">
+        <% if (ventana === "SALA") { %>
+          <a class="nav-link active" href="/Sala">Sala</a>
+        <% } else { %>
+          <a class="nav-link" href="/Sala">Sala</a>
+        <% } %>
+      </li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>

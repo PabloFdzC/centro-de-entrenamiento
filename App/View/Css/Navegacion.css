@@ -1,0 +1,15 @@
+.navbar-dark .navbar-nav .nav-link{
+  color:#FFFFFF;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover{
+  color:#FFF358;
+}
+
+.navbar-dark .navbar-nav .nav-link.active{
+  color: #FFEC00;
+}
+
+.nav-link .dropdown-toggle{
+  color: #FFFFFF;
+}

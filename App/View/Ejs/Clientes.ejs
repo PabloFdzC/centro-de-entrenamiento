@@ -1,0 +1,47 @@
+
+<%- include('Header.ejs'); %>
+<body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/victor-freitas-nlZTjUZX2qo-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
+  <%- include('Navegacion.ejs', {ventana:"CLIENTES"}); %>
+  <div class="card mx-auto background cardLista mb-2">
+    <div class="card-body" id="cardB">
+      <div class="row justify-content-between">
+        <div class="col-12">
+          <h1 class="card-title tituloLista">Clientes</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="card-title tituloElementoLista">María José Sanchez Vargas</h2>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-6">
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos ">Edad:</h3>
+            <div class="ms-2">24</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">Teléfono:</h3>
+            <div class="ms-2">88888888</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">E-mail:</h3>
+            <div class="ms-2">email@email.com</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">Identificación:</h3>
+            <div class="ms-2">1-1111-1111</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="../Js/Interfaz.js"></script>
+</body>
+</html>

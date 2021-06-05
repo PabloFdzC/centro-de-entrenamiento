@@ -1,0 +1,33 @@
+.tituloLista{
+  font-size: x-large;
+}
+
+.tituloElementoLista{
+  font-size: x-large;
+  color: #FFEC00;
+}
+
+.tituloElementoLista2{
+  font-size: x-large;
+  color: #FFFFFF;
+}
+
+.cardLista{
+  width: 37rem;
+}
+
+.tituloDatos{
+  font-size: large;
+  height: auto;
+}
+
+.servicio{
+  color: #383D3E;
+  background-color: #FFF358;
+  border-radius: 20px;
+  width: auto;
+}
+
+.diasCalendarioSala{
+  width: auto;
+}

@@ -1,0 +1,66 @@
+
+<%- include('Header.ejs'); %>
+<body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/humphrey-muleba-dDp-6pXrYik-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
+  <%- include('Navegacion.ejs', {ventana:"SALA"}); %>
+  <div class="card mx-auto background cardLista mb-2">
+    <div class="card-body" id="cardB">
+      <div class="row justify-content-between">
+        <div class="col-6">
+          <h1 class="card-title tituloLista">Sala</h1>
+        </div>
+        <div class="d-grid col-2">
+          <button type="submit" class="btn btn-primary">Crear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <h2 class="card-title tituloElementoLista2">Sala</h2>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-primary">Editar</button>
+        </div>
+      </div>
+      <div class="d-flex justify-content-around m-2">
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Capacidad:</h3>
+          <div class="ms-2">28</div>
+        </div>
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Aforo:</h3>
+          <div class="ms-2">50%</div>
+        </div>
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Costo matricula:</h3>
+          <div class="ms-2">$10</div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <h2 class="card-title tituloElementoLista2">Calendario</h2>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-primary">Editar</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="row justify-content-center">
+            <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1">Lunes: 7:00-16:00</div>
+            <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1">Martes: 7:00-16:00</div>
+            <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1">Miércoles: 7:00-16:00</div>
+            <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1">Jueves: 7:00-16:00</div>
+            <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1">Viernes: 7:00-16:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="../Js/Interfaz.js"></script>
+</body>
+</html>

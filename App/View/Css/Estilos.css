@@ -1,10 +1,15 @@
+body{
+  overflow-x: hidden;
+}
+
 .background{
   background: #383D3E;
   color: #FFFFFF;
+  box-shadow: 0px 0px 14px 2px #000000;
 }
 
 .card{
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 .btn-primary{
@@ -24,6 +29,23 @@
   color: #383D3E;
 }
 
+.btn-secondary{
+  background: #FFFFFF;
+  border-radius: 30px;
+  border: transparent;
+  color: #383D3E;
+}
+
+.btn-secondary:hover{
+  background: #D2D2D2;
+  color: #383D3E;
+}
+
+.btn-secondary:focus{
+  background: #FFFFFF;
+  color: #383D3E;
+}
+
 .link{
   color: #FFEC00;
 }
@@ -35,3 +57,5 @@
 #cardCont{
   width: 27rem;
 }
+
+

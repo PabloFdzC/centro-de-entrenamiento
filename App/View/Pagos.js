@@ -1,0 +1,11 @@
+class Pagos{
+
+  mostrarPendientes(){
+
+  }
+
+  confirmarPago(){
+
+  }
+  
+}

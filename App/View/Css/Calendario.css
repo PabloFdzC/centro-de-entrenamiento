@@ -1,0 +1,19 @@
+.calendario{
+  width: 60rem;
+  height: 35rem;
+}
+
+.diaAmarillo{
+  color: #383D3E;
+  background: #FFF358;
+}
+
+.diaVerde{
+  color: #383D3E;
+  background: #0DFF00;
+}
+
+.diaBlanco{
+  color: #383D3E;
+  background: #FFFFFF;
+}

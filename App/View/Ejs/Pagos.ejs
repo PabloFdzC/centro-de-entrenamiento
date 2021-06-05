@@ -1,0 +1,30 @@
+
+<%- include('Header.ejs'); %>
+<body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/nathan-dumlao-pzLbV-NFT40-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
+  <%- include('Navegacion.ejs', {ventana:"PAGOS"}); %>
+  <div class="card mx-auto background cardLista mb-2">
+    <div class="card-body" id="cardB">
+      <div class="row justify-content-between">
+        <div class="col-12">
+          <h1 class="card-title tituloLista">Pagos pendientes</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <h2 class="card-title tituloElementoLista2">7 de abril 2021</h2>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-primary">Pagar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="../Js/Interfaz.js"></script>
+</body>
+</html>
