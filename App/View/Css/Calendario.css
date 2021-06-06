@@ -17,3 +17,38 @@
   color: #383D3E;
   background: #FFFFFF;
 }
+
+.tituloDia{
+  font-size: large;
+  text-align: left;
+}
+
+.punto{
+  padding: 4px;
+  border-radius: 50%;
+  background-color: #383D3E;
+  max-width: 4px;
+  max-height: 4px;
+  margin: auto;
+}
+
+.clasesCalendarioDia{
+  width: fit-content;
+
+}
+
+.rowDia{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.botonesCalendario{
+  height: fit-content;
+  width: fit-content;
+  color: #383D3E;
+  background-color: #0DFF00;
+  border-radius: 100%;
+  padding: 5px;
+  margin: auto;
+}

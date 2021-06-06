@@ -18,7 +18,34 @@
           <h2 class="card-title tituloElementoLista2">7 de abril 2021</h2>
         </div>
         <div class="">
-          <button type="submit" class="btn btn-primary">Pagar</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPagar">Pagar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalPagar" tabindex="-1" aria-labelledby="pagarModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content background">
+        <div class="modal-body d-grid gap-4">
+          <h3 class="text-center" id="pagarModal">Pagar</h3>
+          <div class="d-grid col-9 mx-auto gap-2">
+            <div>
+              <label for="FormaDePago" class="form-label">Forma de pago</label>
+              <select name="FormaDePago" id="FormaDePago" class="form-control" aria-describedby="FormaDePago">
+                <option value="" disabled selected hidden>Forma de pago</option>
+                <option value="SINPE">SINPE</option>
+                <option value="EFECTIVO">Efectivo</option>
+              </select>
+            </div>
+            <div class="row justify-content-end">
+              <div class="col-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+              </div>
+              <div class="col-3">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

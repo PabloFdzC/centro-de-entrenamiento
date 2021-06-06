@@ -9,7 +9,7 @@
           <h1 class="card-title tituloLista">Instructores</h1>
         </div>
         <div class="d-grid col-2">
-          <button type="submit" class="btn btn-primary">Enviar</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearEditar">Crear</button>
         </div>
       </div>
     </div>
@@ -17,16 +17,16 @@
   <div class="card mx-auto background cardLista mt-2">
     <div class="card-body" id="cardB">
       <div class="row justify-content-between">
-        <div class="col-6">
+        <div class="col-8">
           <h2 class="card-title tituloElementoLista">María José Sanchez Vargas</h2>
         </div>
         <div class="col-4">
           <div class="row">
             <div class="d-grid col-6">
-              <button type="submit" class="btn btn-secondary">Eliminar</button>
+              <button type="button" class="btn btn-secondary">Eliminar</button>
             </div>
             <div class="d-grid col-6">
-              <button type="submit" class="btn btn-primary">Enviar</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearEditar">Editar</button>
             </div>
           </div>
         </div>
@@ -58,6 +58,93 @@
             <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Pilates</div>
             <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Yoga</div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalCrearEditar" tabindex="-1" aria-labelledby="crearEditar" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 620px;">
+      <div class="modal-content background">
+        <div class="modal-body d-grid gap-4">
+          <h3 class="text-center" id="crearEditar">Crear instructor</h3>
+          <form class="d-grid gap-4">
+            <div class="d-grid col-11 mx-auto gap-2">
+              <div class="row">
+                <div class="d-grid col-6">
+                  <label for="PrimerNombre" class="form-label">Primer nombre</label>
+                  <input type="text" class="form-control" id="PrimerNombre" aria-describedby="Primer nombre">
+                </div>
+                <div class="d-grid col-6">
+                  <label for="SegundoNombre" class="form-label">Segundo nombre</label>
+                  <input type="text" class="form-control" id="SegundoNombre" aria-describedby="Segundo nombre">
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-grid col-6">
+                  <label for="PrimerApellido" class="form-label">Primer apellido</label>
+                  <input type="text" class="form-control" id="PrimerNombre" aria-describedby="Primer apellido">
+                </div>
+                <div class="d-grid col-6">
+                  <label for="SegundoApellido" class="form-label">Segundo apellido</label>
+                  <input type="text" class="form-control" id="SegundoApellido" aria-describedby="Segundo apellido">
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-grid col-6">
+                  <label for="Identificacion" class="form-label">Identificación</label>
+                  <input type="text" class="form-control" id="Identificacion" aria-describedby="Identificación">
+                </div>
+                <div class="d-grid col-6">
+                  <label for="FechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                  <input type="date" class="form-control" id="FechaNacimiento" aria-describedby="Fecha de nacimiento">
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-grid col-6">
+                  <label for="Telefono" class="form-label">Teléfono</label>
+                  <input type="text" class="form-control" id="Telefono" name="Telefono" aria-describedby="Teléfono">
+                </div>
+                <div class="d-grid col-6">
+                  <label for="Email" class="form-label">E-mail</label>
+                  <input type="email" class="form-control" id="Email" name="Email" aria-describedby="Email">
+                </div>
+              </div>
+              <div class="row">
+                <div class="d-grid col-6" style="height: fit-content;">
+                  <label for="AnnadirServicio" class="form-label">Añadir servicio</label>
+                  <div class="row">
+                    <div class="d-grid col-10">
+                      <select name="AnnadirServicio" id="AnnadirServicio" aria-describedby="AñadirServicio" class="form-control">
+                        <option value="" disabled selected hidden>Añadir servicio</option>
+                      </select>
+                    </div>
+                    <div class="d-grid col-2">
+                      <button class="btn btn-primary">+</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <h3 class="tituloDatos">Servicios:</h3>
+                  <div class="row justify-content-center">
+                    <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Acrotelas</div>
+                    <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Boxeo</div>
+                    <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Pilates</div>
+                    <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1">Yoga</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-grid col-11 mx-auto gap-2">
+              <div class="row justify-content-end">
+                <div class="d-grid col-2">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                </div>
+                <div class="d-grid col-2">
+                  <button type="submit" class="btn btn-primary">Crear</button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

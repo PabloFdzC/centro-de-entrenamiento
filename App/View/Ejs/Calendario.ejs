@@ -1,11 +1,173 @@
 <%- include('Header.ejs'); %>
   <body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/mathieu-chassara-0b3Nkg9oisc-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
     <%- include('Navegacion.ejs', {ventana:"CALENDARIO"}); %>
-    <div class="card text-center mx-auto my-auto background calendario">
-      <div class="card-body">
-        <h5 class="card-title" id="mes">Abril 2021</h5>
-        <div class="container ps-4 pe-4 pt-2 w-75" id="calendarioCont">
-          
+    <div class="d-flex justify-content-between">
+      <div class="botonesCalendario">IZQ</div>
+      <div class="card text-center mx-auto my-auto background calendario">
+        <div class="card-body">
+          <h5 class="card-title" id="mes">Abril 2021</h5>
+          <div class="ps-4 pe-4 pt-2" id="calendarioCont">
+            
+          </div>
+        </div>
+      </div>
+      <div class="botonesCalendario">DER</div>
+    </div>
+    <div class="modal fade" id="modalCrearEditar" tabindex="-1" aria-labelledby="crearEditarModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content background">
+          <div class="modal-body d-grid gap-4">
+            <h3 class="text-center" id="crearEditarModal">Crear clase</h3>
+            <div class="d-grid col-9 mx-auto gap-2">
+              <div>
+                <label for="Capacidad" class="form-label">Capacidad</label>
+                <input type="text" class="form-control" id="Capacidad" aria-describedby="CapacidadClase">
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <label for="Dia" class="form-label">Día</label>
+                  <input type="date" class="form-control" id="Dia" aria-describedby="Dia">
+                </div>
+                <div class="col-4">
+                  <label for="HoraInicio" class="form-label">Hora inicio</label>
+                  <select name="HoraInicio" id="HoraInicio" class="form-control" aria-describedby="HoraInicio" required>
+                    <option value="" disabled selected hidden>Hora inicio</option>
+                    <% for(let i = 1; i <= 23; i++) { %>
+                      <% for(let j = 0; j < 59; j+=5) { %>
+                        <% if(j < 10) { %>
+                          <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                        <% } else { %>
+                          <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                        <% } %>    
+                      <% } %>
+                    <% } %>
+                  </select>
+                </div>
+                <div class="col-4">
+                  <label for="HoraFinal" class="form-label">Hora inicio</label>
+                  <select name="HoraFinal" id="HoraFinal" class="form-control" aria-describedby="HoraFinal" required>
+                    <option value="" disabled selected hidden>Hora final</option>
+                    <% for(let i = 1; i <= 23; i++) { %>
+                      <% for(let j = 0; j < 59; j+=5) { %>
+                        <% if(j < 10) { %>
+                          <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                        <% } else { %>
+                          <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                        <% } %>    
+                      <% } %>
+                    <% } %>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="Servicio" class="form-label">Servicio</label>
+                <select name="Servicio" id="Servicio" class="form-control" aria-describedby="Servicio" required>
+                  <option value="" disabled selected hidden>Servicio</option>
+                </select>
+              </div>
+              <% if(true) { %>
+                <div id="contRepeticion">
+                  <label for="Repeticion" class="form-label">Repetición</label>
+                  <select name="Repeticion" id="Repeticion" class="form-control" aria-describedby="Repetición">
+                    <option value="" disabled selected hidden>Repeticion</option>
+                    <option value="CADASEMANADELMES">Cada semana del mes</option>
+                    <option value="TODOSLOSDIASDELMES">Todos los días del mes</option>
+                    <option value="NOSEREPITE">No se repite</option>
+                  </select>
+                </div>
+              <% } else { %>
+                <div>
+                  <label for="Estado" class="form-label">Estado</label>
+                  <select name="Estado" id="Estado" class="form-control" aria-describedby="Estado">
+                    <option value="" disabled selected hidden>Estado</option>
+                    <option value="AGENDADA">Agendada</option>
+                    <option value="PUBLICADA">Publicada</option>
+                    <option value="DESHABILITADA">Deshabilitada</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="Instructor" class="form-label">Instructor</label>
+                  <select name="Instructor" id="Instructor" class="form-control" aria-describedby="Instructor">
+                    <option value="" disabled selected hidden>Instructor</option>
+                  </select>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="InstructorTemporal">
+                  <label class="form-check-label" for="InstructorTemporal">
+                    Instructor temporal
+                  </label>
+                </div>
+              <% } if(true) { %>
+                <div class="form-check" id="checkAplicarTodas">
+                  <input class="form-check-input" type="checkbox" value="" id="AplicarTodas">
+                  <label class="form-check-label" for="AplicarTodas">
+                    Aplicar a todas
+                  </label>
+                </div>
+              <% } %>
+              <div class="row justify-content-end">
+                <div class="col-3">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                </div>
+                <div class="col-3">
+                  <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modalVerDia" tabindex="-1" aria-labelledby="verDiaModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content background">
+          <div class="modal-body d-grid gap-4">
+            <h3 class="text-center" id="verDiaModal">19 de abril 2021</h3>
+            <div class="d-grid col-9 mx-auto gap-2">
+              <a class="linkDatosClase" data-bs-toggle="collapse" href="#datosClase1" role="button" aria-expanded="false" aria-controls="datosClase1">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="row justify-content-end">
+                      <div class="linkDatosClaseTexto" id="nombreClase1">
+                        Yoga - 
+                      </div>
+                      <div class="linkDatosClaseTexto" id="estadoClase1">
+                        &nbsp;Publicada
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="row justify-content-end">
+                      <div class="linkDatosClaseTexto" id="inicioFinClase1">
+                        08:00 -
+                      </div>
+                      <div class="linkDatosClaseTexto" id="finalClase1">
+                        &nbsp;09:00
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              <div class="collapse" id="datosClase1">
+                <div class="card card-body" style="background-color: #383D3E; border: transparent;">
+                  <div class="row">
+                    <div class="col-9">
+                      - Sonia Álvarez Matarrita <br>
+                      - Carlos Esteban Villegas Gómez
+                    </div>
+                    <div class="col-3">
+                      <button class="btn btn-tertiary">Editar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row justify-content-end">
+                <div class="col-3">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

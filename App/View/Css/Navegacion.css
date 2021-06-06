@@ -10,6 +10,12 @@
   color: #FFEC00;
 }
 
-.nav-link .dropdown-toggle{
+.navbar-dark .nav-link .dropdown-toggle{
   color: #FFFFFF;
+}
+
+.dropdown-menu-dark{
+  color:#FFFFFF;
+  background-color: #383D3E;
+  border-color: #383D3E;
 }

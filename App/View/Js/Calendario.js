@@ -34,9 +34,15 @@ $('body').ready(function(){
       for(let j = 0; j < 7; j++){
         html+= `
           <div class="col">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title" id="`+(i+1)+``+(j+1)+`">`+(i+j+1)+`</h5>
+            <div class="card diaBlanco">
+              <div class="card-body" style="padding-left: 0;padding-right: 0;">
+                <div class="container">
+                  <h5 class="card-title tituloDia" id="`+(i+1)+``+(j+1)+`">`+(i+j+1)+`</h5>
+                  <div class="row rowDia">
+                    <div class="punto"></div>
+                    <div class="clasesCalendarioDia">2 clases</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

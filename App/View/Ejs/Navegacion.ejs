@@ -1,10 +1,12 @@
-
-<nav class="navbar navbar-expand-lg navbar-dark background mb-3">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark background mb-3">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
       <img src="../Images/Logo.png" alt="" height="30">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </a>
-    <div class="collapse navbar-collapse" id="navbarScroll">
+    <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
       <li class="nav-item">
       <% if (ventana === "CALENDARIO") { %>
@@ -41,8 +43,30 @@
           <a class="nav-link" href="/Sala">Sala</a>
         <% } %>
       </li>
+      <li class="nav-item">
+        <% if (ventana === "PAGOS") { %>
+          <a class="nav-link active" href="/Pagos">Pagos</a>
+        <% } else { %>
+          <a class="nav-link" href="/Pagos">Pagos</a>
+        <% } %>
+      </li>
       </ul>
-      
+      <ul class="navbar-nav navbar-right">
+        <li class="nav-item dropdown">
+          <% if (ventana === "OTRO") { %>
+          <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <% } else { %>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <% } %>
+            Administrador
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+            <li><a class="dropdown-item" href="/NuevoAdministrador">Nuevo administrador</a></li>
+            <li><a class="dropdown-item" href="/Perfil">Perfil</a></li>
+            <li><a class="dropdown-item" href="/">Cerrar sesión</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

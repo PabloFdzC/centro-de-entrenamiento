@@ -36,4 +36,14 @@ navigation.get('/Pagos', function (req, res) {
   res.render('Pagos.ejs');
 });
 
+navigation.get('/NuevoAdministrador', function (req, res) {
+  res.render('NuevoAdministrador.ejs');
+});
+
+navigation.get('/Perfil', function (req, res) {
+  res.render('Perfil.ejs');
+});
+
+
+
 module.exports = navigation;

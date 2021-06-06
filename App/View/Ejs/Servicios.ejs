@@ -9,7 +9,7 @@
           <h1 class="card-title tituloLista">Servicios</h1>
         </div>
         <div class="d-grid col-2">
-          <button type="submit" class="btn btn-primary">Crear</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearServicio">Crear</button>
         </div>
       </div>
     </div>
@@ -26,7 +26,30 @@
               <button type="submit" class="btn btn-secondary">Eliminar</button>
             </div>
             <div class="d-grid col-6">
-              <button type="submit" class="btn btn-primary">Editar</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearServicio">Editar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalCrearServicio" tabindex="-1" aria-labelledby="crearServicioModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content background">
+        <div class="modal-body d-grid gap-4">
+          <h3 class="text-center" id="crearServicioModal">Crear servicio</h3>
+          <div class="d-grid col-9 mx-auto gap-2">
+            <div>
+              <label for="Nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="Nombre" aria-describedby="NombreServicio">
+            </div>
+            <div class="row justify-content-end">
+              <div class="col-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+              </div>
+              <div class="col-3">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </div>
             </div>
           </div>
         </div>

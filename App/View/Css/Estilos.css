@@ -1,5 +1,7 @@
 body{
   overflow-x: hidden;
+  min-height: 75rem;
+  padding-top: 4.5rem;
 }
 
 .background{
@@ -46,6 +48,23 @@ body{
   color: #383D3E;
 }
 
+.btn-tertiary{
+  background: #0DFF00;
+  border-radius: 30px;
+  border: transparent;
+  color: #383D3E;
+}
+
+.btn-tertiary:hover{
+  background: #4AF541;
+  color: #383D3E;
+}
+
+.btn-tertiary:focus{
+  background: #0DFF00;
+  color: #383D3E;
+}
+
 .link{
   color: #FFEC00;
 }
@@ -58,4 +77,23 @@ body{
   width: 27rem;
 }
 
+.perfil{
+  width: 40rem;
+}
 
+.linkDatosClase{
+  color: #FFFFFF;
+}
+
+.linkDatosClase:hover{
+  color: #FFEC00;
+}
+
+.linkDatosClase:focus{
+  color: #FFEC00;
+}
+
+.linkDatosClaseTexto{
+  width: fit-content;
+  padding: 0;
+}
