@@ -1,10 +1,10 @@
 DROP PROCEDURE IF EXISTS CrearSala;
 DELIMITER //
 
-CREATE PROCEDURE CrearSala(IN piCostoMatricula INT, IN piAforo INT)
+CREATE PROCEDURE CrearSala(IN piCostoMatricula INT, IN piCapacidad INT, IN piAforo INT)
 BEGIN
-	INSERT INTO Sala(costo_matricula, aforo)
-	VALUES(piCostoMatricula, piAforo);
+	INSERT INTO Sala(costo_matricula, capacidad, aforo)
+	VALUES(piCostoMatricula, piCapacidad, piAforo);
     COMMIT;
 END //
 
@@ -13,10 +13,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS EditarSala;
 DELIMITER //
 
-CREATE PROCEDURE EditarSala(IN piIdSala INT, IN piCostoMatricula INT, IN piAforo INT)
+CREATE PROCEDURE EditarSala(IN piIdSala INT, IN piCostoMatricula INT, IN piCapacidad INT, IN piAforo INT)
 BEGIN
 	UPDATE Sala
-    SET costo_matricula = piCostoMatricula, aforo = piAforo
+    SET costo_matricula = piCostoMatricula, capacidad = piCapacidad, aforo = piAforo
     WHERE id_sala = piIdSala;
     COMMIT;
 END //
@@ -28,7 +28,7 @@ DELIMITER //
 
 CREATE PROCEDURE SelectSala(IN piIdSala INT)
 BEGIN
-	SELECT id_sala, costo_matricula, aforo
+	SELECT id_sala, costo_matricula, capacidad, aforo
     FROM Sala
     WHERE id_sala = piIdSala;
 END //
@@ -83,6 +83,33 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS CrearJornadaCalendario;
+DELIMITER //
+
+CREATE PROCEDURE CrearJornadaCalendario(IN pdDia DATE, IN piIdSala INT)
+BEGIN
+	INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala)
+	VALUES(pdDia, LAST_INSERT_ID(), piIdSala);
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetJornadasDeSala;
+DELIMITER //
+
+CREATE PROCEDURE GetJornadasDeSala(IN piIdSala INT)
+BEGIN
+	SELECT j.id_jornada, j.dia, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+    FROM (SELECT id_jornada, dia, id_intervalo_tiempo
+		FROM Jornada
+		WHERE id_sala = piIdSala) as j
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = j.id_intervalo_tiempo;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS EditarJornada;
 DELIMITER //
 
@@ -120,6 +147,19 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS ModificarServicio;
+DELIMITER //
+
+CREATE PROCEDURE ModificarServicio(IN pvNombreServicio VARCHAR(50), IN pfCostoMatricula FLOAT)
+BEGIN
+	UPDATE Servicio
+    SET costo_matricula = pfCostoMatricula
+    WHERE nombre_servicio = pvNombreServicio;
+    COMMIT;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS EliminarServicio;
 DELIMITER //
 
@@ -128,6 +168,17 @@ BEGIN
 	DELETE FROM Servicio
     WHERE nombre_servicio = pvNombreServicio;
     COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetServicios;
+DELIMITER //
+
+CREATE PROCEDURE GetServicios()
+BEGIN
+	SELECT nombre_servicio, costo_matricula
+	FROM Servicio;
 END //
 
 DELIMITER ;
@@ -156,6 +207,18 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS GetServiciosDeSala;
+DELIMITER //
+
+CREATE PROCEDURE GetServiciosDeSala(IN piIdSala INT)
+BEGIN
+	SELECT id_sala, nombre_servicio
+	FROM Servicios_de_Sala
+	WHERE id_sala = piIdSala;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS AgregarServicioAInstructor;
 DELIMITER //
 
@@ -180,10 +243,25 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS GetServiciosDeInstructor;
+DELIMITER //
+
+CREATE PROCEDURE GetServiciosDeInstructor(IN pvEmailInstructor VARCHAR(50))
+BEGIN
+	SELECT sdi.email_instructor, sdi.nombre_servicio, s.costo_matricula 
+    FROM (SELECT email_instructor, nombre_servicio
+	FROM Servicios_de_Instructor
+	WHERE email_instructor = pvEmailInstructor) AS sdi
+    INNER JOIN Servicio s
+    ON s.nombre_servicio = sdi.nombre_servicio;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS RegistroCliente;
 DELIMITER //
 
-CREATE PROCEDURE RegistroCliente(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pvContrasenna VARCHAR(25), IN piTelefono INT)
+CREATE PROCEDURE RegistroCliente(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pdFechaNacimiento DATE, IN pvContrasenna VARCHAR(25), IN piTelefono INT)
 BEGIN
 	DECLARE nuevaLlave VARCHAR(16);
     DECLARE nuevaSal VARCHAR(16);
@@ -191,8 +269,8 @@ BEGIN
     SET nuevaSal = LEFT(UUID(), 16);
     INSERT INTO Llaves(email_usuario, llave)
     VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
-    INSERT INTO Cliente(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, contrasenna, sal, telefono)
-    VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
+    INSERT INTO Cliente(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, contrasenna, sal, telefono)
+    VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, pdFechaNacimiento, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
     COMMIT;
 END //
 
@@ -201,7 +279,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS RegistroInstructor;
 DELIMITER //
 
-CREATE PROCEDURE RegistroInstructor(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pvContrasenna VARCHAR(25), IN piTelefono INT)
+CREATE PROCEDURE RegistroInstructor(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pdFechaNacimiento DATE, IN pvContrasenna VARCHAR(25), IN piTelefono INT)
 BEGIN
 	DECLARE nuevaLlave VARCHAR(16);
     DECLARE nuevaSal VARCHAR(16);
@@ -209,8 +287,8 @@ BEGIN
     SET nuevaSal = LEFT(UUID(), 16);
     INSERT INTO Llaves(email_usuario, llave)
     VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
-    INSERT INTO Instructor(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, contrasenna, sal, telefono)
-    VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
+    INSERT INTO Instructor(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, contrasenna, sal, telefono)
+    VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, pdFechaNacimiento, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
     COMMIT;
 END //
 
@@ -237,10 +315,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS modificarCliente;
 DELIMITER //
 
-CREATE PROCEDURE modificarCliente(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN piTelefono INT)
+CREATE PROCEDURE modificarCliente(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pdFechaNacimiento DATE, IN piTelefono INT)
 BEGIN
 	UPDATE Cliente
-    SET identificacion = piIdentificacion, primer_nombre = pvPrimerNombre, segundo_nombre = pvSegundoNombre, primer_apellido = pvPrimerApellido, segundo_apellido = pvSegundoApellido, telefono = piTelefono
+    SET identificacion = piIdentificacion, primer_nombre = pvPrimerNombre, segundo_nombre = pvSegundoNombre, primer_apellido = pvPrimerApellido, segundo_apellido = pvSegundoApellido, fecha_nacimiento = pdFechaNacimiento, telefono = piTelefono
     WHERE email = pvEmail;
     COMMIT;
 END //
@@ -250,72 +328,81 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS modificarInstructor;
 DELIMITER //
 
-CREATE PROCEDURE modificarInstructor(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN piTelefono INT)
+CREATE PROCEDURE modificarInstructor(IN pvEmail VARCHAR(50), IN piIdentificacion INT, IN pvPrimerNombre VARCHAR(50), IN pvSegundoNombre VARCHAR(50), IN pvPrimerApellido VARCHAR(50), IN pvSegundoApellido VARCHAR(50), IN pdFechaNacimiento DATE, IN piTelefono INT)
 BEGIN
 	UPDATE Instructor
-    SET identificacion = piIdentificacion, primer_nombre = pvPrimerNombre, segundo_nombre = pvSegundoNombre, primer_apellido = pvPrimerApellido, segundo_apellido = pvSegundoApellido, telefono = piTelefono
+    SET identificacion = piIdentificacion, primer_nombre = pvPrimerNombre, segundo_nombre = pvSegundoNombre, primer_apellido = pvPrimerApellido, segundo_apellido = pvSegundoApellido, fecha_nacimiento = pdFechaNacimiento, telefono = piTelefono
     WHERE email = pvEmail;
     COMMIT;
 END //
 
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS modificarContrasennaCliente;
+DROP PROCEDURE IF EXISTS eliminarInstructor;
 DELIMITER //
 
-CREATE PROCEDURE modificarContrasennaCliente(IN pvEmail VARCHAR(50), IN pvContrasenna VARCHAR(25))
+CREATE PROCEDURE eliminarInstructor(IN pvEmail VARCHAR(50))
 BEGIN
-	DECLARE nuevaLlave VARCHAR(16);
-    DECLARE nuevaSal VARCHAR(16);
-    SET nuevaLlave = LEFT(UUID(), 16);
-    SET nuevaSal = LEFT(UUID(), 16);
-    UPDATE Llaves
-    SET llave = aes_encrypt(nuevaLlave, nuevaSal)
-    WHERE email_usuario = pvEmail;
-	UPDATE Cliente
-    SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
+    DELETE FROM Servicios_de_Instructor
+    WHERE email_instructor = pvEmail;
+    DELETE FROM Instructor
     WHERE email = pvEmail;
     COMMIT;
 END //
 
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS modificarContrasennaInstructor;
+DROP PROCEDURE IF EXISTS modificarContrasenna;
 DELIMITER //
 
-CREATE PROCEDURE modificarContrasennaInstructor(IN pvEmail VARCHAR(50), IN pvContrasenna VARCHAR(25))
+CREATE PROCEDURE modificarContrasenna(IN pvEmail VARCHAR(50), IN pvContrasenna VARCHAR(25))
 BEGIN
-	DECLARE nuevaLlave VARCHAR(16);
+    DECLARE nuevaLlave VARCHAR(16);
     DECLARE nuevaSal VARCHAR(16);
-    SET nuevaLlave = LEFT(UUID(), 16);
-    SET nuevaSal = LEFT(UUID(), 16);
-    UPDATE Llaves
-    SET llave = aes_encrypt(nuevaLlave, nuevaSal)
-    WHERE email_usuario = pvEmail;
-	UPDATE Instructor
-    SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
+	DECLARE usuarioExiste INT;
+    SELECT Count(*) INTO usuarioExiste FROM Instructor
     WHERE email = pvEmail;
-    COMMIT;
-END //
-
-DELIMITER ;
-
-DROP PROCEDURE IF EXISTS modificarContrasennaAdministrador;
-DELIMITER //
-
-CREATE PROCEDURE modificarContrasennaAdministrador(IN pvEmail VARCHAR(50), IN pvContrasenna VARCHAR(25))
-BEGIN
-	DECLARE nuevaLlave VARCHAR(16);
-    DECLARE nuevaSal VARCHAR(16);
-    SET nuevaLlave = LEFT(UUID(), 16);
-    SET nuevaSal = LEFT(UUID(), 16);
-    UPDATE Llaves
-    SET llave = aes_encrypt(nuevaLlave, nuevaSal)
-    WHERE email_usuario = pvEmail;
-	UPDATE Administrador
-    SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
-    WHERE email = pvEmail;
-    COMMIT;
+    IF usuarioExiste = 1 THEN
+        SET nuevaLlave = LEFT(UUID(), 16);
+        SET nuevaSal = LEFT(UUID(), 16);
+        UPDATE Llaves
+        SET llave = aes_encrypt(nuevaLlave, nuevaSal)
+        WHERE email_usuario = pvEmail;
+        UPDATE Instructor
+        SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
+        WHERE email = pvEmail;
+        COMMIT;
+    ELSE 
+		SELECT Count(*) INTO usuarioExiste FROM Cliente
+		WHERE email = pvEmail;
+		IF usuarioExiste = 1 THEN
+			SET nuevaLlave = LEFT(UUID(), 16);
+            SET nuevaSal = LEFT(UUID(), 16);
+            UPDATE Llaves
+            SET llave = aes_encrypt(nuevaLlave, nuevaSal)
+            WHERE email_usuario = pvEmail;
+            UPDATE Cliente
+            SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
+            WHERE email = pvEmail;
+            COMMIT;
+		ELSE 
+			SELECT Count(*) INTO usuarioExiste FROM Administrador
+			WHERE email = pvEmail;
+			IF usuarioExiste = 1 THEN
+                SET nuevaLlave = LEFT(UUID(), 16);
+                SET nuevaSal = LEFT(UUID(), 16);
+                UPDATE Llaves
+                SET llave = aes_encrypt(nuevaLlave, nuevaSal)
+                WHERE email_usuario = pvEmail;
+                UPDATE Administrador
+                SET contrasenna = aes_encrypt(pvContrasenna, nuevaLlave), sal = nuevaSal
+                WHERE email = pvEmail;
+                COMMIT;
+			ELSE 
+				SELECT 'El usuario no existe' AS error_message;
+			END IF;
+		END IF;
+	END IF;
 END //
 
 DELIMITER ;
@@ -325,7 +412,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClientes()
 BEGIN
-	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono
+	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
     FROM Cliente;
 END //
 
@@ -336,8 +423,20 @@ DELIMITER //
 
 CREATE PROCEDURE GetInstructores()
 BEGIN
-	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono
+	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
     FROM Instructor;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetInstructor;
+DELIMITER //
+
+CREATE PROCEDURE GetInstructor(IN pvEmail VARCHAR(50))
+BEGIN
+	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
+    FROM Instructor
+    WHERE email = pvEmail;
 END //
 
 DELIMITER ;
@@ -365,7 +464,7 @@ BEGIN
         SET laLlave = CAST(aes_decrypt(LlaveEncriptada, LaSal) AS CHAR(50));
         SET contrasennaDesencriptada = CAST(aes_decrypt(contrasennaEncriptada, laLlave) AS CHAR(50));
         IF pvContrasenna = contrasennaDesencriptada THEN
-			SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono
+			SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
             FROM Instructor
             WHERE email = pvEmail;
         ELSE
@@ -384,7 +483,7 @@ BEGIN
 			SET laLlave = CAST(aes_decrypt(LlaveEncriptada, LaSal) AS CHAR(50));
 			SET contrasennaDesencriptada = CAST(aes_decrypt(contrasennaEncriptada, laLlave) AS CHAR(50));
 			IF pvContrasenna = contrasennaDesencriptada THEN
-				SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono
+				SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
 				FROM Cliente
 				WHERE email = pvEmail;
 			ELSE
@@ -421,12 +520,25 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CrearClase;
 DELIMITER //
 
-CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN piIdJornada INT, IN piIdIntervalo INT)
+CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN piIdJornada INT, IN piIdIntervalo INT, IN pvEmailInstructor VARCHAR(50))
 BEGIN
-	INSERT INTO Clase(capacidad, id_estado, nombre_servicio)
-    VALUES(piCapacidad, 0, pvNombreServicio, piIdJornada, piIdIntervalo);
+	INSERT INTO Clase(capacidad, estado_clase, nombre_servicio, email_instructor)
+    VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, piIdJornada, piIdIntervalo, pvEmailInstructor);
     INSERT INTO ClasesEnJornada(id_clase, id_intervalo, id_jornada)
     VALUES(last_insert_id(), piIdIntervalo, piIdJornada);
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS ModificarClase;
+DELIMITER //
+
+CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
+BEGIN
+    UPDATE Clase
+    SET capacidad = piCapacidad, estado_clase = pvEstadoClase, nombre_servicio = pvNombreServicio, email_instructor = pvEmailInstructor
+    WHERE id_clase = piIdClase;
     COMMIT;
 END //
 
@@ -435,10 +547,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS PublicarClase;
 DELIMITER //
 
-CREATE PROCEDURE PublicarClase(IN piIdClase INT)
+CREATE PROCEDURE PublicarClase(IN piIdClase INT, IN pvEstadoClase VARCHAR(50))
 BEGIN
 	UPDATE Clase
-    SET id_estado = 1
+    SET estado_clase = pvEstadoClase
 	WHERE id_clase = piIdClase;
     COMMIT;
 END //
@@ -448,10 +560,23 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS DeshabilitarClase;
 DELIMITER //
 
-CREATE PROCEDURE DeshabilitarClase(IN piIdClase INT)
+CREATE PROCEDURE DeshabilitarClase(IN piIdClase INT, IN pvEstadoClase VARCHAR(50))
 BEGIN
 	UPDATE Clase
-    SET id_estado = 2
+    SET estado_clase = pvEstadoClase
+	WHERE id_clase = piIdClase;
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS AgregarInstructorTemporal;
+DELIMITER //
+
+CREATE PROCEDURE AgregarInstructorTemporal(IN piIdClase INT, IN pvEmailInstructor VARCHAR(50))
+BEGIN
+	UPDATE Clase
+    SET email_instructor = pvEmailInstructor
 	WHERE id_clase = piIdClase;
     COMMIT;
 END //
@@ -461,18 +586,79 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetClasesDisponibles;
 DELIMITER //
 
-CREATE PROCEDURE GetClasesDisponibles()
+CREATE PROCEDURE GetClasesDisponibles(IN pvEstadoClase VARCHAR(50))
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.id_estado, c.nombre_servicio, ec.estado_clase_nombre, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
-    FROM (SELECT id_clase, capacidad, id_estado, nombre_servicio
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
 		FROM Clase
-		WHERE id_estado = 1) as c
-    INNER JOIN Estado_Clase ec
-    ON ec.id_estado_clase = c.id_estado
+		WHERE estado_clase = pvEstadoClase) as c
     INNER JOIN Clases_en_Jornada cej
     ON cej.id_clase = c.id_clase
     INNER JOIN Intervalo_Tiempo it
-    ON it.id_intervalo = cej.id_intervalo;
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetClasesMes;
+DELIMITER //
+
+CREATE PROCEDURE GetClasesMes(IN piMes INT)
+BEGIN
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+    FROM (SELECT id_jornada
+		FROM Jornada
+		WHERE MONTH(dia) = piMes) as j
+    INNER JOIN Clases_en_Jornada cej
+    ON cej.id_jornada = j.id_jornada
+    INNER JOIN Clase c
+    ON c.id_clase = cej.id_clase
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetClase;
+DELIMITER //
+
+CREATE PROCEDURE GetClase(IN pvIdClase INT)
+BEGIN
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
+		FROM Clase
+		WHERE id_clase = pvIdClase) as c
+    INNER JOIN Clases_en_Jornada cej
+    ON cej.id_clase = c.id_clase
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetClasesEnJornada;
+DELIMITER //
+
+CREATE PROCEDURE GetClasesEnJornada(IN piIdJornada INT)
+BEGIN
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+    FROM (SELECT id_clase, id_intervalo, id_jornada
+		FROM Clases_en_Jornada
+		WHERE id_jornada = piIdJornada) as cej
+    INNER JOIN Clase c
+    ON cej.id_clase = c.id_clase
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor
+    INNER JOIN Servicio s
+    ON s.nombre_servicio = c.nombre_servicio;
 END //
 
 DELIMITER ;
@@ -494,18 +680,18 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesMatriculadas(IN pvEmailCliente VARCHAR(50))
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.id_estado, c.nombre_servicio, ec.estado_clase_nombre, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT email_cliente, id_clase
 		FROM Matricula
 		WHERE email_cliente = pvEmailCliente) as m
 	INNER JOIN Clase c
     ON c.id_clase = m.id_clase
-    INNER JOIN Estado_Clase ec
-    ON ec.id_estado_clase = c.id_estado
     INNER JOIN Clases_en_Jornada cej
     ON cej.id_clase = ep.id_clase
     INNER JOIN Intervalo_Tiempo it
-    ON it.id_intervalo = cej.id_intervalo;
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor;
 END //
 
 DELIMITER ;
@@ -527,7 +713,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetMatriculasClase(IN piIdClase INT)
 BEGIN
-	SELECT c.email, c.identificacion, c.primer_nombre, c.segundo_nombre, c.primer_apellido, c.segundo_apellido, c.telefono
+	SELECT c.email, c.identificacion, c.primer_nombre, c.segundo_nombre, c.primer_apellido, c.segundo_apellido, c.fecha_nacimiento, c.telefono
     FROM (SELECT email_cliente, id_clase
 		FROM Matricula
 		WHERE id_clase = piIdClase) as m
@@ -537,61 +723,13 @@ END //
 
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS CrearFormaPago;
-DELIMITER //
-
-CREATE PROCEDURE CrearFormaPago(IN pvNombre VARCHAR(50))
-BEGIN
-	INSERT INTO Forma_Pago(forma_pago_nombre)
-	VALUES(pvNombre);
-    COMMIT;
-END //
-
-DELIMITER ;
-
-DROP PROCEDURE IF EXISTS EliminarFormaPago;
-DELIMITER //
-
-CREATE PROCEDURE EliminarFormaPago(IN piId INT)
-BEGIN
-	DELETE FROM Forma_Pago
-    WHERE id_forma_pago = piId;
-    COMMIT;
-END //
-
-DELIMITER ;
-
-DROP PROCEDURE IF EXISTS CrearEstadoPago;
-DELIMITER //
-
-CREATE PROCEDURE CrearEstadoPago(IN pvNombre VARCHAR(50))
-BEGIN
-	INSERT INTO Estado_Pago(estado_pago_nombre)
-	VALUES(pvNombre);
-    COMMIT;
-END //
-
-DELIMITER ;
-
-DROP PROCEDURE IF EXISTS EliminarEstadoPago;
-DELIMITER //
-
-CREATE PROCEDURE EliminarEstadoPago(IN piId INT)
-BEGIN
-	DELETE FROM Estado_Pago
-    WHERE id_estado_pago = piId;
-    COMMIT;
-END //
-
-DELIMITER ;
-
 DROP PROCEDURE IF EXISTS CrearPago;
 DELIMITER //
 
-CREATE PROCEDURE CrearPago(IN piCantidad INT, IN pvEmailCliente VARCHAR(50))
+CREATE PROCEDURE CrearPago(IN piCantidad INT, IN pvEmailCliente VARCHAR(50), IN pvId_clase INT, IN pvEstadoPago VARCHAR(50))
 BEGIN
-	INSERT INTO Pago(cantidad, id_estado_pago, email_usuario)
-	VALUES(piCantidad, 2, pvEmailCliente);
+	INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase)
+	VALUES(piCantidad, pvEstadoPago, pvEmailCliente, pvId_clase);
     COMMIT;
 END //
 
@@ -600,10 +738,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS PagoMoroso;
 DELIMITER //
 
-CREATE PROCEDURE PagoMoroso(IN piIdPago INT)
+CREATE PROCEDURE PagoMoroso(IN piIdPago INT, IN pvEstadoPago VARCHAR(50))
 BEGIN
 	UPDATE Pago
-    SET id_estado_pago = 0
+    SET estado_pago = pvEstadoPago
 	WHERE id_pago = piIdPago;
     COMMIT;
 END //
@@ -613,11 +751,11 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS RealizarPago;
 DELIMITER //
 
-CREATE PROCEDURE RealizarPago(IN piIdPago INT, IN piIdFormaPago INT)
+CREATE PROCEDURE RealizarPago(IN piIdPago INT, IN pvFormaPago VARCHAR(50), IN pvEstadoPago VARCHAR(50))
 BEGIN
 	UPDATE Pago
-    SET id_estado_pago = 1, fecha = CURDATE(), id_forma_pago = piIdFormaPago
-	WHERE id_pago = piIdPago;
+    SET id_estado_pago = 1, fecha = CURDATE(), forma_pago = pvFormaPago
+	WHERE estado_pago = pvEstadoPago;
     COMMIT;
 END //
 
@@ -626,11 +764,22 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetPagosPendientes;
 DELIMITER //
 
-CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50))
+CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50), IN pvEstadoPago VARCHAR(50))
 BEGIN
-	SELECT id_pago, cantidad
+	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+    FROM (SELECT id_pago, cantidad, estado_pago, id_clase
     FROM Pago
-    WHERE id_estado_pago = 2 AND email_usuario = pvEmailCliente;
+    WHERE estado_pago = pvEstadoPago AND email_usuario = pvEmailCliente) AS p
+	INNER JOIN Clase c
+    ON c.id_clase = p.id_clase
+    INNER JOIN Clases_en_Jornada cej
+    ON cej.id_clase = p.id_clase
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor
+    INNER JOIN Servicio s
+    ON s.nombre_servicio = c.nombre_servicio;
 END //
 
 DELIMITER ;

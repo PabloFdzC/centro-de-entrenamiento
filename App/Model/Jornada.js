@@ -1,13 +1,23 @@
 class Jornada {
   
+  #id
   #dia;
   #horarioAtencion;
   #clases;
 
-  constructor(dia, horarioAtencion){
+  constructor(id, dia, horarioAtencion, clases){
+    this.#id = id;
     this.#dia = dia;
     this.#horarioAtencion = horarioAtencion;
     this.#clases = clases;
+  }
+
+  getId(){
+    return this.#id;
+  }
+
+  setId(id){
+    this.#id = id;
   }
 
   getDia(){

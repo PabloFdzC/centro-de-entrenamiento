@@ -7,21 +7,6 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1234';
 
 flush privileges;
 
-CREATE TABLE Forma_Pago(
-	id_forma_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    forma_pago_nombre VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE Estado_Pago(
-	id_estado_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    estado_pago_nombre VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE Estado_Clase(
-	id_estado_clase INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    estado_clase_nombre VARCHAR(50) NOT NULL
-);
-
 CREATE TABLE Servicio(
 	nombre_servicio VARCHAR(50) NOT NULL PRIMARY KEY,
     costo_matricula FLOAT NOT NULL
@@ -42,6 +27,7 @@ CREATE TABLE Cliente(
     segundo_nombre VARCHAR(50),
     primer_apellido VARCHAR(50) NOT NULL,
     segundo_apellido VARCHAR(50) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
     contrasenna VARBINARY(256) NOT NULL,
     sal VARCHAR(16) NOT NULL,
     telefono INT NOT NULL
@@ -51,11 +37,10 @@ CREATE TABLE Pago(
 	id_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     cantidad INT NOT NULL,
     fecha DATE,
-    id_forma_pago INT,
-    id_estado_pago INT NOT NULL,
     email_usuario VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_forma_pago) REFERENCES Forma_Pago(id_forma_pago),
-    FOREIGN KEY (id_estado_pago) REFERENCES Estado_Pago(id_estado_pago),
+    id_clase INT NOT NULL,
+    estado_pago VARCHAR(50) NOT NULL,
+    forma_pago VARCHAR(50) NOT NULL,
     FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
 );
 
@@ -72,6 +57,7 @@ CREATE TABLE Instructor(
     segundo_nombre VARCHAR(50),
     primer_apellido VARCHAR(50) NOT NULL,
     segundo_apellido VARCHAR(50) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
     contrasenna VARBINARY(256) NOT NULL,
     sal VARCHAR(16) NOT NULL,
     telefono INT NOT NULL
@@ -85,6 +71,7 @@ CREATE TABLE Llaves(
 CREATE TABLE Sala(
 	id_sala INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     costo_matricula INT NOT NULL,
+    capacidad INT NOT NULL,
     aforo INT NOT NULL
 );
 
@@ -100,10 +87,13 @@ CREATE TABLE Jornada(
 CREATE TABLE Clase(
 	id_clase INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     capacidad INT NOT NULL,
-    id_estado INT NOT NULL,
+    estado_clase VARCHAR(50) NOT NULL,
     nombre_servicio VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_estado) REFERENCES Estado_Clase(id_estado_clase),
-    FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio)
+    email_instructor VARCHAR(50) NOT NULL,
+    email_instructor_temporal VARCHAR(50),
+    FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio),
+    FOREIGN KEY (email_instructor) REFERENCES Instructor(email),
+    FOREIGN KEY (email_instructor_temporal) REFERENCES Instructor(email)
 );
 
 CREATE TABLE Servicios_de_Instructor(

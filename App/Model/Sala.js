@@ -1,17 +1,27 @@
 class Sala {
   
+  #id
   #capacidad;
   #aforo;
   #costoMatricula;
   #calendario;
   #servicios;
 
-  constructor(capacidad, aforo, costoMatricula, calendario, servicios){
+  constructor(id, capacidad, aforo, costoMatricula, calendario, servicios){
+    this.#id = id;
     this.#capacidad = capacidad;
     this.#aforo = aforo;
     this.#costoMatricula = costoMatricula;
     this.#calendario = calendario;
     this.#servicios = servicios;
+  }
+
+  getId(){
+    return this.#id;
+  }
+
+  setId(id){
+    this.#id = id;
   }
 
   getCapacidad(){

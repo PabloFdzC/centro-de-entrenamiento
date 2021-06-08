@@ -1,5 +1,6 @@
 class Clase {
   
+  #id
   #capacidad;
   #estado;
   #horarioClase;
@@ -8,8 +9,9 @@ class Clase {
   #instructor;
   #clientes;
 
-  constructor(capacidad, estado, horarioClase, instructorTemporal, servicio,
+  constructor(id, capacidad, estado, horarioClase, instructorTemporal, servicio,
     instructor, clientes){
+    this.#id = id;
     this.#capacidad = capacidad;
     this.#estado = estado;
     this.#horarioClase = horarioClase;
@@ -17,6 +19,14 @@ class Clase {
     this.#servicio = servicio;
     this.#instructor = instructor;
     this.#clientes = clientes;
+  }
+
+  getId(){
+    return this.#id;
+  }
+
+  setId(id){
+    this.#id = id;
   }
 
   getCapacidad(){

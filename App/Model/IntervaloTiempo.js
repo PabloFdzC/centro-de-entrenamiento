@@ -5,12 +5,11 @@ class IntervaloTiempo {
   #horaFinal;
   #minutoFinal;
 
-  constructor(horaInicio, minutoInicio, horaFinal, minutoFinal, servicios){
+  constructor(horaInicio, minutoInicio, horaFinal, minutoFinal){
     this.#horaInicio = horaInicio;
     this.#minutoInicio = minutoInicio;
     this.#horaFinal = horaFinal;
     this.#minutoFinal = minutoFinal;
-    this.#servicios = servicios;
   }
 
   getHoraInicio(){

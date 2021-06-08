@@ -4,7 +4,7 @@ const OperacionesAdministrador = Router();
 const ctrlAdm = ControllerSng.getControllerAdministrador();
 
 OperacionesAdministrador.post('/nuevoAdministrador', function(req, res){
-  ctrlAdm.agregar(req.body);
+  ctrlAdm.agregar(req.body, res);
 });
 
 module.exports = OperacionesAdministrador;
