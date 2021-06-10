@@ -1,18 +1,18 @@
-ControllerAdministrador = require('ControllerAdministrador.js');
-ControllerPago = require('ControllerPago.js');
-ControllerSala = require('ControllerSala.js');
-ControllerServicios = require('ControllerServicios.js');
-ControllerInstructor = require('ControllerInstructor.js');
-ControllerClase = require('ControllerClase.js');
-ControllerUsuario = require('ControllerUsuario.js');
-ControllerCliente = require('ControllerCliente.js');
+ControllerAdministrador = require('./ControllerAdministrador.js');
+ControllerPago = require('./ControllerPago.js');
+ControllerSala = require('./ControllerSala.js');
+ControllerServicio = require('./ControllerServicio.js');
+ControllerInstructor = require('./ControllerInstructor.js');
+ControllerClase = require('./ControllerClase.js');
+ControllerUsuario = require('./ControllerUsuario.js');
+ControllerCliente = require('./ControllerCliente.js');
 
-class ControllerSng{
+class ControllersSng{
   static #instance = null;
   static #controllerAdministrador = null;
   static #controllerPago = null;
   static #controllerSala = null;
-  static #controllerServicios = null;
+  static #controllerServicio = null;
   static #controllerInstructor = null;
   static #controllerClase = null;
   static #controllerUsuario = null;
@@ -22,7 +22,7 @@ class ControllerSng{
   
   static getInstance(){
     if(this.#instance == null){
-      this.#instance = new ControllerSng();
+      this.#instance = new ControllersSng();
     }
     return this.#instance;
   }
@@ -48,11 +48,11 @@ class ControllerSng{
     return this.#controllerSala;
   }
 
-  static getControllerServicios(){
-    if(this.#controllerServicios == null){
-      this.#controllerServicios = new ControllerServicios();
+  static getControllerServicio(){
+    if(this.#controllerServicio == null){
+      this.#controllerServicio = new ControllerServicio();
     }
-    return this.#controllerServicios;
+    return this.#controllerServicio;
   }
 
   static getControllerInstructor(){
@@ -84,4 +84,4 @@ class ControllerSng{
   }
 }
 
-module.exports = ControllerSng;
+module.exports = ControllersSng;

@@ -23,6 +23,10 @@ class Persona{
 
   }
 
+  nombreCompleto(){
+    return this.primerNombre + ' ' + this.segundoNombre + ' ' + this.primerApellido + ' ' + this.segundoApellido;
+  }
+
 }
 
 module.exports = Persona;

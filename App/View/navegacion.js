@@ -1,5 +1,5 @@
 const { Router} = require('express');
-const navigation = Router();
+const navigation = Router({caseSensitive:true});
 
 const path = {root: 'View/'};
 

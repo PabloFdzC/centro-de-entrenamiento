@@ -21,6 +21,17 @@ class Clase {
     this.#clientes = clientes;
   }
 
+  constructor(id, servicio){
+    this.#id = id;
+    this.#capacidad = null;
+    this.#estado = null;
+    this.#horarioClase = null;
+    this.#instructorTemporal = null;
+    this.#servicio = servicio;
+    this.#instructor = null;
+    this.#clientes = null;
+  }
+
   getId(){
     return this.#id;
   }

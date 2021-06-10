@@ -1,4 +1,4 @@
-Persona = require('Persona.js');
+Persona = require('./Persona.js');
 
 class Instructor extends Persona{
 

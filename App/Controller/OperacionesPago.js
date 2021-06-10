@@ -1,22 +1,26 @@
 const { Router} = require('express');
-const ControllerSng = require('ControllerSng.js');
-const OperacionesPago = Router();
-const ctrlPago = ControllerSng.getControllerPago();
+const ControllersSng = require('./ControllersSng.js');
+const OperacionesPago = Router({caseSensitive:true});
+const ctrlPago = ControllersSng.getControllerPago();
 
 OperacionesPago.post('/mostrarPendientes', function(req, res){
-  ctrlPago.mostrarPendientes(req.body, res);
+  var r = ctrlPago.mostrarPendientes(req.body);
+  res.send(r);
 });
 
 OperacionesPago.post('/crearPago', function(req, res){
-  ctrlPago.agregar(req.body, res);
+  var r = ctrlPago.agregar(req.body);
+  res.send(r);
 });
 
 OperacionesPago.post('/realizarPago', function(req, res){
-  ctrlPago.realizarPago(req.body, res);
+  var lista = ctrlPago.realizarPago(req.body);
+  res.render('PagosCards.ejs', {lista});
 });
 
 OperacionesPago.post('/pagoMoroso', function(req, res){
-  ctrlPago.realizarPago(req.body, res);
+  var r = ctrlPago.pagoMoroso(req.body);
+  res.send(r);
 });
 
 module.exports = OperacionesPago;

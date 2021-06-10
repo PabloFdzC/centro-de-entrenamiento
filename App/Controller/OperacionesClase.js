@@ -1,30 +1,36 @@
 const { Router} = require('express');
-const ControllerSng = require('ControllerSng.js');
-const OperacionesClase = Router();
-const ctrlClase = ControllerSng.getControllerClase();
+const ControllersSng = require('./ControllersSng.js');
+const OperacionesClase = Router({caseSensitive:true});
+const ctrlClase = ControllersSng.getControllerClase();
 
 OperacionesClase.post('/crearClase', function(req, res){
-  ctrlClase.agregar(req.body, res);
+  var r = ctrlClase.agregar(req.body);
+  res.send(r);
 });
 
 OperacionesClase.post('/modificarClase', function(req, res){
-  ctrlClase.modificar(req.body, res);
+  var r = ctrlClase.modificar(req.body);
+  res.send(r);
 });
 
 OperacionesClase.get('/mostrarClasesPorMes', function(req, res){
-  ctrlClase.clasesPorMes(req.body, res);
+  var lista = ctrlClase.clasesPorMes(req.body);
+  res.send(lista);
 });
 
 OperacionesClase.get('/mostrarReservas', function(req, res){
-  ctrlClase.listadoReservas(req.body, res);
+  var lista = ctrlClase.listadoReservas(req.body);
+  res.render('Clientes.ejs', {lista});
 });
 
 OperacionesClase.post('/matricularClase', function(req, res){
-  ctrlClase.matricularClase(req.body, res);
+  var r = ctrlClase.matricularClase(req.body);
+  res.send(r);
 });
 
 OperacionesClase.post('/cancelarMatricula', function(req, res){
-  ctrlClase.cancelarMatricula(req.body, res);
+  var r = ctrlClase.cancelarMatricula(req.body);
+  res.send(r);
 });
 
 module.exports = OperacionesClase;

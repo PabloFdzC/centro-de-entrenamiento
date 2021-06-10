@@ -1,5 +1,5 @@
-const EstadoPago = require('EstadoPago.js');
-Persona = require('Persona.js');
+const EstadoPago = require('./EstadoPago.js');
+Persona = require('./Persona.js');
 
 class Cliente extends Persona{
   

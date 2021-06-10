@@ -1,0 +1,45 @@
+<% for(let sala in lista){ %>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <h2 class="card-title tituloElementoLista2">Sala</h2>
+        </div>
+        <div class="">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearSala">Editar</button>
+        </div>
+      </div>
+      <div class="d-flex justify-content-around m-2">
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Capacidad:</h3>
+          <div class="ms-2"><%= sala.getCapacidad() %></div>
+        </div>
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Aforo:</h3>
+          <div class="ms-2"><%= sala.getAforo() %></div>
+        </div>
+        <div class="d-flex justify-content-start">
+          <h3 class="tituloDatos ">Costo matricula:</h3>
+          <div class="ms-2"><%= sala.getCostoMatricula() %></div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <div class="">
+          <h2 class="card-title tituloElementoLista2">Calendario</h2>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-primary">Editar</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="row justify-content-center">
+            <% for(let dia in sala.getCalendarioSala()){ %>
+              <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1"><%= dia %></div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<%%>

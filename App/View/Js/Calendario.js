@@ -1,4 +1,7 @@
 $('body').ready(function(){
+  let dUsuario = new Date();
+  let mesUsuario = dUsuario.getMonth();
+
   const meses = Array(
     "Enero",
     "Febrero",
@@ -13,6 +16,7 @@ $('body').ready(function(){
     "Noviembre",
     "Diciembre",
     );
+
   const dias = Array(
     "Lun",
     "Mar",
@@ -24,15 +28,21 @@ $('body').ready(function(){
     );
   
   construyeCalendario = function (){
-    let html = ``;
-    var d = new Date();
-    var n = d.getDate();
+    let cuadrosDias = ``;
+    let d = new Date();
+    let diaActual = d.getDay();
+    let diaNActual = d.getDate();
+    let mesActual = d.getMonth();
+    let annoActual = d.getFullYear();
+    let diasSemana = `
+    <div class="row mt-2 justify-content-center">
+    `;
     for(let i = 0; i < 5; i++){
-      html += `
+      cuadrosDias += `
         <div class="row mt-2 justify-content-center">
       `;
       for(let j = 0; j < 7; j++){
-        html+= `
+        cuadrosDias+= `
           <div class="col">
             <div class="card diaBlanco">
               <div class="card-body" style="padding-left: 0;padding-right: 0;">
@@ -47,13 +57,21 @@ $('body').ready(function(){
             </div>
           </div>
         `;
-        $('#calendarioCont').append();
       }
-      html += `
+      cuadrosDias += `
         </div>
       `;
     }
-    $('#calendarioCont').append(html);
+    for(let i = 0; i < 7; i++){
+      diasSemana += `
+      <div class="col">`+dias[i]+`</div>
+      `;
+    }
+    diasSemana += `
+      </div>
+    `;
+    $('#calendarioCont').append(diasSemana);
+    $('#calendarioCont').append(cuadrosDias);
   }
 
   construyeCalendario();

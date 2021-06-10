@@ -1,0 +1,31 @@
+<% for(let cliente in lista) { %>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="card-title tituloElementoLista"><%= cliente.nombreCompleto() %></h2>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-6">
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos ">Edad:</h3>
+            <div class="ms-2"><%= cliente.getEdad() %></div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">Teléfono:</h3>
+            <div class="ms-2"><%= cliente.getTelefono() %></div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">E-mail:</h3>
+            <div class="ms-2"><%= cliente.getEmail() %></div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <h3 class="tituloDatos">Identificación:</h3>
+            <div class="ms-2"><%= cliente.getIdentificacion() %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>

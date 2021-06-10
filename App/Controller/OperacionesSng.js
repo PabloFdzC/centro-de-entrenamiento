@@ -1,24 +1,33 @@
-OperacionesAdministrador = require('OperacionesAdministrador.js');
-OperacionesPago = require('OperacionesPago.js');
-OperacionesSala = require('OperacionesSala.js');
-OperacionesServicios = require('OperacionesServicios.js');
-OperacionesInstructor = require('OperacionesInstructor.js');
-OperacionesClase = require('OperacionesClase.js');
-OperacionesUsuario = require('OperacionesUsuario.js');
-OperacionesCliente = require('OperacionesCliente.js');
+OperacionesAdministrador = require('./OperacionesAdministrador.js');
+OperacionesPago = require('./OperacionesPago.js');
+OperacionesSala = require('./OperacionesSala.js');
+OperacionesServicios = require('./OperacionesServicios.js');
+OperacionesInstructor = require('./OperacionesInstructor.js');
+OperacionesClase = require('./OperacionesClase.js');
+OperacionesUsuario = require('./OperacionesUsuario.js');
+OperacionesCliente = require('./OperacionesCliente.js');
 
 class OperacionesSng{
   static #instance = null;
-  static #operacionesAdministrador = null;
-  static #operacionesPago = null;
-  static #operacionesSala = null;
-  static #operacionesServicios = null;
-  static #operacionesInstructor = null;
-  static #operacionesClase = null;
-  static #operacionesUsuario = null;
-  static #operacionesCliente = null;
+  #operacionesAdministrador;
+  #operacionesPago;
+  #operacionesSala;
+  #operacionesServicios;
+  #operacionesInstructor;
+  #operacionesClase;
+  #operacionesUsuario;
+  #operacionesCliente;
 
-  constructor(){}
+  constructor(){
+    this.#operacionesAdministrador = null;
+    this.#operacionesPago = null;
+    this.#operacionesSala = null;
+    this.#operacionesServicios = null;
+    this.#operacionesInstructor = null;
+    this.#operacionesClase = null;
+    this.#operacionesUsuario = null;
+    this.#operacionesCliente = null;
+  }
   
   static getInstance(){
     if(this.#instance == null){
@@ -27,56 +36,56 @@ class OperacionesSng{
     return this.#instance;
   }
 
-  static operacionesAdministrador(){
+  getOperacionesAdministrador(){
     if(this.#operacionesAdministrador == null){
       this.#operacionesAdministrador = OperacionesAdministrador;
     }
     return this.#operacionesAdministrador;
   }
 
-  static operacionesPago(){
+  getOperacionesPago(){
     if(this.#operacionesPago == null){
       this.#operacionesPago = OperacionesPago;
     }
     return this.#operacionesPago;
   }
 
-  static operacionesSala(){
+  getOperacionesSala(){
     if(this.#operacionesSala == null){
       this.#operacionesSala = OperacionesSala;
     }
     return this.#operacionesSala;
   }
 
-  static operacionesServicios(){
+  getOperacionesServicios(){
     if(this.#operacionesServicios == null){
       this.#operacionesServicios = OperacionesServicios;
     }
     return this.#operacionesServicios;
   }
 
-  static operacionesInstructor(){
+  getOperacionesInstructor(){
     if(this.#operacionesInstructor == null){
       this.#operacionesInstructor = OperacionesInstructor;
     }
     return this.#operacionesInstructor;
   }
 
-  static operacionesClase(){
+  getOperacionesClase(){
     if(this.#operacionesClase == null){
       this.#operacionesClase = OperacionesClase;
     }
     return this.#operacionesClase;
   }
 
-  static operacionesUsuario(){
+  getOperacionesUsuario(){
     if(this.#operacionesUsuario == null){
       this.#operacionesUsuario = OperacionesUsuario;
     }
     return this.#operacionesUsuario;
   }
 
-  static operacionesCliente(){
+  getOperacionesCliente(){
     if(this.#operacionesCliente == null){
       this.#operacionesCliente = OperacionesCliente;
     }

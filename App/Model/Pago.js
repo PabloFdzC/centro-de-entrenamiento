@@ -1,4 +1,4 @@
-const FormaPago = require('FormaPago.js');
+const FormaPago = require('./FormaPago.js');
 
 class Pago{
   

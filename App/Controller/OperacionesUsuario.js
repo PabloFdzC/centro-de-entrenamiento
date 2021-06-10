@@ -1,14 +1,11 @@
 const { Router} = require('express');
-const ControllerSng = require('ControllerSng.js');
-const OperacionesUsuario = Router();
-const ctrlUsuario = ControllerSng.getControllerUsuario();
+const ControllersSng = require('./ControllersSng.js');
+const OperacionesUsuario = Router({caseSensitive:true});
+const ctrlUsuario = ControllersSng.getControllerUsuario();
 
 OperacionesUsuario.post('/iniciarSesion', function(req, res){
-  ctrlUsuario.iniciarSesion(req, res);
-});
-
-OperacionesUsuario.post('/modificarContrasenna', function(req, res){
-  ctrlUsuario.modificarContrasenna(req.info, res);
+  var email = ctrlUsuario.iniciarSesion(req.body);
+  res.send(email);
 });
 
 module.exports = OperacionesUsuario;

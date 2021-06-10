@@ -1,26 +1,31 @@
 const { Router} = require('express');
-const ControllerSng = require('ControllerSng.js');
-const OperacionesSala = Router();
-const ctrlSala = ControllerSng.getControllerSala();
+const ControllersSng = require('./ControllersSng.js');
+const OperacionesSala = Router({caseSensitive:true});
+const ctrlSala = ControllersSng.getControllerSala();
 
 OperacionesSala.post('/crearSala', function(req, res){
-  ctrlSala.agregar(req.body, res);
+  var r = ctrlSala.agregar(req.body);
+  res.send(r);
 });
 
 OperacionesSala.post('/modificarSala', function(req, res){
-  ctrlSala.modificar(req.body, res);
+  var r = ctrlSala.modificar(req.body);
+  res.send(r);
 });
 
 OperacionesSala.get('/mostrarSala', function(req, res){
-  ctrlSala.consultar(req.body, res);
+  var sala = ctrlSala.consultar(req.body);
+  res.render('Sala.ejs', {sala});
 });
 
 OperacionesSala.post('/crearCalendario', function(req, res){
-  ctrlSala.crearCalendario(req.body, res);
+  var r = ctrlSala.crearCalendario(req.body);
+  res.send(r);
 });
 
 OperacionesSala.post('/modificarCalendario', function(req, res){
-  ctrlSala.modificarCalendario(req.body, res);
+  var r = ctrlSala.modificarCalendario(req.body);
+  res.send(r);
 });
 
 module.exports = OperacionesSala;

@@ -1,55 +1,62 @@
-const connection = require("connection.js");
-Servicio = require("../Model/Servicio.js");
+const connection = require("./connection.js");
+Servicio = require("./../Model/Servicio.js");
 
 class ControllerServicio{
   
   constructor(){}
 
-  agregar(elem, res){
+  agregar(elem){
+    var res;
     connection.query('CALL CrearServicio(?,?)',[elem.nombreServicio, elem.costoMatricula], function(error, result){
       if(error){
         console.log("error: ", error);
-        res.send([[{"error_message": error.message}]]);
+        res = {"error_message": error.message};
       }else{
         console.log( "exito: ", result);
-        res.send(result);
+        res = result;
       }
     });
+    return res;
   }
 
-  consultar(elem, res){
+  consultar(elem){
 
   }
 
-  modificar(elem, res){
+  modificar(elem){
+    var res;
     connection.query('CALL ModificarServicio(?,?)',[elem.nombreServicio, elem.costoMatricula], function(error, result){
       if(error){
         console.log("error: ", error);
-        res.send([[{"error_message": error.message}]]);
+        res = {"error_message": error.message};
       }else{
         console.log( "exito: ", result);
-        res.send(result);
+        res = result;
       }
     });
+    return res;
   }
 
-  eliminar(elem, res){
+  eliminar(elem){
+    var res;
     connection.query('CALL EliminarServicio(?)',[elem.id], function(error, result){
       if(error){
         console.log("error: ", error);
-        res.send([[{"error_message": error.message}]]);
+        res = {"error_message": error.message};
       }else{
         console.log( "exito: ", result);
-        res.send(result);
+        res = result;
       }
     });
+    return res;
   }
 
-  listadoServicios(res){
+  listadoServicios(){
+    var res;
     connection.query('CALL GetServicios()',[], function(error, result){
       if(error){
         console.log("error: ", error);
-        res.send([[{"error_message": error.message}]]);
+        res = {"error_message": error.message};
       }else{
         listaserviciosresult = result[0];
         var i;
@@ -60,9 +67,10 @@ class ControllerServicio{
           listaServicios.push(servicio);
         }
         console.log({listaServicios});
-        res.render('Servicios.ejs', {lista: listaServicios});
+        res = listaServicios;
       }
     });
+    return res;
   }
 
 }
