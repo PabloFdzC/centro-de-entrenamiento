@@ -10,11 +10,10 @@ class ControllerPersona{
         console.log("error: ", error);
         res = {"error_message": error.message};
       }else{
-        clienteresult = result[0][0];
-        cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido, clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
-        console.log({clienteresult});
+        usuarioresult = result[0][0];
+        usuario = {email = usuarioresult.email, tipo_usuario = usuarioresult.tipo_usuario};
         console.log( "exito: ", result);
-        res = cliente.getEmail();
+        res = usuario;
       }
     });
     return res;

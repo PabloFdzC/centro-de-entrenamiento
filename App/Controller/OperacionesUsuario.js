@@ -4,8 +4,8 @@ const OperacionesUsuario = Router({caseSensitive:true});
 const ctrlUsuario = ControllersSng.getControllerUsuario();
 
 OperacionesUsuario.post('/iniciarSesion', function(req, res){
-  var email = ctrlUsuario.iniciarSesion(req.body);
-  res.send(email);
+  var usuario = ctrlUsuario.iniciarSesion(req.body);
+  res.send(usuario);
 });
 
 module.exports = OperacionesUsuario;

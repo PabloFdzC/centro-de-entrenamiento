@@ -5,14 +5,19 @@ class ControllerAdministrador{
 
   agregar(elem){
     var res;
-    
-    connection.query('CALL RegistroAdministrador(?,?)',[elem.email, elem.contrasenna], function(error, result){
+    var password = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < 10; i++ ) {
+      password += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    connection.query('CALL RegistroAdministrador(?,?)',[elem.email, password], function(error, result){
       if(error){
         console.log("error: ", error);
         res = error.message;
       }else{
         console.log( "exito: ", result);
-        res = result;
+        res = {password};
       }
     });
 
