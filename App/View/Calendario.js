@@ -5,6 +5,7 @@ class Calendario{
       
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -13,6 +14,7 @@ class Calendario{
 
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -21,6 +23,7 @@ class Calendario{
 
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
   

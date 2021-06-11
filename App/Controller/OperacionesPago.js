@@ -3,9 +3,9 @@ const ControllersSng = require('./ControllersSng.js');
 const OperacionesPago = Router({caseSensitive:true});
 const ctrlPago = ControllersSng.getControllerPago();
 
-OperacionesPago.post('/mostrarPendientes', async function(req, res){
+OperacionesPago.post('/mostrarPendientes/:email', async function(req, res){
   try{
-    var r = await ctrlPago.mostrarPendientes(req.body);
+    var r = await ctrlPago.mostrarPendientes(req.params.email);
     res.send(r);
   }catch(err){
     console.log(err);

@@ -6,6 +6,7 @@ class Pagos{
       res = html;
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
     return res;
   }
@@ -16,7 +17,7 @@ class Pagos{
       muestraMensaje("Exito", "Pago realizado con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo realizar el pago");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
   

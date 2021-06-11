@@ -6,7 +6,7 @@ class Registrarse{
       muestraMensaje("Exito", "Cuenta creada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo crear la cuenta");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 

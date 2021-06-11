@@ -3,6 +3,6 @@ function muestraMensaje(titulo, mensaje){
   $('#tituloMensaje').append(titulo);
   $('#mensaje').empty();
   $('#mensaje').append(mensaje);
-  let modal = $('#modalMensaje');
+  let modal = new bootstrap.Modal(document.getElementById('modalMensaje'));
   modal.show();
 }

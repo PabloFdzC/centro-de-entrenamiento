@@ -8,7 +8,7 @@ class Sala{
       muestraMensaje("Exito", "Sala creada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "Datos modificados con éxito");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -18,6 +18,7 @@ class Sala{
       muestraMensaje("Exito", "Sala modificada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -26,9 +27,18 @@ class Sala{
       $('#sala').append(html);
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se puede mostrar la sala");
+      muestraMensaje("Fallo", xhr.responseText);
     });
     
+  }
+
+  mostrarSalas(){
+    /*ajaxCall('/mostrarSalas', 'GET', {}, function(html){
+      $('#sala').append(html);
+    }, function(xhr, status, error){
+      console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
+    });*/
   }
 
 }

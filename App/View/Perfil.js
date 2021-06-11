@@ -10,6 +10,7 @@ class Perfil{
         muestraMensaje("Exito", "Datos modificados con éxito");
       }, function(xhr, status, error){
         console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
       });
     }
   }
@@ -30,6 +31,7 @@ class Perfil{
         muestraMensaje("Exito", "Contraseña modificada con éxito");
       }, function(xhr, status, error){
         console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
       });
     }
   }

@@ -31,9 +31,9 @@ OperacionesClase.post('/modificarClase', async function(req, res){
   }
 });
 
-OperacionesClase.get('/mostrarClasesPorMes', async function(req, res){
+OperacionesClase.get('/mostrarClasesPorMes/:mes', async function(req, res){
   try{
-    var lista = await ctrlClase.clasesPorMes(req.body);
+    var lista = await ctrlClase.clasesPorMes(req.params.mes);
     res.send(lista);
   }catch(err){
     console.log(err);
@@ -45,9 +45,9 @@ OperacionesClase.get('/mostrarClasesPorMes', async function(req, res){
   }
 });
 
-OperacionesClase.get('/mostrarReservas', async function(req, res){
+OperacionesClase.get('/mostrarReservas/:idClase', async function(req, res){
   try{
-    var lista = await ctrlClase.listadoReservas(req.body);
+    var lista = await ctrlClase.listadoReservas(req.params.idClase);
     res.render('Clientes.ejs', {lista});
   }catch(err){
     console.log(err);

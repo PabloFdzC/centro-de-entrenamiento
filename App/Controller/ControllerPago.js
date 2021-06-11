@@ -33,20 +33,20 @@ class ControllerPago{
     
   }
 
-  async mostrarPendientes(elem){
+  async mostrarPendientes(email){
     return new Promise(function(resolve, reject){
-      connection.query('CALL GetPagosPendientes(?,?)',[elem.email, EstadoPago[PENDIENTE]], function(error, result){
+      connection.query('CALL GetPagosPendientes(?,?)',[email, EstadoPago[PENDIENTE]], function(error, result){
         if(error){
           reject(error);
         }else{
-          pagoslistaresult = result[0];
+          var pagoslistaresult = result[0];
           var i;
           var listaPagos = [];
           for(i = 0; i < pagoslistaresult.length; i++){
-            pagoresult = pagoslistaresult[i];
-            servicio = new Servicio(pagoresult.nombre_servicio, pagoresult.costo_matricula);
-            clase = new Clase(id = pagoresult.id_clase, servicio = servicio);
-            pago = new Pago(pagoresult.id_pago, pagoresult.fecha, pagoresult.forma_pago, clase);
+            var pagoresult = pagoslistaresult[i];
+            var servicio = new Servicio(pagoresult.nombre_servicio, pagoresult.costo_matricula);
+            var clase = new Clase(id = pagoresult.id_clase, servicio = servicio);
+            var pago = new Pago(pagoresult.id_pago, pagoresult.fecha, pagoresult.forma_pago, clase);
             listaPagos.push(pago);
           }
           resolve(listaPagos);

@@ -35,7 +35,7 @@ OperacionesServicios.get('/mostrarServicios/:esLista', async function(req, res){
   try{
     var lista = await ctrlServicio.listadoServicios();
     if(req.params.esLista){
-      res.send(lista);
+      res.render('ServiciosLista.ejs', {lista});
     } else {
       res.render('ServiciosCards.ejs', {lista});
     }

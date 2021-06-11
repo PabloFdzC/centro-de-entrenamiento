@@ -6,7 +6,7 @@ class Servicios{
       muestraMensaje("Exito", "Servicio creado con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo crear el servicio");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -16,6 +16,7 @@ class Servicios{
       muestraMensaje("Exito", "Servicio modificado con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -23,8 +24,11 @@ class Servicios{
     var res = null;
     ajaxCall('/mostrarServicios/'+esLista, 'GET', {}, function(r){
       res = r;
+      console.log("resultado:");
+      console.log(r);
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
     return res;
   }

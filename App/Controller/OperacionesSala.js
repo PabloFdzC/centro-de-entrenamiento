@@ -31,9 +31,9 @@ OperacionesSala.post('/modificarSala', async function(req, res){
   }
 });
 
-OperacionesSala.get('/mostrarSala', async function(req, res){
+OperacionesSala.get('/mostrarSala/:idSala', async function(req, res){
   try{
-    var sala = await ctrlSala.consultar(req.body);
+    var sala = await ctrlSala.consultar(req.params.idSala);
     res.render('Sala.ejs', {sala});
   }catch(err){
     console.log(err);

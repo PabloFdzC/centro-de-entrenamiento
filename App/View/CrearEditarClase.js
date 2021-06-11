@@ -1,10 +1,12 @@
 class CrearEditarClase{
   
   crearClase(info){
-    ajaxCall('/matricularClase', 'POST', info, function(r){
+    ajaxCall('/crearClase', 'POST', info, function(r){
       console.log(r);
+      muestraMensaje("Exito", "Clase creada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -14,6 +16,7 @@ class CrearEditarClase{
       muestraMensaje("Exito", "Clase modificada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 

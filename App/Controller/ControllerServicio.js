@@ -51,12 +51,12 @@ class ControllerServicio{
         if(error){
           reject(error);
         }else{
-          listaserviciosresult = result[0];
+          var listaserviciosresult = result[0];
           var i;
           var listaServicios = [];
           for(i = 0; i < listaserviciosresult.length; i++){
-            servicioresult = listaserviciosresult[i];
-            servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+            var servicioresult = listaserviciosresult[i];
+            var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
             listaServicios.push(servicio);
           }
           resolve(listaServicios);

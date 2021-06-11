@@ -7,9 +7,24 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1234';
 
 flush privileges;
 
+DROP TABLE IF EXISTS Clases_en_Jornada;
+DROP TABLE IF EXISTS Jornada;
+DROP TABLE IF EXISTS Intervalo_Tiempo;
+DROP TABLE IF EXISTS Servicios_de_Sala;
+DROP TABLE IF EXISTS Servicios_de_Instructor;
+DROP TABLE IF EXISTS Pago;
+DROP TABLE IF EXISTS Sala;
+DROP TABLE IF EXISTS Matricula;
+DROP TABLE IF EXISTS Clase;
+DROP TABLE IF EXISTS Servicio;
+DROP TABLE IF EXISTS Cliente;
+DROP TABLE IF EXISTS Administrador;
+DROP TABLE IF EXISTS Instructor;
+DROP TABLE IF EXISTS Llaves;
+
 CREATE TABLE Servicio(
 	nombre_servicio VARCHAR(50) NOT NULL PRIMARY KEY,
-    costo_matricula FLOAT NOT NULL
+    costo_matricula FLOAT
 );
 
 CREATE TABLE Intervalo_Tiempo(
@@ -70,7 +85,7 @@ CREATE TABLE Llaves(
 
 CREATE TABLE Sala(
 	id_sala INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    costo_matricula INT NOT NULL,
+    costo_matricula FLOAT NOT NULL,
     capacidad INT NOT NULL,
     aforo INT NOT NULL
 );

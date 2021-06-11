@@ -6,6 +6,7 @@ class Clientes{
       res = html;
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
     return res;
   }

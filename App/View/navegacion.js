@@ -12,8 +12,8 @@ navigation.get('/IniciarSesion', function (req, res) {
   res.render('IniciarSesion-Registrarse.ejs');
 });
 
-navigation.get('/Calendario', function (req, res) {
-  res.render('Calendario.ejs');
+navigation.get('/Calendario/:tipo', function (req, res) {
+  res.render('Calendario.ejs', {tipo: req.params.tipo});
 });
 
 navigation.get('/Instructores', function (req, res) {
@@ -40,8 +40,8 @@ navigation.get('/NuevoAdministrador', function (req, res) {
   res.render('NuevoAdministrador.ejs');
 });
 
-navigation.get('/Perfil', function (req, res) {
-  res.render('Perfil.ejs');
+navigation.get('/Perfil/:tipo', function (req, res) {
+  res.render('Perfil.ejs', {tipo: req.params.tipo});
 });
 
 

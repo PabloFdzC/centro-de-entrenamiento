@@ -10,11 +10,12 @@
       <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
       <li class="nav-item">
       <% if (ventana === "CALENDARIO") { %>
-        <a class="nav-link active" href="/Calendario">Calendario</a>
+        <a class="nav-link active" href="/Calendario/<%= tipo_usuario %>">Calendario</a>
       <% } else { %>
-        <a class="nav-link" href="/Calendario">Calendario</a>
+        <a class="nav-link" href="/Calendario/<%= tipo_usuario %>">Calendario</a>
       <% } %>
       </li>
+      <% if(tipo_usuario === "Administrador"){ %>
       <li class="nav-item">
         <% if (ventana === "INSTRUCTORES") { %>
           <a class="nav-link active" href="/Instructores">Instructores</a>
@@ -43,6 +44,7 @@
           <a class="nav-link" href="/Sala">Sala</a>
         <% } %>
       </li>
+      <% } else if(tipo_usuario === "Cliente"){ %>
       <li class="nav-item">
         <% if (ventana === "PAGOS") { %>
           <a class="nav-link active" href="/Pagos">Pagos</a>
@@ -50,6 +52,7 @@
           <a class="nav-link" href="/Pagos">Pagos</a>
         <% } %>
       </li>
+      <% } %>
       </ul>
       <ul class="navbar-nav navbar-right">
         <li class="nav-item dropdown">
@@ -58,11 +61,19 @@
           <% } else { %>
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <% } %>
+          <% if(tipo_usuario === "Administrador"){ %>
             Administrador
+          <% } else if(tipo_usuario === "Cliente"){ %>
+            Cliente
+          <% } else if(tipo_usuario === "Instructor"){ %>
+            Instructor
+          <% } %>
           </a>
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+            <% if(tipo_usuario === "Administrador"){ %>
             <li><a class="dropdown-item" href="/NuevoAdministrador">Nuevo administrador</a></li>
-            <li><a class="dropdown-item" href="/Perfil">Perfil</a></li>
+            <% } %>
+            <li><a class="dropdown-item" href="/Perfil/<%= tipo_usuario %>">Perfil</a></li>
             <li><a class="dropdown-item" href="/">Cerrar sesión</a></li>
           </ul>
         </li>

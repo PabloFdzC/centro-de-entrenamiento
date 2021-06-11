@@ -6,7 +6,7 @@ class Instructores{
       muestraMensaje("Exito", "Instructor creado con éxito");   
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo crear el instructor");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -16,7 +16,7 @@ class Instructores{
       muestraMensaje("Exito", "Instructor modificados con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo modificar el instructor");
+      muestraMensaje("Fallo", xhr.responseText);
     });
   }
 
@@ -26,6 +26,7 @@ class Instructores{
       res = instructor;
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
     return res;
   }
@@ -36,6 +37,7 @@ class Instructores{
       res = html;
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", xhr.responseText);
     });
     return res;
   }
@@ -48,7 +50,7 @@ class Instructores{
       res = true;
     }, function(xhr, status, error){
       console.log(xhr);
-      muestraMensaje("Fallo", "No se pudo eliminar el instructor");
+      muestraMensaje("Fallo", xhr.responseText);
       res = false;
     });
     return res;

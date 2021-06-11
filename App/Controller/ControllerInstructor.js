@@ -23,9 +23,9 @@ class ControllerInstructor{
         if(error){
           reject(error);
         }else{
-          instructorresult = result[0][0];
-          listaServicios = serviciosDeInstructor(email);
-          instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
+          let instructorresult = result[0][0];
+          var listaServicios = serviciosDeInstructor(email);
+          var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
           resolve(instructor);
         }
       });
@@ -62,13 +62,13 @@ class ControllerInstructor{
         if(error){
           reject(error);
         }else{
-          listainstructoresresult = result[0]
+          var listainstructoresresult = result[0]
           var i;
           var listaInstructores = [];
           for(i = 0; i < listainstructoresresult.length; i++){
-            instructorresult = listainstructoresresult[i];
-            listaServicios = serviciosDeInstructor(instructorresult.email);
-            instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
+            let instructorresult = listainstructoresresult[i];
+            let listaServicios = serviciosDeInstructor(instructorresult.email);
+            var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
             listaInstructores.push(instructor);
           }
           resolve(listaInstructores);
@@ -87,8 +87,8 @@ class ControllerInstructor{
           var i;
           var listaServicios = [];
           for(i = 0; i < listaserviciosresult.length; i++){
-            servicioresult = listaserviciosresult[i];
-            servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+            var servicioresult = listaserviciosresult[i];
+            var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
             listaServicios.push(servicio);
           }
           resolve(listaServicios);

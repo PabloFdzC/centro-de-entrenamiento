@@ -18,7 +18,7 @@ $('body').ready(function(){
     event.preventDefault();
     let form = $('#formIniciarSesion')[0];
     let info = new FormData(form);
-    ini.IniciarSesion(info);
+    ini.iniciarSesion(info);
   });
 
   $('#formRegistrarse').submit(function(event){
