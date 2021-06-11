@@ -1,8 +1,9 @@
 $('body').ready(function(){
-  $('#enviar').click(function(event){
-    var form = $('#nuevoAdministradorForm')[0];
-    var info = new FormData(form);
-    na = new NuevoAdministrador();
+  var na = new NuevoAdministrador();
+  $('#formNuevoAdmin').submit(function(event){
+    event.preventDefault();
+    let form = $('#formNuevoAdmin')[0];
+    let info = new FormData(form);
     na.enviarCorreo(info);
   });
 });

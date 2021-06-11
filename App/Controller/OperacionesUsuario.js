@@ -3,9 +3,18 @@ const ControllersSng = require('./ControllersSng.js');
 const OperacionesUsuario = Router({caseSensitive:true});
 const ctrlUsuario = ControllersSng.getControllerUsuario();
 
-OperacionesUsuario.post('/iniciarSesion', function(req, res){
-  var usuario = ctrlUsuario.iniciarSesion(req.body);
-  res.send(usuario);
+OperacionesUsuario.post('/iniciarSesion', async function(req, res){
+  try{
+    var usuario = await ctrlUsuario.iniciarSesion(req.body);
+    res.send(usuario);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
 module.exports = OperacionesUsuario;

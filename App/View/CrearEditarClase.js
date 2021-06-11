@@ -11,23 +11,10 @@ class CrearEditarClase{
   modificarClase(info){
     ajaxCall('/modificarClase', 'POST', info, function(r){
       console.log(r);
+      muestraMensaje("Exito", "Clase modificada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
     });
-  }
-
-  mostrarClase(info){
-
-  }
-
-  mostrarListadoServicios(){
-    var servicios;
-    ajaxCall('/mostrarServicios', 'GET', {}, function(s){
-      servicios = s;
-    }, function(xhr, status, error){
-      console.log(xhr);
-    });
-    return servicios;
   }
 
 }

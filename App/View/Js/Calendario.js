@@ -1,4 +1,6 @@
 $('body').ready(function(){
+  var cal = new Calendario();
+
   let dUsuario = new Date();
   let mesUsuario = dUsuario.getMonth();
 
@@ -47,7 +49,7 @@ $('body').ready(function(){
             <div class="card diaBlanco">
               <div class="card-body" style="padding-left: 0;padding-right: 0;">
                 <div class="container">
-                  <h5 class="card-title tituloDia" id="`+(i+1)+``+(j+1)+`">`+(i+j+1)+`</h5>
+                  <h5 class="card-title tituloDia" id="`+(i+j)+`">`+(i+j+1)+`</h5>
                   <div class="row rowDia">
                     <div class="punto"></div>
                     <div class="clasesCalendarioDia">2 clases</div>
@@ -75,4 +77,7 @@ $('body').ready(function(){
   }
 
   construyeCalendario();
+  //cal.mostrarClasesPorMes();
+  //cal.mostrarListadoReservas();
+  //cal.mostrarClase();
 });

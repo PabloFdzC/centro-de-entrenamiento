@@ -3,34 +3,88 @@ const ControllersSng = require('./ControllersSng.js');
 const OperacionesClase = Router({caseSensitive:true});
 const ctrlClase = ControllersSng.getControllerClase();
 
-OperacionesClase.post('/crearClase', function(req, res){
-  var r = ctrlClase.agregar(req.body);
-  res.send(r);
+OperacionesClase.post('/crearClase', async function(req, res){
+  try{
+    var r = await ctrlClase.agregar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesClase.post('/modificarClase', function(req, res){
-  var r = ctrlClase.modificar(req.body);
-  res.send(r);
+OperacionesClase.post('/modificarClase', async function(req, res){
+  try{
+    var r = await ctrlClase.modificar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesClase.get('/mostrarClasesPorMes', function(req, res){
-  var lista = ctrlClase.clasesPorMes(req.body);
-  res.send(lista);
+OperacionesClase.get('/mostrarClasesPorMes', async function(req, res){
+  try{
+    var lista = await ctrlClase.clasesPorMes(req.body);
+    res.send(lista);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesClase.get('/mostrarReservas', function(req, res){
-  var lista = ctrlClase.listadoReservas(req.body);
-  res.render('Clientes.ejs', {lista});
+OperacionesClase.get('/mostrarReservas', async function(req, res){
+  try{
+    var lista = await ctrlClase.listadoReservas(req.body);
+    res.render('Clientes.ejs', {lista});
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesClase.post('/matricularClase', function(req, res){
-  var r = ctrlClase.matricularClase(req.body);
-  res.send(r);
+OperacionesClase.post('/matricularClase', async function(req, res){
+  try{
+    var r = await ctrlClase.matricularClase(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesClase.post('/cancelarMatricula', function(req, res){
-  var r = ctrlClase.cancelarMatricula(req.body);
-  res.send(r);
+OperacionesClase.post('/cancelarMatricula', async function(req, res){
+  try{
+    var r = await ctrlClase.cancelarMatricula(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
 module.exports = OperacionesClase;

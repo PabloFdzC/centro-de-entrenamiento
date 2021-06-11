@@ -3,24 +3,60 @@ const ControllersSng = require('./ControllersSng.js');
 const OperacionesPago = Router({caseSensitive:true});
 const ctrlPago = ControllersSng.getControllerPago();
 
-OperacionesPago.post('/mostrarPendientes', function(req, res){
-  var r = ctrlPago.mostrarPendientes(req.body);
-  res.send(r);
+OperacionesPago.post('/mostrarPendientes', async function(req, res){
+  try{
+    var r = await ctrlPago.mostrarPendientes(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesPago.post('/crearPago', function(req, res){
-  var r = ctrlPago.agregar(req.body);
-  res.send(r);
+OperacionesPago.post('/crearPago', async function(req, res){
+  try{
+    var r = await ctrlPago.agregar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesPago.post('/realizarPago', function(req, res){
-  var lista = ctrlPago.realizarPago(req.body);
-  res.render('PagosCards.ejs', {lista});
+OperacionesPago.post('/realizarPago', async function(req, res){
+  try{
+    var lista = await ctrlPago.realizarPago(req.body);
+    res.render('PagosCards.ejs', {lista});
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
-OperacionesPago.post('/pagoMoroso', function(req, res){
-  var r = ctrlPago.pagoMoroso(req.body);
-  res.send(r);
+OperacionesPago.post('/pagoMoroso', async function(req, res){
+  try{
+    var r = await ctrlPago.pagoMoroso(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
 module.exports = OperacionesPago;

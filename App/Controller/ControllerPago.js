@@ -1,4 +1,4 @@
-const connection = require("./connection.js");
+const connection = require("./ConexionBaseDatos.js");
 const Clase = require("./../Model/Clase.js");
 const EstadoPago = require("./../Model/EstadoPago.js");
 const { PENDIENTE, MOROSO } = require("./../Model/EstadoPago.js");
@@ -9,18 +9,16 @@ class ControllerPago{
   
   constructor(){}
 
-  agregar(elem){
-    var res;
-    connection.query('CALL CrearPago(?,?,?,?)',[elem.cantidad, elem.emailCliente, elem.idClase, EstadoPago[PENDIENTE]], function(error, result){
-      if(error){
-        console.log("error: ", error);
-        res = {"error_message": error.message};
-      }else{
-        console.log( "exito: ", result);
-        res = result;
-      }
+  async agregar(elem){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL CrearPago(?,?,?,?)',[elem.cantidad, elem.emailCliente, elem.idClase, EstadoPago[PENDIENTE]], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
     });
-    return res;
   }
 
   consultar(elem){
@@ -35,56 +33,50 @@ class ControllerPago{
     
   }
 
-  mostrarPendientes(elem){
-    var res;
-    connection.query('CALL GetPagosPendientes(?,?)',[elem.email, EstadoPago[PENDIENTE]], function(error, result){
-      if(error){
-        console.log("error: ", error);
-        res = {"error_message": error.message};
-      }else{
-        pagoslistaresult = result[0];
-        var i;
-        var listaPagos = [];
-        for(i = 0; i < pagoslistaresult.length; i++){
-          pagoresult = pagoslistaresult[i];
-          servicio = new Servicio(pagoresult.nombre_servicio, pagoresult.costo_matricula);
-          clase = new Clase(pagoresult.id_clase, servicio);
-          pago = new Pago(pagoresult.id_pago, pagoresult.fecha, pagoresult.forma_pago, clase);
-          listaPagos.push(pago);
+  async mostrarPendientes(elem){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL GetPagosPendientes(?,?)',[elem.email, EstadoPago[PENDIENTE]], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          pagoslistaresult = result[0];
+          var i;
+          var listaPagos = [];
+          for(i = 0; i < pagoslistaresult.length; i++){
+            pagoresult = pagoslistaresult[i];
+            servicio = new Servicio(pagoresult.nombre_servicio, pagoresult.costo_matricula);
+            clase = new Clase(id = pagoresult.id_clase, servicio = servicio);
+            pago = new Pago(pagoresult.id_pago, pagoresult.fecha, pagoresult.forma_pago, clase);
+            listaPagos.push(pago);
+          }
+          resolve(listaPagos);
         }
-        console.log({listaPagos});
-        res = listaPagos;
-      }
+      });
     });
-    return res;
   }
 
-  realizarPago(elem){
-    var res;
-    connection.query('CALL RealizarPago(?,?,?)',[elem.id, elem.formaPago, EstadoPago[ACTIVO]], function(error, result){
-      if(error){
-        console.log("error: ", error);
-        res = {"error_message": error.message};
-      }else{
-        console.log( "exito: ", result);
-        res = result;
-      }
+  async realizarPago(elem){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL RealizarPago(?,?,?)',[elem.id, elem.formaPago, EstadoPago[ACTIVO]], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
     });
-    return res;
   }
 
-  pagoMoroso(elem){
-    var res;
-    connection.query('CALL PagoMoroso(?,?)',[elem.id, EstadoPago[MOROSO]], function(error, result){
-      if(error){
-        console.log("error: ", error);
-        res = {"error_message": error.message};
-      }else{
-        console.log( "exito: ", result);
-        res = result;
-      }
+  async pagoMoroso(elem){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL PagoMoroso(?,?)',[elem.id, EstadoPago[MOROSO]], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
     });
-    return res;
   }
 
 }

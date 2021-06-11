@@ -3,19 +3,20 @@ class ControllerPersona{
   
   constructor(){}
 
-  iniciarSesion(elem){
+  async iniciarSesion(elem){
     var res;
-    connection.query('CALL LogIn(?,?)',[elem.email, elem.contrasenna], function(error, result){
-      if(error){
-        console.log("error: ", error);
-        res = {"error_message": error.message};
-      }else{
-        usuarioresult = result[0][0];
-        usuario = {email = usuarioresult.email, tipo_usuario = usuarioresult.tipo_usuario};
-        console.log( "exito: ", result);
-        res = usuario;
-      }
+    return new Promise(function(resolve, reject){
+      connection.query('CALL LogIn(?,?)',[elem.email, elem.contrasenna], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          usuarioresult = result[0][0];
+          usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
+          resolve(usuario);
+        }
+      });
     });
+    
     return res;
   }
   

@@ -3,25 +3,64 @@ const ControllersSng = require('./ControllersSng.js');
 const OperacionesServicios = Router({caseSensitive:true});
 const ctrlServicio = ControllersSng.getControllerServicio();
 
-OperacionesServicios.post('/crearServicio', function(req, res){
-  ctrlServicio.agregar(req.info, res);
-});
-
-OperacionesServicios.post('/modificarServicio', function(req, res){
-  ctrlServicio.modificar(req.info, res);
-});
-
-OperacionesServicios.get('/mostrarServicios', function(req, res){
-  ctrlServicio.listadoServicios();
-  if(req.body.esLista){
-    res.send(lista);
-  } else {
-    res.render('ServiciosCards.ejs', {lista});
+OperacionesServicios.post('/crearServicio', async function(req, res){
+  try{
+    var r = await ctrlServicio.agregar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
   }
 });
 
-OperacionesServicios.post('/eliminarServicio', function(req, res){
-  ctrlServicio.eliminar(req.info, res);
+OperacionesServicios.post('/modificarServicio', async function(req, res){
+  try{
+    var r = await ctrlServicio.modificar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesServicios.get('/mostrarServicios/:esLista', async function(req, res){
+  try{
+    var lista = await ctrlServicio.listadoServicios();
+    if(req.params.esLista){
+      res.send(lista);
+    } else {
+      res.render('ServiciosCards.ejs', {lista});
+    }
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesServicios.post('/eliminarServicio', async function(req, res){
+  try{
+    var r = await ctrlServicio.eliminar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
 });
 
 module.exports = OperacionesServicios;

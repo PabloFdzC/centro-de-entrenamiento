@@ -1,11 +1,13 @@
 class Clientes{
 
   verClientes(){
+    var res = null;
     ajaxCall('/mostrarClientes', 'GET', {}, function(html){
-      $('#body').append(html);
+      res = html;
     }, function(xhr, status, error){
       console.log(xhr);
     });
+    return res;
   }
 
 }

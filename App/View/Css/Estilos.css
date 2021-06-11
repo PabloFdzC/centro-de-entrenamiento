@@ -97,3 +97,7 @@ body{
   width: fit-content;
   padding: 0;
 }
+
+.esconde{
+  display: none!important;
+}

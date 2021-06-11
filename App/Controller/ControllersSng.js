@@ -64,7 +64,7 @@ class ControllersSng{
 
   static getControllerClase(){
     if(this.#controllerClase == null){
-      this.#controllerClase = new ControllerClase();
+      this.#controllerClase = new ControllerClase(this.getControllerInstructor());
     }
     return this.#controllerClase;
   }

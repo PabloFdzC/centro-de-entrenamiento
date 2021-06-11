@@ -1,10 +1,12 @@
 class Registrarse{
 
-  registrarse(info, funcExito, funcError){
+  registrarse(info){
     ajaxCall('/crearCliente', 'POST', info, function(r){
       console.log(r);
+      muestraMensaje("Exito", "Cuenta creada con éxito");
     }, function(xhr, status, error){
       console.log(xhr);
+      muestraMensaje("Fallo", "No se pudo crear la cuenta");
     });
   }
 
