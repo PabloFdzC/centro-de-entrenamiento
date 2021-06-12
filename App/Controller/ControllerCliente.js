@@ -17,8 +17,19 @@ class ControllerCliente{
     });
   }
 
-  consultar(elem){
-
+  consultar(email){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL GetCliente(?)',[email], async function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          var clienteresult = result[0][0];
+          var cliente = new Cliente(clienteresult.primerNombre, clienteresult.segundoNombre, clienteresult.primerApellido, clienteresult.segundoApellido,
+            clienteresult.fechaNacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
+          resolve(cliente);
+        }
+      });
+    });
   }
 
   async modificar(elem){
@@ -53,7 +64,7 @@ class ControllerCliente{
       });
     });
   }
-
+  
   mostrarClientesEnClase(elem){
 
   }

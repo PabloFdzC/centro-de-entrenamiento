@@ -442,6 +442,18 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS GetCliente;
+DELIMITER //
+
+CREATE PROCEDURE GetCliente(IN pvEmail VARCHAR(50))
+BEGIN
+	SELECT email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, telefono
+    FROM Cliente
+    WHERE email = pvEmail;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS GetClientes;
 DELIMITER //
 
