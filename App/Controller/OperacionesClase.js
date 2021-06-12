@@ -11,7 +11,7 @@ OperacionesClase.post('/crearClase', async function(req, res){
     console.log(err);
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+      res.send("No se pudo crear la clase por que ya existe");
     else
       res.send("Algo salió mal");
   }
@@ -25,7 +25,7 @@ OperacionesClase.post('/modificarClase', async function(req, res){
     console.log(err);
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+      res.send("No se pudo modificar la clase");
     else
       res.send("Algo salió mal");
   }

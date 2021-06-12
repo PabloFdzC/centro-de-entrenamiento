@@ -43,7 +43,7 @@ class ControllersSng{
 
   static getControllerSala(){
     if(this.#controllerSala == null){
-      this.#controllerSala = new ControllerSala();
+      this.#controllerSala = new ControllerSala(this.getControllerInstructor());
     }
     return this.#controllerSala;
   }

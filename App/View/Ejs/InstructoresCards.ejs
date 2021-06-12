@@ -1,4 +1,4 @@
-<% for(let instructor of list){ %>
+<% for(let instructor of lista){ %>
   <div class="card mx-auto background cardLista mt-2">
     <div class="card-body" id="cardB">
       <div class="row justify-content-between">
@@ -8,10 +8,10 @@
         <div class="col-4">
           <div class="row">
             <div class="d-grid col-6">
-              <button type="button" class="btn btn-secondary eliminarInstructor" value="<%= cliente.getEmail() %>">Eliminar</button>
+              <button type="button" class="btn btn-secondary eliminarInstructor" value="<%= instructor.getEmail() %>">Eliminar</button>
             </div>
             <div class="d-grid col-6">
-              <button type="button" class="btn btn-primary activaModal" value="<%= cliente.getEmail() %>" data-bs-toggle="modal" data-bs-target="#modalCrearEditar">Editar</button>
+              <button type="button" class="btn btn-primary activaModal" value="<%= instructor.getEmail() %>" data-bs-toggle="modal" data-bs-target="#modalCrearEditar">Editar</button>
             </div>
           </div>
         </div>
@@ -20,19 +20,19 @@
         <div class="col-6">
           <div class="d-flex justify-content-start">
             <h3 class="tituloDatos ">Edad:</h3>
-            <div class="ms-2"><%= cliente.getEdad() %></div>
+            <div class="ms-2"><%= instructor.getEdad() %></div>
           </div>
           <div class="d-flex justify-content-start">
             <h3 class="tituloDatos">Teléfono:</h3>
-            <div class="ms-2"><%= cliente.getTelefono() %>  </div>
+            <div class="ms-2"><%= instructor.getTelefono() %>  </div>
           </div>
           <div class="d-flex justify-content-start">
             <h3 class="tituloDatos">E-mail:</h3>
-            <div class="ms-2"><%= cliente.getEmail() %></div>
+            <div class="ms-2"><%= instructor.getEmail() %></div>
           </div>
           <div class="d-flex justify-content-start">
             <h3 class="tituloDatos">Identificación:</h3>
-            <div class="ms-2"><%= cliente.getIdentificacion() %></div>
+            <div class="ms-2"><%= instructor.getIdentificacion() %></div>
           </div>
         </div>
         <div class="col-6">

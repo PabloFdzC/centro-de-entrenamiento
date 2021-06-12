@@ -12,7 +12,7 @@ OperacionesCliente.post('/crearCliente', async function(req, res){
     console.log(err);
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+      res.send("Ya existe un usuario con ese correo");
     else
       res.send(err.code);
   }

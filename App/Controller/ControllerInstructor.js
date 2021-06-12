@@ -6,6 +6,7 @@ class ControllerInstructor{
   constructor(){}
 
   async agregar(elem){
+    var ctrlInstr = this;
     return new Promise(function(resolve, reject){
       var password = '';
       var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -19,7 +20,7 @@ class ControllerInstructor{
           reject(error);
         }else{
           console.log(password);
-          crearServiciosDeInstructor(elem.email, elem.servicios);
+          ctrlInstr.crearServiciosDeInstructor(elem.email, elem.servicios);
           resolve(password);
         }
       });
@@ -42,12 +43,13 @@ class ControllerInstructor{
   }
 
   async modificar(elem){
+    var ctrlInstr = this;
     return new Promise(function(resolve, reject){
       connection.query('CALL modificarInstructor(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], function(error, result){
         if(error){
           reject(error);
         }else{
-          modificarServiciosDeInstructor(elem.email, elem.serviciosBorrar, elem.servicios);
+          ctrlInstr.modificarServiciosDeInstructor(elem.email, elem.serviciosBorrar, elem.servicios);
           resolve(result);
         }
       });
@@ -67,6 +69,7 @@ class ControllerInstructor{
   }
 
   async mostrarInstructores(){
+    var ctrlInstr = this;
     return new Promise(function(resolve, reject){
       connection.query('CALL GetInstructores()',[], function(error, result){
         if(error){
@@ -77,7 +80,7 @@ class ControllerInstructor{
           var listaInstructores = [];
           for(i = 0; i < listainstructoresresult.length; i++){
             let instructorresult = listainstructoresresult[i];
-            let listaServicios = serviciosDeInstructor(instructorresult.email);
+            let listaServicios = ctrlInstr.serviciosDeInstructor(instructorresult.email);
             var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
             listaInstructores.push(instructor);
           }
@@ -93,7 +96,7 @@ class ControllerInstructor{
         if(error){
           reject(error);
         }else{
-          listaserviciosresult = result[0];
+          var listaserviciosresult = result[0];
           var i;
           var listaServicios = [];
           for(i = 0; i < listaserviciosresult.length; i++){

@@ -4,10 +4,17 @@ $('body').ready(function(){
   var esModificar = false;
   var listaServicios = [];
 
-  cargar = async function(){
+  cargarServicios = async function(){
     var res = await servicios.mostrarListadoServicios(true);
     if(res){
       $('#annadirServicio').append(res);
+    }
+  };
+
+  cargarInstructores = async function(){
+    var res = await instructores.mostrarListadoInstructores(false);
+    if(res){
+      $('#instructores').append(res);
     }
   };
 
@@ -65,8 +72,10 @@ $('body').ready(function(){
       let info = new FormData(form);
       if(esModificar)
         instructores.modificarInstructor(info, listaServicios);
-      else
+      else{
         instructores.crearInstructor(info, listaServicios);
+        cargarInstructores();
+      }
     }
   });
 
@@ -74,7 +83,7 @@ $('body').ready(function(){
     let val = $(this).attr('title');
     let i = listaServicios.indexOf(val);
     if (i > -1) {
-      array.splice(i, 1);
+      listaServicios.splice(i, 1);
       $(this).remove();
     }
   });
@@ -84,5 +93,6 @@ $('body').ready(function(){
     insertaServicioHtml(val);
   });
 
-  cargar();
+  cargarServicios();
+  cargarInstructores();
 });

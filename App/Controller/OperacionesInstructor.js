@@ -5,13 +5,14 @@ const ctrlInstr = ControllersSng.getControllerInstructor();
 
 OperacionesInstructor.post('/crearInstructor', async function(req, res){
   try{
+    req.body.servicios = JSON.parse(req.body.servicios);
     var contrasenna = await ctrlInstr.agregar(req.body);
     res.send({contrasenna});
   }catch(err){
     console.log(err);
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+      res.send("Ya existe un instructor con ese correo");
     else
       res.send("Algo salió mal");
   }
@@ -19,6 +20,7 @@ OperacionesInstructor.post('/crearInstructor', async function(req, res){
 
 OperacionesInstructor.post('/modificarInstructor', async function(req, res){
   try{
+    req.body.servicios = JSON.parse(req.body.servicios);
     var r = await ctrlInstr.modifcar(req.body);
     res.send(r);
   }catch(err){
@@ -45,10 +47,14 @@ OperacionesInstructor.get('/mostrarInstructor/:email', async function(req, res){
   }
 });
 
-OperacionesInstructor.get('/mostrarInstructores', async function(req, res){
+OperacionesInstructor.get('/mostrarInstructores/:esLista', async function(req, res){
   try{
     var lista = await ctrlInstr.mostrarInstructores();
-    res.render('InstructoresCards.ejs', {lista});
+    if(req.params.esLista === "true"){
+      res.render('InstructoresLista.ejs', {lista});
+    } else {
+      res.render('InstructoresCards.ejs', {lista});
+    }
   }catch(err){
     console.log(err);
     res.status(400);

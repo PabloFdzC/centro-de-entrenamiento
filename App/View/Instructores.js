@@ -1,8 +1,8 @@
 class Instructores{
 
   crearInstructor(info, listaServicios){
+    info.append("servicios", JSON.stringify(listaServicios));
     let i = Utilidades.convertirAJSON(info);
-    i.servicios = listaServicios;
     Utilidades.ajaxCall('/crearInstructor', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "La contraseña del instructor es " + r.contrasenna);   
@@ -13,8 +13,8 @@ class Instructores{
   }
 
   modificarInstructor(info, listaServicios){
+    info.append("servicios", JSON.stringify(listaServicios));
     let i = Utilidades.convertirAJSON(info);
-    i.servicios = listaServicios;
     Utilidades.ajaxCall('/modificarInstructor', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Instructor modificados con éxito");
@@ -36,9 +36,9 @@ class Instructores{
     });
   }
 
-  async mostrarListadoInstructores(){
+  async mostrarListadoInstructores(esLista){
     return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarInstructores', 'GET', {}, function(html){
+      Utilidades.ajaxCall('/mostrarInstructores/'+esLista, 'GET', {}, function(html){
         resolve(html);
       }, function(xhr, status, error){
         console.log(xhr);

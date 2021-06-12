@@ -27,6 +27,7 @@ class ControllerClase{
 
   async consultar(elem){
     let ctrlInstructor = this.#ctrlInstructor;
+    var ctrlClase = this;
     return new Promise(function(resolve, reject){
       connection.query('CALL GetClase(?)',[elem.id], function(error, result){
         if(error){
@@ -41,7 +42,7 @@ class ControllerClase{
           }
           var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
           var intervalo = new IntervaloTiempo(claseresult.hora_inicio, claseresult.minuto_inicio, claseresult.hora_final, claseresult.minuto_final);
-          var matriculas = getMatriculasClase(claseresult.id_clase);
+          var matriculas = ctrlClase.getMatriculasClase(claseresult.id_clase);
           var clase = new Clase(claseresult.id_clase, claseresult.capacidad, claseresult.estado_clase, intervalo, instructor_temporal, servicio, instructor, matriculas);
           resolve(clase);
         }
@@ -67,6 +68,7 @@ class ControllerClase{
 
   async clasesPorMes(mes){
     let ctrlInstructor = this.#ctrlInstructor;
+    var ctrlClase = this;
     return new Promise(function(resolve, reject){
       connection.query('CALL GetClasesMes(?)',[mes], function(error, result){
         if(error){
@@ -85,7 +87,7 @@ class ControllerClase{
             }
             var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
             var intervalo = new IntervaloTiempo(claseresult.hora_inicio, claseresult.minuto_inicio, claseresult.hora_final, claseresult.minuto_final);
-            var matriculas = getMatriculasClase(claseresult.id_clase);
+            var matriculas = ctrlClase.getMatriculasClase(claseresult.id_clase);
             var clase = new Clase(claseresult.id_clase, claseresult.capacidad, claseresult.estado_clase, intervalo, instructor_temporal, servicio, instructor, matriculas);
             listaClases.push(clase);
           }

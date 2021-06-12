@@ -3,9 +3,9 @@ class Sala{
   constructor(){}
 
   crearSala(info, listaServicios, calendario){
+    info.append("servicios", JSON.stringify(listaServicios));
+    info.append("calendario", JSON.stringify(calendario));
     let i = Utilidades.convertirAJSON(info);
-    i.servicios = listaServicios;
-    i.calendario = calendario;
     Utilidades.ajaxCall('/crearSala', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Sala creada con éxito");
@@ -16,9 +16,9 @@ class Sala{
   }
 
   modificarSala(info, listaServicios, calendario){
+    info.append("servicios", JSON.stringify(listaServicios));
+    info.append("calendario", JSON.stringify(calendario));
     let i = Utilidades.convertirAJSON(info);
-    i.servicios = listaServicios;
-    i.calendario = calendario;
     Utilidades.ajaxCall('/modificarSala', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Sala modificada con éxito");
