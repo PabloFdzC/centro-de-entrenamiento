@@ -49,7 +49,7 @@ OperacionesCliente.post('/modificarContrasennaCliente', async function(req, res)
 OperacionesInstructor.get('/mostrarCliente/:email', async function(req, res){
   try{
     var cliente = await ctrlCliente.consultar(req.params.email);
-    res.send(cliente);
+    res.send(cliente.convertirAJSONString());
   }catch(err){
     console.log(err);
     res.status(400);

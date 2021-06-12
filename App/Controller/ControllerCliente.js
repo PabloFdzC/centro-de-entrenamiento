@@ -24,8 +24,8 @@ class ControllerCliente{
           reject(error);
         }else{
           var clienteresult = result[0][0];
-          var cliente = new Cliente(clienteresult.primerNombre, clienteresult.segundoNombre, clienteresult.primerApellido, clienteresult.segundoApellido,
-            clienteresult.fechaNacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
+          var cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido,
+            clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
           resolve(cliente);
         }
       });

@@ -20,6 +20,20 @@ class Cliente extends Persona{
     this.#estadoPago = estadoPago;
   }
 
+  convertirAJSONString(){
+    var obj = {
+      primerNombre:this.primerNombre,
+      segundoNombre:this.segundoNombre,
+      primerApellido:this.primerApellido,
+      segundoApellido:this.segundoApellido,
+      fechaNacimiento:this.fechaNacimiento,
+      telefono:this.telefono,
+      email:this.email,
+      identificacion:this.identificacion
+    }
+    return JSON.stringify(obj);
+  }
+
 }
 
 module.exports = Cliente;

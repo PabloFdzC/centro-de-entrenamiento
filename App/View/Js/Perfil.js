@@ -22,22 +22,24 @@ $('body').ready(function(){
   });
 
   cargar = async function(){
-    let tipo = localStorage.getItem('tipo_usuario');
+    let tipo = localStorage.getItem('tipo');
+    let email = localStorage.getItem('email');
     let u = null;
     if(tipo == "Cliente"){
-      u = await clientes.mostrarCliente(val);
+      u = await clientes.mostrarCliente(email);
     } else if(tipo == "Instructor"){
-      u = await instructores.mostrarInstructor(val);
+      u = await instructores.mostrarInstructor(email);
     }
     if(u){
-      $('#primerNombre').val(u.getPrimerNombre());
-      $('#segundoNombre').val(u.getSegundoNombre());
-      $('#primerApellido').val(u.getPrimerApellido());
-      $('#segundoApellido').val(u.getSegundoApellido());
-      $('#identificacion').val(u.getIdentificacion());
-      $('#fechaNacimiento').val(u.getFechaNacimiento());
-      $('#telefono').val(u.getTelefono());
-      $('#email').val(u.getEmail());
+      u = JSON.parse(u);
+      $('#primerNombre').val(u.primerNombre);
+      $('#segundoNombre').val(u.segundoNombre);
+      $('#primerApellido').val(u.primerApellido);
+      $('#segundoApellido').val(u.segundoApellido);
+      $('#identificacion').val(u.identificacion);
+      $('#fechaNacimiento').val(u.fechaNacimiento);
+      $('#telefono').val(u.telefono);
+      $('#email').val(u.email);
     } else {
       $('#email').val(localStorage.getItem('email'));
       $('#email').prop('disabled', true);

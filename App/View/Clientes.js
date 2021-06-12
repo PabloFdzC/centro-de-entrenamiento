@@ -12,9 +12,9 @@ class Clientes{
     });
   }
 
-  async mostrarCliente(){
+  async mostrarCliente(email){
     return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarCliente', 'GET', {}, function(c){
+      Utilidades.ajaxCall('/mostrarCliente/'+email, 'GET', {}, function(c){
         resolve(c);
       }, function(xhr, status, error){
         console.log(xhr);
