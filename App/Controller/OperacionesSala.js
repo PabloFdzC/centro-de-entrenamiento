@@ -7,9 +7,14 @@ OperacionesSala.post('/crearSala', async function(req, res){
   try{
     req.body.servicios = JSON.parse(req.body.servicios);
     req.body.calendario = JSON.parse(req.body.calendario);
+    var cal = [];
+    for(var c of req.body.calendario){
+      cal.push(JSON.parse(c))
+    }
+    req.body.calendario = cal;
     var r = await ctrlSala.agregar(req.body);
-    var r3 = await ctrlSala.crearCalendario(req.body.calendario);
     res.send(r);
+    res.send("");
   }catch(err){
     console.log(err);
     res.status(400);
@@ -25,7 +30,18 @@ OperacionesSala.post('/modificarSala', async function(req, res){
     req.body.serviciosE = JSON.parse(req.body.serviciosE);
     req.body.serviciosA = JSON.parse(req.body.serviciosA);
     req.body.calendarioE = JSON.parse(req.body.calendarioE);
+    var cal = [];
+    for(var c of req.body.calendarioE){
+      cal.push(JSON.parse(c))
+    }
     req.body.calendarioA = JSON.parse(req.body.calendarioA);
+    var cal2 = [];
+    for(var c of req.body.calendarioA){
+      cal2.push(JSON.parse(c))
+    }
+
+    req.body.calendarioE = cal;
+    req.body.calendarioA = cal2;
     var r = await ctrlSala.modificar(req.body);
     res.send(r);
   }catch(err){
@@ -68,8 +84,8 @@ OperacionesSala.get('/mostrarJornadasDelMes/:mes', async function(req, res){
 
 OperacionesSala.get('/mostrarSalas', async function(req, res){
   try{
-    var salas = await ctrlSala.consultarSalas(req.body);
-    res.render('Sala.ejs', {salas});
+    var lista = await ctrlSala.consultarSalas(req.body);
+    res.render('SalaCards.ejs', {lista});
   }catch(err){
     console.log(err);
     res.status(400);

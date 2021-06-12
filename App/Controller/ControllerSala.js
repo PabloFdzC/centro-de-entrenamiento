@@ -17,16 +17,16 @@ class ControllerSala{
   async agregar(elem){
     var ctrlSala = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL CrearSala(?,?,?)',[elem.costo, elem.capacidad, elem.aforo], function(error, result){
+      connection.query('CALL CrearSala(?,?,?)',[elem.costo, elem.capacidad, elem.aforo], async function(error, result){
         if(error){
           reject(error);
         }else{
           try{
-            ctrlSala.crearServiciosDeSala(result.id_sala, elem.servicios);
-            ctrlSala.crearCalendario(result.id_sala, elem.servicios);
+            await ctrlSala.crearServiciosDeSala(result[0][0].id_sala, elem.servicios);
+            await ctrlSala.crearCalendario(result[0][0].id_sala, elem.calendario);
             resolve(result);
           }catch(err){
-            reject(error);
+            reject(err);
           }
         }
       });
@@ -103,7 +103,7 @@ class ControllerSala{
         }else{
           try{
             ctrlSala.modificarServiciosDeSala(elem.idSala, elem.serviciosE, elem.serviciosA);
-            ctrlSala.modificarCalendario(elem.idSala, elem.calendarioE);
+            ctrlSala.modificarCalendario(elem.idSala, elem.calendarioA, elem.calendarioE);
             resolve(result);
           }catch(err){
             reject()
@@ -114,7 +114,8 @@ class ControllerSala{
   }
 
   //elem es una lista
-  async crearCalendario(elem, id){
+  async crearCalendario(id, elem){
+    console.log(elem);
     return new Promise(function(resolve, reject){
       if(elem.length > 0){
         connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[elem[0].horaInicio, elem[0].horaFinal, elem[0].minutoInicio, elem[0].minutoFinal], function(error, result){

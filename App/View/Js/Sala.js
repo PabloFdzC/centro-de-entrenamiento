@@ -80,7 +80,7 @@ $('body').ready(function(){
   });
 
   cargarSalas = async function(){
-    var res = sala.mostrarSalas();
+    var res = await sala.mostrarSalas();
     if(res){
       $('#salas').append(res);
     }
@@ -93,7 +93,7 @@ $('body').ready(function(){
     } else {
       let i = listaServicios.indexOf(val);
       if (i > -1) {
-        array.splice(i, 1);
+        listaServicios.splice(i, 1);
         $(this).remove();
       }
     }
@@ -112,7 +112,7 @@ $('body').ready(function(){
           calendarioA.splice(i[1], 1);
         }
       }else{
-        calendarioE.push(parseInt(i));
+        calendarioE.push(i);
       }
     } else {
       if (parseInt(i) > -1) {
@@ -138,10 +138,10 @@ $('body').ready(function(){
       info.set("minutoFinal", s[1]);
       if(esModificar){
         ultimo = calendarioA.length;
-        calendarioA.push(info);
+        calendarioA.push(Utilidades.convertirAJSON(info));
       } else {
         ultimo = calendario.length;
-        calendario.push(info);
+        calendario.push(Utilidades.convertirAJSON(info));
       }
       var rep = info.get("repeticion");
       var e;
@@ -150,19 +150,19 @@ $('body').ready(function(){
         if(esModificar){
           e = `<a class="fechaCalendario link" title="A`+ultimo+`">Cada `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }else{
-          e = `<a class="fechaCalendario link" title="`+ultimo+`">Cada `+dias[d.getDay()]+`, `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
+          e = `<a class="fechaCalendario link" title="`+ultimo+`">Cada `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }
       } else if(rep == "TODOSLOSDIASDELMES"){
         if(esModificar){
-          e = `<a class="fechaCalendario link" title="A`+ultimo+`">Todos los días del mes, `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
+          e = `<a class="fechaCalendario link" title="A`+ultimo+`">Todos los días del mes, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }else{
-          e = `<a class="fechaCalendario link" title="`+ultimo+`">Todos los días del mes, `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
+          e = `<a class="fechaCalendario link" title="`+ultimo+`">Todos los días del mes, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }
       } else if(rep == "NOSEREPITE"){
         if(esModificar){
-          e = `<a class="fechaCalendario link" title="A`+ultimo+`">`+info.get("dia")+`, `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
+          e = `<a class="fechaCalendario link" title="A`+ultimo+`">`+info.get("dia")+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }else{
-          e = `<a class="fechaCalendario link" title="`+ultimo+`">`+info.get("dia")+`, `+dias[d.getDay()]+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
+          e = `<a class="fechaCalendario link" title="`+ultimo+`">`+info.get("dia")+`, `+info.get("horaInicio")+`:`+info.get("minutoInicio")+`-`+info.get("horaFinal")+`:`+info.get("minutoFinal")+` </a>`;
         }
       }
       

@@ -5,6 +5,7 @@ class Sala{
   crearSala(info, listaServicios, calendario){
     info.append("servicios", JSON.stringify(listaServicios));
     info.append("calendario", JSON.stringify(calendario));
+    console.log(info.get("calendario"));
     let i = Utilidades.convertirAJSON(info);
     Utilidades.ajaxCall('/crearSala', 'POST', i, function(r){
       console.log(r);
@@ -15,9 +16,11 @@ class Sala{
     });
   }
 
-  modificarSala(info, listaServicios, calendario){
-    info.append("servicios", JSON.stringify(listaServicios));
-    info.append("calendario", JSON.stringify(calendario));
+  modificarSala(info, listaServiciosE, listaServiciosA, calendarioE, calendarioA){
+    info.append("serviciosA", JSON.stringify(listaServiciosA));
+    info.append("calendarioA", JSON.stringify(calendarioA));
+    info.append("serviciosE", JSON.stringify(listaServiciosE));
+    info.append("calendarioE", JSON.stringify(calendarioE));
     let i = Utilidades.convertirAJSON(info);
     Utilidades.ajaxCall('/modificarSala', 'POST', i, function(r){
       console.log(r);
@@ -39,11 +42,15 @@ class Sala{
   }
 
   mostrarSalas(){
-    Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
-      $('#sala').append(html);
-    }, function(xhr, status, error){
-      console.log(xhr);
-      muestraMensaje("Fallo", xhr.responseText);
+    return new Promise(function(resolve, reject) {
+      Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
+        console.log(html);
+        resolve(html);
+      }, function(xhr, status, error){
+        console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
+        resolve(null);
+      });
     });
   }
 
