@@ -19,6 +19,7 @@ class ControllerInstructor{
           reject(error);
         }else{
           console.log(password);
+          crearServiciosDeInstructor(elem.email, elem.servicios);
           resolve(password);
         }
       });
@@ -46,6 +47,7 @@ class ControllerInstructor{
         if(error){
           reject(error);
         }else{
+          modificarServiciosDeInstructor(elem.email, elem.serviciosBorrar, elem.servicios);
           resolve(result);
         }
       });
@@ -100,6 +102,58 @@ class ControllerInstructor{
             listaServicios.push(servicio);
           }
           resolve(listaServicios);
+        }
+      });
+    });
+  }
+
+  crearServiciosDeInstructor(email, servicios){
+    return new Promise(function(resolve, reject){
+      var sql = "INSERT INTO Servicios_de_Instructor(email_instructor, nombre_servicio) VALUES ?";
+      var values = [];
+      var i;
+      var value;
+      for(i = 0; i < servicios.length; i++){
+        value = [email, servicios[i]];
+        values.push(value);
+      }
+      connection.query(sql,[values], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  modificarServiciosDeInstructor(email, serviciosBorrar, servicios){
+    return new Promise(function(resolve, reject){
+      var sql1 = "DELETE FROM Servicios_de_Instructor WHERE (email_instructor, nombre_servicio) IN (?)";
+      var values1 = [];
+      var i;
+      var value;
+      for(i = 0; i < serviciosBorrar.length; i++){
+        value = [email, serviciosBorrar[i]];
+        values1.push(value);
+      }
+      var sql2 = "INSERT INTO Servicios_de_Instructor(email_instructor, nombre_servicio) VALUES ?";
+      var values2 = [];
+      for(i = 0; i < servicios.length; i++){
+        value = [email, servicios[i]];
+        values2.push(value);
+      }
+      connection.query(sql1,[values1], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          connection.query(sql2,[values2], function(error, result){
+            if(error){
+              reject(error);
+            }else{
+              resolve(result);
+            }
+          });
         }
       });
     });
