@@ -31,8 +31,8 @@
       <div class="row">
         <div class="col-12">
           <div class="row justify-content-center">
-            <% for(let dia in sala.getCalendario()){ %>
-              <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1"><%= dia %></div>
+            <% for(let dia of sala.getCalendario()){ %>
+              <div class="diasCalendarioSala ps-3 pe-3 pt-2 pb-2 text-center m-1"><%= dia.getDia() %></div>
             <% } %>
           </div>
         </div>

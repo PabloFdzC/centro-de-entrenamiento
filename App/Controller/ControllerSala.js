@@ -57,13 +57,13 @@ class ControllerSala{
   async consultar(id){
     var ctrlSala= this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL SelectSala(?)',[id], function(error, result){
+      connection.query('CALL SelectSala(?)',[id], async function(error, result){
         if(error){
           reject(error);
         }else{
           var salaresult = result[0][0];
-          var listaJornadas = ctrlSala.jornadasDeSala(salaresult.id_sala);
-          var listaServicios = ctrlSala.serviciosDeSala(salaresult.id_sala);
+          var listaJornadas = await ctrlSala.jornadasDeSala(salaresult.id_sala);
+          var listaServicios = await ctrlSala.serviciosDeSala(salaresult.id_sala);
           var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula, listaJornadas, listaServicios);
           resolve(sala);
         }
@@ -71,10 +71,10 @@ class ControllerSala{
     });
   }
 
-  async consultarSalas(elem){
+  async consultarSalas(){
     var ctrlSala = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL SelectSalas()',[], function(error, result){
+      connection.query('CALL SelectSalas()',[], async function(error, result){
         if(error){
           reject(error);
         }else{
@@ -83,9 +83,9 @@ class ControllerSala{
           var listaSalas = [];
           for(i = 0; i < salalistaresult.length; i++){
             var salaresult = salalistaresult[i];
-            var listaJornadas = ctrlSala.jornadasDeSala(salaresult.id_sala);
-            var listaServicios = ctrlSala.serviciosDeSala(salaresult.id_sala);
-            var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula/*, listaJornadas, listaServicios*/);
+            var listaJornadas = await ctrlSala.jornadasDeSala(salaresult.id_sala);
+            var listaServicios = await ctrlSala.serviciosDeSala(salaresult.id_sala);
+            var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula, listaJornadas, listaServicios);
             listaSalas.push(sala);
           }
           resolve(listaSalas);
@@ -115,98 +115,123 @@ class ControllerSala{
 
   //elem es una lista
   async crearCalendario(id, elem){
-    console.log(elem);
+    var ctrlSala = this;
     return new Promise(function(resolve, reject){
       if(elem.length > 0){
-        connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[elem[0].horaInicio, elem[0].horaFinal, elem[0].minutoInicio, elem[0].minutoFinal], function(error, result){
+        connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[elem[0].horaInicio, elem[0].horaFinal, elem[0].minutoInicio, elem[0].minutoFinal], async function(error, result){
           if(error){
             reject(error);
           }else{
-            if(!result.id_intervalo){
-              reject(result);
+            try{
+              var r = await ctrlSala.crearCalendarioAux(id, elem, result);
+              resolve(r);
+            }catch(err){
+              reject(err);
             }
-            var id_primer_intervalo = result.id_intervalo;
-            var sql = "INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final) VALUES ?";
-            var values = [];
-            var i;
-            var value;
-            for(i = 1; i < elem.length; i++){
-              value = [elem[i].horaInicio, elem[i].horaFinal, elem[i].minutoInicio, elem[i].minutoFinal];
-              values.push(value);
-            }
-            connection.query(sql,[values], function(error, result){
-              if(error){
-                reject(error);
-              }else{
-                sql = "INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala) VALUES ?";
-                values = [];
-                var mes;
-                var nuevoDia;
-                var mismoMes;
-                var j;
-                for(i = 0; i < elem.length; i++){
-                  mes = elem[i].dia.getMonth();
-                  if(elem[i].repeticion == "CADASEMANADELMES"){
-                    j = 7;
-                    while(dia.getDate() - j > 0){
-                      nuevoDia = new Date();
-                      nuevoDia.setMonth(dia.getMonth());
-                      nuevoDia.setFullYear(dia.getFullYear());
-                      nuevoDia.setDate(dia.getDate() - j);
-                      values.push([nuevoDia, id_primer_intervalo + i, id]);
-                      j += 7;
-                    }
-                    j = 0;
-                    mismoMes = true;
-                    while(mismoMes){
-                      nuevoDia = new Date();
-                      nuevoDia.setMonth(dia.getMonth());
-                      nuevoDia.setFullYear(dia.getFullYear());
-                      nuevoDia.setDate(dia.getDate() + j);
-                      if(nuevoDia.getMonth() == mes){
-                        values.push([nuevoDia, id_primer_intervalo + i, id]);
-                      }
-                      else{
-                        mismoMes = false;
-                      }
-                      j += 7;
-                    }
-                  }
-                  else if(elem[i].repeticion == "TODOSLOSDIASDELMES"){
-                    mismoMes = true;
-                    j = 1;
-                    while(mismoMes){
-                      nuevoDia = new Date();
-                      nuevoDia.setMonth(dia.getMonth());
-                      nuevoDia.setFullYear(dia.getFullYear());
-                      nuevoDia.setDate(j);
-                      if(nuevoDia.getMonth() == mes){
-                        values.push([nuevoDia, id_primer_intervalo + i, id]);
-                      }
-                      else{
-                        mismoMes = false;
-                      }
-                      j += 1;
-                    }
-                  }
-                  else{
-                    values.push([elem[i].dia, id_primer_intervalo + i, id]);
-                  }
-                }
-                connection.query(sql,[values], function(error, result){
-                  if(error){
-                    reject(error);
-                  }else{
-                    resolve(result);
-                  }
-                });
-              }
-            });
           }
         });
       } else{
         reject({code: 0});
       }
+    });
+  }
+
+  async crearCalendarioAux(id, elem, result){
+    var ctrlSala = this;
+    return new Promise(function(resolve, reject){
+      if(!result[0][0].id_intervalo){
+        reject(result);
+      }
+      var id_primer_intervalo = result[0][0].id_intervalo;
+      var sql = "INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final) VALUES ?";
+      var values = [];
+      var i;
+      var value;
+      for(i = 0; i < elem.length; i++){
+        value = [elem[i].horaInicio, elem[i].horaFinal, elem[i].minutoInicio, elem[i].minutoFinal];
+        values.push(value);
+      }
+      connection.query(sql,[values], async function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          try{
+            var r = await ctrlSala.crearCalendarioAux2(id,elem, id_primer_intervalo)
+            resolve(r);
+          }catch(err){
+            reject(err);
+          }
+        }
+      });
+    });
+  }
+
+  crearCalendarioAux2(id,elem, id_primer_intervalo){
+    return new Promise(function(resolve, reject){
+      var sql = "INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala) VALUES ?";
+    var values = [];
+    var mes;
+    var nuevoDia;
+    var mismoMes;
+    var j;
+    for(var i = 0; i < elem.length; i++){
+      var dia = new Date(elem[i].dia);
+      mes = dia.getMonth();
+      console.log(mes);
+      if(elem[i].repeticion == "CADASEMANADELMES"){
+        j = 7;
+        while(dia.getDate() - j > 0){
+          nuevoDia = new Date();
+          nuevoDia.setMonth(dia.getMonth());
+          nuevoDia.setFullYear(dia.getFullYear());
+          nuevoDia.setDate(dia.getDate() - j);
+          values.push([nuevoDia, id_primer_intervalo + i, id]);
+          j += 7;
+        }
+        j = 0;
+        mismoMes = true;
+        while(mismoMes){
+          nuevoDia = new Date();
+          nuevoDia.setMonth(dia.getMonth());
+          nuevoDia.setFullYear(dia.getFullYear());
+          nuevoDia.setDate(dia.getDate() + j);
+          if(nuevoDia.getMonth() == mes){
+            values.push([nuevoDia, id_primer_intervalo + i, id]);
+          }
+          else{
+            mismoMes = false;
+          }
+          j += 7;
+        }
+      }
+      else if(elem[i].repeticion == "TODOSLOSDIASDELMES"){
+        mismoMes = true;
+        j = 1;
+        while(mismoMes){
+          nuevoDia = new Date();
+          nuevoDia.setMonth(dia.getMonth());
+          nuevoDia.setFullYear(dia.getFullYear());
+          nuevoDia.setDate(j);
+          if(nuevoDia.getMonth() == mes){
+            values.push([nuevoDia, id_primer_intervalo + i, id]);
+          }
+          else{
+            mismoMes = false;
+          }
+          j += 1;
+        }
+      }
+      else{
+        values.push([elem[i].dia, id_primer_intervalo + i, id]);
+      }
+    }
+    connection.query(sql,[values], function(error, result){
+      if(error){
+        reject(error);
+      }else{
+        resolve(result);
+      }
+    });
     });
   }
 
@@ -343,7 +368,7 @@ class ControllerSala{
   async jornadasDeSala(id){
     var ctrlSala = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL GetJornadasDeSala(?)',[id], function(error, result){
+      connection.query('CALL GetJornadasDeSala(?)',[id], async function(error, result){
         if(error){
           reject(error);
         }else{
@@ -353,7 +378,7 @@ class ControllerSala{
           for(i = 0; i < listajornadasresult.length; i++){
             var jornadaresult = listajornadasresult[i];
             var intervalo = new IntervaloTiempo(jornadaresult.hora_inicio, jornadaresult.minuto_inicio, jornadaresult.hora_final, jornadaresult.minuto_final);
-            var listaclases = ctrlSala.clasesDeJornada(jornadaresult.id_jornada);
+            var listaclases = await ctrlSala.clasesDeJornada(jornadaresult.id_jornada);
             var jornada = new Jornada(jornadaresult.id_jornada, jornadaresult.dia, intervalo, listaclases);
             listajornadas.push(jornada);
           }
@@ -387,8 +412,9 @@ class ControllerSala{
   }
 
   async clasesDeJornada(id){
+    var ctrlInstr = this.#ctrlInstructor;
     return new Promise(function(resolve, reject){
-      connection.query('CALL GetClasesEnJornada(?)',[id], function(error, result){
+      connection.query('CALL GetClasesEnJornada(?)',[id], async function(error, result){
         if(error){
           reject(error);
         }else{
@@ -401,7 +427,7 @@ class ControllerSala{
             var instructor = new Instructor(claseresult.primer_nombre, claseresult.segundo_nombre, claseresult.primer_apellido, claseresult.segundo_apellido, claseresult.fecha_nacimiento, claseresult.telefono, claseresult.email, claseresult.identificacion, null);
             var instructor_temporal = claseresult.email_instructor_temporal;
             if(instructor_temporal){
-              instructor_temporal = getInstructor(claseresult.email_instructor_temporal);
+              instructor_temporal = await ctrlInstr.getInstructor(claseresult.email_instructor_temporal);
             }
             var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
             var intervalo = new IntervaloTiempo(claseresult.hora_inicio, claseresult.minuto_inicio, claseresult.hora_final, claseresult.minuto_final);

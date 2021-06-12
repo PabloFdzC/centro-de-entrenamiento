@@ -35,9 +35,7 @@ $('body').ready(function(){
   
   construyeCalendario = async function (annoUsuario, mesUsuario, annoActual, mesActual, diaActual){
     let jornadasDelMes = await cal.mostrarJornadasDelMes(mesUsuario);
-    for(let jdm of jornadasDelMes){
-      console.log(jdm.getDia());
-    }
+    console.log(jornadasDelMes);
     $('#calendarioCont').empty();
     $('#mesAnno').empty();
     $('#mesAnno').append(meses[mesUsuario]+" "+annoUsuario);

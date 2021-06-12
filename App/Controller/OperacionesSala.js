@@ -14,7 +14,6 @@ OperacionesSala.post('/crearSala', async function(req, res){
     req.body.calendario = cal;
     var r = await ctrlSala.agregar(req.body);
     res.send(r);
-    res.send("");
   }catch(err){
     console.log(err);
     res.status(400);
@@ -70,8 +69,8 @@ OperacionesSala.get('/mostrarSala/:idSala', async function(req, res){
 
 OperacionesSala.get('/mostrarJornadasDelMes/:mes', async function(req, res){
   try{
-    var sala = await ctrlSala.jornadasDeMes(req.params.mes);
-    res.render('Sala.ejs', {sala});
+    var jornadas = await ctrlSala.jornadasDeMes(req.params.mes);
+    res.send(jornadas);
   }catch(err){
     console.log(err);
     res.status(400);
