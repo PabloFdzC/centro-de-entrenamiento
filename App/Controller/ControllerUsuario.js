@@ -10,8 +10,12 @@ class ControllerPersona{
           reject(error);
         }else{
           var usuarioresult = result[0][0];
-          var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
-          resolve(usuario);
+          if(usuarioresult.email && usuarioresult.tipo_usuario){
+            var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
+            resolve(usuario);
+          }
+          else
+            reject({code: "Email o contraseña incorrecta"});
         }
       });
     });

@@ -50,17 +50,6 @@ CREATE TABLE Cliente(
     telefono INT NOT NULL
 );
 
-CREATE TABLE Pago(
-	id_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    cantidad INT NOT NULL,
-    fecha DATE,
-    email_usuario VARCHAR(50) NOT NULL,
-    id_clase INT NOT NULL,
-    estado_pago VARCHAR(50) NOT NULL,
-    forma_pago VARCHAR(50) NOT NULL,
-    FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
-);
-
 CREATE TABLE Administrador(
 	email VARCHAR(50) NOT NULL PRIMARY KEY,
     contrasenna VARBINARY(256),
@@ -111,6 +100,18 @@ CREATE TABLE Clase(
     FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio),
     FOREIGN KEY (email_instructor) REFERENCES Instructor(email),
     FOREIGN KEY (email_instructor_temporal) REFERENCES Instructor(email)
+);
+
+CREATE TABLE Pago(
+	id_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    cantidad INT NOT NULL,
+    fecha DATE,
+    email_usuario VARCHAR(50) NOT NULL,
+    id_clase INT NOT NULL,
+    estado_pago VARCHAR(50) NOT NULL,
+    forma_pago VARCHAR(50) NOT NULL,
+    FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
+    FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
 );
 
 CREATE TABLE Servicios_de_Instructor(

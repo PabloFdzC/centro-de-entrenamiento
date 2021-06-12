@@ -16,10 +16,32 @@ class ControllerSala{
         if(error){
           reject(error);
         }else{
+          crearServiciosDeSala(result.id_sala, elem.servicios);
           resolve(result);
         }
       });
     });
+  }
+
+  async serviciosDeSala(id){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL GetServiciosDeSala(?)',[id], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          var listaserviciosresult = result[0];
+          var i;
+          var listaServicios = [];
+          for(i = 0; i < listaserviciosresult.length; i++){
+            var servicioresult = listaserviciosresult[i];
+            var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+            listaServicios.push(servicio);
+          }
+          resolve(listaServicios);
+        }
+      });
+    });
+
   }
 
   async consultar(id){
@@ -38,12 +60,37 @@ class ControllerSala{
     });
   }
 
+  async consultarSalas(elem){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL SelectSalas()',[], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          salalistaresult = result[0];
+          console.log({salalistaresult});
+          var i;
+          var listaSalas = [];
+          for(i = 0; i < salalistaresult.length; i++){
+            salaresult = salalistaresult[i];
+            listaJornadas = jornadasDeSala(salaresult.id_sala);
+            listaServicios = serviciosDeSala(salaresult.id_sala);
+            sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula/*, listaJornadas, listaServicios*/);
+            listaSalas.push(sala);
+          }
+          console.log({listaSalas});
+          resolve(listaSalas);
+        }
+      });
+    });
+  }
+
   async modificar(elem){
     return new Promise(function(resolve, reject){
       connection.query('CALL editarSala(?,?,?,?)',[elem.idSala, elem.costo, elem.capacidad, elem.aforo], function(error, result){
         if(error){
           reject(error);
         }else{
+          modificarServiciosDeSala(elem.idSala, elem.serviciosBorrar, elem.servicios);
           resolve(result);
         }
       });
@@ -51,73 +98,208 @@ class ControllerSala{
   }
 
   //elem es una lista
-  async crearCalendario(elem){
-    var dia = new Date(elem.dia);
-    var horaInicio = elem.horaInicio;
-    var horaFinal = elem.horaFinal;
-    var repeticion = elem.repeticion;
-    var dias = [];
+  async crearCalendario(elem, id){
     return new Promise(function(resolve, reject){
-      connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[horaInicio, horaFinal, 0, 0], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          var mes = dia.getMonth();
-          dias.push(dia);
-          var nuevoDia;
-          if(repeticion == "cadaSemana"){
-            var mismoMes = true;
-            var i = 7;
-            while(mismoMes){
-              nuevoDia = new Date();
-              nuevoDia.setMonth(dia.getMonth());
-              nuevoDia.setFullYear(dia.getFullYear());
-              nuevoDia.setDate(dia.getDate() + i);
-              if(nuevoDia.getMonth() == mes){
-                dias.push(nuevoDia);
-              }
-              else{
-                mismoMes = false;
-              }
-              i += 7;
+      if(elem.length > 0){
+        connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[elem[0].horaInicio, elem[0].horaFinal, elem[0].minutoInicio, elem[0].minutoFinal], function(error, result){
+          if(error){
+            reject(error);
+          }else{
+            if(!result.id_intervalo){
+              reject(result);
             }
-          }
-          else if(repeticion == "todosLosDias"){
-            var mismoMes = true;
-            var i = 1;
-            while(mismoMes){
-              nuevoDia = new Date();
-              nuevoDia.setMonth(dia.getMonth());
-              nuevoDia.setFullYear(dia.getFullYear());
-              nuevoDia.setDate(i);
-              if(nuevoDia.getMonth() == mes){
-                dias.push(nuevoDia);
-              }
-              else{
-                mismoMes = false;
-              }
-              i += 1;
+            var id_primer_intervalo = result.id_intervalo;
+            var sql = "INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final) VALUES ?";
+            var values = [];
+            var i;
+            var value;
+            for(i = 1; i < elem.length; i++){
+              value = [elem[i].horaInicio, elem[i].horaFinal, elem[i].minutoInicio, elem[i].minutoFinal];
+              values.push(value);
             }
-          }
-          var j;        
-          for(j = 0; j < dias.length; j++){
-            connection.query('CALL CrearJornadaCalendario(?,?)',[dia[j], elem.idSala], function(error, result){
+            connection.query(sql,[values], function(error, result){
               if(error){
                 reject(error);
               }else{
-                console.log( "exito: ", result);
+                sql = "INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala) VALUES ?";
+                values = [];
+                var mes;
+                var nuevoDia;
+                var mismoMes;
+                var j;
+                for(i = 0; i < elem.length; i++){
+                  mes = elem[i].dia.getMonth();
+                  if(elem[i].repeticion == "CADASEMANADELMES"){
+                    j = 7;
+                    while(dia.getDate() - j > 0){
+                      nuevoDia = new Date();
+                      nuevoDia.setMonth(dia.getMonth());
+                      nuevoDia.setFullYear(dia.getFullYear());
+                      nuevoDia.setDate(dia.getDate() - j);
+                      values.push([nuevoDia, id_primer_intervalo + i, id]);
+                      j += 7;
+                    }
+                    j = 0;
+                    mismoMes = true;
+                    while(mismoMes){
+                      nuevoDia = new Date();
+                      nuevoDia.setMonth(dia.getMonth());
+                      nuevoDia.setFullYear(dia.getFullYear());
+                      nuevoDia.setDate(dia.getDate() + j);
+                      if(nuevoDia.getMonth() == mes){
+                        values.push([nuevoDia, id_primer_intervalo + i, id]);
+                      }
+                      else{
+                        mismoMes = false;
+                      }
+                      j += 7;
+                    }
+                  }
+                  else if(elem[i].repeticion == "TODOSLOSDIASDELMES"){
+                    mismoMes = true;
+                    j = 1;
+                    while(mismoMes){
+                      nuevoDia = new Date();
+                      nuevoDia.setMonth(dia.getMonth());
+                      nuevoDia.setFullYear(dia.getFullYear());
+                      nuevoDia.setDate(j);
+                      if(nuevoDia.getMonth() == mes){
+                        values.push([nuevoDia, id_primer_intervalo + i, id]);
+                      }
+                      else{
+                        mismoMes = false;
+                      }
+                      j += 1;
+                    }
+                  }
+                  else{
+                    values.push([elem[i].dia, id_primer_intervalo + i, id]);
+                  }
+                }
+                connection.query(sql,[values], function(error, result){
+                  if(error){
+                    reject(error);
+                  }else{
+                    resolve(result);
+                  }
+                });
               }
             });
           }
-          resolve(result);
-        }
-      });
+        });
+      } else{
+        reject({code: 0});
+      }
     });
   }
 
-  //calendario es una lista
-  modificarCalendario(calendario){
-    
+  modificarCalendario(elem, calendarioBorrar){
+    return new Promise(function(resolve, reject){
+      var sql = "DELETE FROM Jornada WHERE (id_jornada) IN (?)";
+      var values = [];
+      var i;
+      var value;
+      for(i = 0; i < calendarioBorrar.length; i++){
+        value = [calendarioBorrar[i]];
+        values.push(value);
+      }
+      connection.query(sql,[values], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          if(elem.length > 0){
+            connection.query('CALL CrearIntervaloTiempo(?,?,?,?)',[elem[0].horaInicio, elem[0].horaFinal, elem[0].minutoInicio, elem[0].minutoFinal], function(error, result){
+              if(error){
+                reject(error);
+              }else{
+                if(!result.id_intervalo){
+                  reject(result);
+                }
+                var id_primer_intervalo = result.id_intervalo;
+                var sql = "INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final) VALUES ?";
+                var values = [];
+                var i;
+                var value;
+                for(i = 1; i < elem.length; i++){
+                  value = [elem[i].horaInicio, elem[i].horaFinal, elem[i].minutoInicio, elem[i].minutoFinal];
+                  values.push(value);
+                }
+                connection.query(sql,[values], function(error, result){
+                  if(error){
+                    reject(error);
+                  }else{
+                    sql = "INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala) VALUES ?";
+                    values = [];
+                    var mes;
+                    var nuevoDia;
+                    var mismoMes;
+                    var j;
+                    for(i = 0; i < elem.length; i++){
+                      mes = elem[i].dia.getMonth();
+                      if(elem[i].repeticion == "CADASEMANADELMES"){
+                        j = 7;
+                        while(dia.getDate() - j > 0){
+                          nuevoDia = new Date();
+                          nuevoDia.setMonth(dia.getMonth());
+                          nuevoDia.setFullYear(dia.getFullYear());
+                          nuevoDia.setDate(dia.getDate() - j);
+                          values.push([nuevoDia, id_primer_intervalo + i, id]);
+                          j += 7;
+                        }
+                        j = 0;
+                        mismoMes = true;
+                        while(mismoMes){
+                          nuevoDia = new Date();
+                          nuevoDia.setMonth(dia.getMonth());
+                          nuevoDia.setFullYear(dia.getFullYear());
+                          nuevoDia.setDate(dia.getDate() + j);
+                          if(nuevoDia.getMonth() == mes){
+                            values.push([nuevoDia, id_primer_intervalo + i, id]);
+                          }
+                          else{
+                            mismoMes = false;
+                          }
+                          j += 7;
+                        }
+                      }
+                      else if(elem[i].repeticion == "TODOSLOSDIASDELMES"){
+                        mismoMes = true;
+                        j = 1;
+                        while(mismoMes){
+                          nuevoDia = new Date();
+                          nuevoDia.setMonth(dia.getMonth());
+                          nuevoDia.setFullYear(dia.getFullYear());
+                          nuevoDia.setDate(j);
+                          if(nuevoDia.getMonth() == mes){
+                            values.push([nuevoDia, id_primer_intervalo + i, id]);
+                          }
+                          else{
+                            mismoMes = false;
+                          }
+                          j += 1;
+                        }
+                      }
+                      else{
+                        values.push([elem[i].dia, id_primer_intervalo + i, id]);
+                      }
+                    }
+                    connection.query(sql,[values], function(error, result){
+                      if(error){
+                        reject(error);
+                      }else{
+                        resolve(result);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          } else{
+            reject({code: 0});
+          }
+        }
+      });
+    });
   }
 
   async serviciosDeSala(id){
@@ -144,6 +326,28 @@ class ControllerSala{
   async jornadasDeSala(id){
     return new Promise(function(resolve, reject){
       connection.query('CALL GetJornadasDeSala(?)',[id], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          var listajornadasresult = result[0];
+          var i;
+          var listajornadas =[];
+          for(i = 0; i < listajornadasresult.length; i++){
+            var jornadaresult = listajornadasresult[i];
+            var intervalo = new IntervaloTiempo(jornadaresult.hora_inicio, jornadaresult.minuto_inicio, jornadaresult.hora_final, jornadaresult.minuto_final);
+            var listaclases = clasesDeJornada(jornadaresult.id_jornada);
+            var jornada = new Jornada(jornadaresult.id_jornada, jornadaresult.dia, intervalo, listaclases);
+            listajornadas.push(jornada);
+          }
+          resolve(listajornadas);
+        }
+      });
+    });
+  }
+
+  async jornadasDeMes(mes){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL GetJornadasMes(?)',[mes], function(error, result){
         if(error){
           reject(error);
         }else{
@@ -193,9 +397,58 @@ class ControllerSala{
   }
 
   //servicios es una lista
-  crearServiciosDeSala(servicios){
-
+  crearServiciosDeSala(id, servicios){
+    return new Promise(function(resolve, reject){
+      var sql = "INSERT INTO Servicios_de_Sala(id_sala, nombre_servicio) VALUES ?";
+      var values = [];
+      var i;
+      var value;
+      for(i = 0; i < servicios.length; i++){
+        value = [id, servicios[i]];
+        values.push(value);
+      }
+      connection.query(sql,[values], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
+    });
   }
+
+  modificarServiciosDeSala(id, serviciosBorrar, servicios){
+    return new Promise(function(resolve, reject){
+      var sql1 = "DELETE FROM Servicios_de_Sala WHERE (id_sala, nombre_servicio) IN (?)";
+      var values1 = [];
+      var i;
+      var value;
+      for(i = 0; i < serviciosBorrar.length; i++){
+        value = [id, serviciosBorrar[i]];
+        values1.push(value);
+      }
+      var sql2 = "INSERT INTO Servicios_de_Sala(id_sala, nombre_servicio) VALUES ?";
+      var values2 = [];
+      for(i = 0; i < servicios.length; i++){
+        value = [id, servicios[i]];
+        values2.push(value);
+      }
+      connection.query(sql1,[values1], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          connection.query(sql2,[values2], function(error, result){
+            if(error){
+              reject(error);
+            }else{
+              resolve(result);
+            }
+          });
+        }
+      });
+    });
+  }
+
 
 }
 

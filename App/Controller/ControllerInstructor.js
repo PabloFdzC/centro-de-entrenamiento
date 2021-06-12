@@ -7,11 +7,19 @@ class ControllerInstructor{
 
   async agregar(elem){
     return new Promise(function(resolve, reject){
-      connection.query('CALL RegistroInstructor(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], function(error, result){
+      var password = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+
+      for ( var i = 0; i < 10; i++ ) {
+        password += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      connection.query('CALL RegistroInstructor(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, password, elem.telefono], function(error, result){
         if(error){
           reject(error);
         }else{
-          resolve(result);
+          console.log(password);
+          resolve(password);
         }
       });
     });

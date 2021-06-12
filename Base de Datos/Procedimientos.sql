@@ -6,6 +6,7 @@ BEGIN
 	INSERT INTO Sala(costo_matricula, capacidad, aforo)
 	VALUES(piCostoMatricula, piCapacidad, piAforo);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_sala;
 END //
 
 DELIMITER ;
@@ -35,6 +36,17 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS SelectSalas;
+DELIMITER //
+
+CREATE PROCEDURE SelectSalas()
+BEGIN
+	SELECT id_sala, costo_matricula, capacidad, aforo
+    FROM Sala;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS CrearIntervaloTiempo;
 DELIMITER //
 
@@ -43,6 +55,7 @@ BEGIN
 	INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final)
 	VALUES(piHoraInicio, piHoraFinal, piMinutoInicio, piMinutoFinal);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_intervalo;
 END //
 
 DELIMITER ;
@@ -104,6 +117,21 @@ BEGIN
     FROM (SELECT id_jornada, dia, id_intervalo_tiempo
 		FROM Jornada
 		WHERE id_sala = piIdSala) as j
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = j.id_intervalo_tiempo;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetJornadasMes;
+DELIMITER //
+
+CREATE PROCEDURE GetJornadasMes(IN piMes INT)
+BEGIN
+	SELECT j.id_jornada, j.dia, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+    FROM (SELECT id_jornada, dia, id_intervalo_tiempo
+		FROM Jornada
+		WHERE MONTH(dia) = piMes) as j
     INNER JOIN Intervalo_Tiempo it
     ON it.id_intervalo = j.id_intervalo_tiempo;
 END //
@@ -267,10 +295,10 @@ BEGIN
     DECLARE nuevaSal VARCHAR(16);
     SET nuevaLlave = LEFT(UUID(), 16);
     SET nuevaSal = LEFT(UUID(), 16);
-    INSERT INTO Llaves(email_usuario, llave)
-    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     INSERT INTO Cliente(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, contrasenna, sal, telefono)
     VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, pdFechaNacimiento, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
+    INSERT INTO Llaves(email_usuario, llave)
+    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     COMMIT;
 END //
 
@@ -285,10 +313,10 @@ BEGIN
     DECLARE nuevaSal VARCHAR(16);
     SET nuevaLlave = LEFT(UUID(), 16);
     SET nuevaSal = LEFT(UUID(), 16);
-    INSERT INTO Llaves(email_usuario, llave)
-    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     INSERT INTO Instructor(email, identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, contrasenna, sal, telefono)
     VALUES (pvEmail, piIdentificacion, pvPrimerNombre, pvSegundoNombre, pvPrimerApellido, pvSegundoApellido, pdFechaNacimiento, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal, piTelefono);
+    INSERT INTO Llaves(email_usuario, llave)
+    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     COMMIT;
 END //
 
@@ -303,10 +331,10 @@ BEGIN
     DECLARE nuevaSal VARCHAR(16);
     SET nuevaLlave = LEFT(UUID(), 16);
     SET nuevaSal = LEFT(UUID(), 16);
-    INSERT INTO Llaves(email_usuario, llave)
-    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     INSERT INTO Administrador(email, contrasenna, sal)
     VALUES (pvEmail, aes_encrypt(pvContrasenna, nuevaLlave), nuevaSal);
+    INSERT INTO Llaves(email_usuario, llave)
+    VALUES (pvEmail, aes_encrypt(nuevaLlave, nuevaSal));
     COMMIT;
 END //
 

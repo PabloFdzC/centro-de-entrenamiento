@@ -5,8 +5,8 @@ const ctrlInstr = ControllersSng.getControllerInstructor();
 
 OperacionesInstructor.post('/crearInstructor', async function(req, res){
   try{
-    var r = await ctrlInstr.agregar(req.body);
-    res.send(r);
+    var contrasenna = await ctrlInstr.agregar(req.body);
+    res.send({contrasenna});
   }catch(err){
     console.log(err);
     res.status(400);

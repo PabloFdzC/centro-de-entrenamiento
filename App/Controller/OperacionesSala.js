@@ -49,6 +49,34 @@ OperacionesSala.get('/mostrarSala/:idSala', async function(req, res){
   }
 });
 
+OperacionesSala.get('/mostrarJornadasDelMes/:mes', async function(req, res){
+  try{
+    var sala = await ctrlSala.jornadasDeMes(req.params.mes);
+    res.render('Sala.ejs', {sala});
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesSala.get('/mostrarSalas', async function(req, res){
+  try{
+    var salas = await ctrlSala.consultarSalas(req.body);
+    res.render('Sala.ejs', {salas});
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
 OperacionesSala.post('/crearCalendario', async function(req, res){
   try{
     var r = await ctrlSala.crearCalendario(req.body);

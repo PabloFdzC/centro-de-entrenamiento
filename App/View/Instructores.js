@@ -5,7 +5,7 @@ class Instructores{
     i.servicios = listaServicios;
     Utilidades.ajaxCall('/crearInstructor', 'POST', i, function(r){
       console.log(r);
-      muestraMensaje("Exito", "Instructor creado con éxito");   
+      muestraMensaje("Exito", "La contraseña del instructor es " + r.contrasenna);   
     }, function(xhr, status, error){
       console.log(xhr);
       muestraMensaje("Fallo", xhr.responseText);

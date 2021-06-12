@@ -1,7 +1,7 @@
 const { Router} = require('express');
 const ControllersSng = require('./ControllersSng.js');
 const OperacionesCliente = Router({caseSensitive:true});
-const ctrlCliente = ControllersSng.getControllerClase();
+const ctrlCliente = ControllersSng.getControllerCliente();
 
 OperacionesCliente.post('/crearCliente', async function(req, res){
   try{
@@ -14,7 +14,7 @@ OperacionesCliente.post('/crearCliente', async function(req, res){
     if(err.code == 'ER_DUP_ENTRY')
       res.send("No se pudo crear el administrador");
     else
-      res.send("Algo salió mal");
+      res.send(err.code);
   }
 });
 

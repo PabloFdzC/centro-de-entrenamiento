@@ -13,7 +13,7 @@ OperacionesUsuario.post('/iniciarSesion', async function(req, res){
     if(err.code == 'ER_DUP_ENTRY')
       res.send("No se pudo crear el administrador");
     else
-      res.send("Algo salió mal");
+      res.send("Email o contraseña incorrecta");
   }
 });
 
