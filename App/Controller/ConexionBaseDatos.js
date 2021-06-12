@@ -4,7 +4,8 @@ const parametrosConexion = {
     host: 'localhost',
     user: 'root',
     password: '1234',
-    database: 'sistemaentrenamiento'
+    database: 'sistemaentrenamiento',
+    dateStrings: true
 };
 
 const connection = mysql.createConnection(parametrosConexion);

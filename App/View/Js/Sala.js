@@ -82,6 +82,7 @@ $('body').ready(function(){
   cargarSalas = async function(){
     var res = await sala.mostrarSalas();
     if(res){
+      $('#salas').empty();
       $('#salas').append(res);
     }
   };

@@ -5,7 +5,6 @@ class Sala{
   crearSala(info, listaServicios, calendario){
     info.append("servicios", JSON.stringify(listaServicios));
     info.append("calendario", JSON.stringify(calendario));
-    console.log(info.get("calendario"));
     let i = Utilidades.convertirAJSON(info);
     Utilidades.ajaxCall('/crearSala', 'POST', i, function(r){
       console.log(r);
@@ -44,7 +43,6 @@ class Sala{
   mostrarSalas(){
     return new Promise(function(resolve, reject) {
       Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
-        console.log(html);
         resolve(html);
       }, function(xhr, status, error){
         console.log(xhr);

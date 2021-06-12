@@ -14,6 +14,7 @@ $('body').ready(function(){
   cargarInstructores = async function(){
     var res = await instructores.mostrarListadoInstructores(false);
     if(res){
+      $('#instructores').empty();
       $('#instructores').append(res);
     }
   };

@@ -1,0 +1,79 @@
+<% let d = new Date(annoUsuario, mesUsuario, 1);
+let empiezaEn = d.getDay();
+let dAnt = new Date(annoUsuario, mesUsuario, 0);
+let antTerminaEn = dAnt.getDate();
+let dDesp 
+if(mesUsuario+1 > 11)
+  dDesp = new Date(annoUsuario, 0, 0);
+else
+  dDesp = new Date(annoUsuario, mesUsuario+1, 0);
+let actTerminaEn = dDesp.getDate();
+let contar = antTerminaEn - empiezaEn;
+let habil = false;
+%>
+<% for(let i = 0; i < 5; i++){ %>
+<div class="row mt-2 justify-content-center">
+  <% for(let j = 0; j < 7; j++){
+    if(contar > antTerminaEn && !habil){
+        habil = true;
+        contar = 1;
+      } else if(contar > actTerminaEn && habil){
+        habil = false;
+        contar = 1;
+        antTerminaEn = 32;
+      }%>
+      <div class="col">
+    <% if(habil){let total = 0;
+    if(annoUsuario === annoActual && mesUsuario === mesActual && contar === diaActual){ %>
+      <div class="card diaVerde cardDia">
+        <div class="card-body" style="padding-left: 0;padding-right: 0;">
+          <div class="container">
+            <h5 class="card-title tituloDia"><%= contar %></h5>
+            <div class="row rowDia" id="<%= contar %>">
+                <% for(var jor of jornadas){ if(jor.getDia().getDate() == contar){ total=jor.getClases().length; }} if(total> 0){ %>
+                    <div class="punto"></div>
+                    <% if(total== 1){ %>
+                    <div class="clasesCalendarioDia"><%= total %> clases</div>
+                    <% } else { %>
+                    <div class="clasesCalendarioDia"><%= total %> clase</div>
+                    <% } %>
+                <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } else { %>
+        <div class="card diaBlanco cardDia">
+            <div class="card-body" style="padding-left: 0;padding-right: 0;">
+              <div class="container">
+                <h5 class="card-title tituloDia"><%= contar %></h5>
+                <div class="row rowDia" id="<%= contar %>">
+                    <% for(var jor of jornadas){ if(jor.getDia().getDate() == contar){ total=jor.getClases().length; }} if(total> 0){ %>
+                        <div class="punto"></div>
+                        <% if(total== 1){ %>
+                            <div class="clasesCalendarioDia"><%= total %> clases</div>
+                            <% } else { %>
+                            <div class="clasesCalendarioDia"><%= total %> clase</div>
+                            <% } %>
+                    <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+    <% }else{ %>
+        <div class="card diaAmarillo cardDia">
+            <div class="card-body" style="padding-left: 0;padding-right: 0;">
+              <div class="container">
+                <h5 class="card-title tituloDia"><%= contar %></h5>
+                <div class="row rowDia">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  <% } contar++; }%>
+</div>
+<% } %>

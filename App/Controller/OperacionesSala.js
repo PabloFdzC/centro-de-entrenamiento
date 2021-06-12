@@ -70,7 +70,25 @@ OperacionesSala.get('/mostrarSala/:idSala', async function(req, res){
 OperacionesSala.get('/mostrarJornadasDelMes/:mes', async function(req, res){
   try{
     var jornadas = await ctrlSala.jornadasDeMes(req.params.mes);
+    console.log(jornadas);
+    for(var i of jornadas){
+      console.log(i.getDia());
+    }
     res.send(jornadas);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesSala.post('/mostrarJornadasDelMesI', async function(req, res){
+  try{
+    var jornadas = await ctrlSala.jornadasDeMes(req.body.mesUsuario+1);
+    res.render('DiasCalendario.ejs',{jornadas, annoUsuario:req.body.annoUsuario, mesUsuario:req.body.mesUsuario, annoActual:req.body.annoActual, mesActual:req.body.mesActual, diaActual:req.body.diaActual});
   }catch(err){
     console.log(err);
     res.status(400);

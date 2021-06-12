@@ -7,7 +7,7 @@ class Jornada {
 
   constructor(id, dia, horarioAtencion, clases){
     this.#id = id;
-    this.#dia = dia;
+    this.#dia = new Date(dia);
     this.#horarioAtencion = horarioAtencion;
     this.#clases = clases;
   }
