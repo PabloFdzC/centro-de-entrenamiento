@@ -60,19 +60,16 @@ $('body').ready(function(){
     construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
   });
 
+  muestraModal = function(){
+    let val = $(this).attr('title');
+    $('#verDiaModal').empty();
+    $('#verDiaModal').append(val);
+    modalVerDia.show();
+  }
 
-  $('#calendarioCont').on('click', '.diaVerde',function(){
-    let val = $(this).attr('title');
-    $('#verDiaModal').empty();
-    $('#verDiaModal').append(val);
-    modalVerDia.show();
-  });
-  $('#calendarioCont').on('click', '.diaBlanco',function(){
-    let val = $(this).attr('title');
-    $('#verDiaModal').empty();
-    $('#verDiaModal').append(val);
-    modalVerDia.show();
-  });
+
+  $('#calendarioCont').on('click', '.diaVerde',muestraModal);
+  $('#calendarioCont').on('click', '.diaBlanco',muestraModal);
 
   construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
   //cal.mostrarListadoReservas();

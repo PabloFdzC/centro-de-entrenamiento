@@ -2,6 +2,7 @@ class CrearEditarClase{
   
   crearClase(info){
     let i = Utilidades.convertirAJSON(info);
+    console.log(i);
     Utilidades.ajaxCall('/crearClase', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Clase creada con éxito");

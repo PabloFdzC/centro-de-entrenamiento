@@ -14,8 +14,9 @@ class ControllerClase{
   }
 
   async agregar(elem){
+    console.log(elem);
     return new Promise(function(resolve, reject){
-      connection.query('CALL CrearClase(?,?,?,?,?,?)',[elem.capacidad, elem.nombreServicio, EstadoClase["AGENDADA"], elem.idJornada, elem.idIntervalo, elem.emailInstructor], function(error, result){
+      connection.query('CALL CrearClase(?,?,?,?,?,?)',[elem.capacidad, elem.servicio, EstadoClase["AGENDADA"], elem.idJornada, elem.idIntervalo, elem.emailInstructor], function(error, result){
         if(error){
           reject(error);
         }else{
@@ -52,7 +53,7 @@ class ControllerClase{
 
   async modificar(elem){
     return new Promise(function(resolve, reject){
-      connection.query('CALL ModificarClase(?,?,?,?,?)',[elem.id, elem.capacidad, elem.nombreServicio, elem.estado_clase, elem.emailInstructor], function(error, result){
+      connection.query('CALL ModificarClase(?,?,?,?,?)',[elem.id, elem.capacidad, elem.servicio, elem.estado_clase, elem.emailInstructor], function(error, result){
         if(error){
           reject(error);
         }else{

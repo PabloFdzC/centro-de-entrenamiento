@@ -44,8 +44,34 @@ class IntervaloTiempo {
     this.#minutoFinal = minutoFinal;
   }
 
-  calcularHoras(){
-    
+  getHoraMinutosInicio(){
+    let mi = ""
+    let hi = ""
+    if(this.getMinutoInicio() < 10){
+      mi = "0"+this.getMinutoInicio();
+    } else {
+      mi += this.getMinutoInicio();
+    }
+    if(this.getMinutoInicio() < 10){
+      hi = "0"+this.getHoraInicio();
+    } else {
+      hi += this.getHoraInicio();
+    }
+  }
+
+  getHoraMinutosFinal(){
+    let mi = ""
+    let hi = ""
+    if(this.getMinutoFinal() < 10){
+      mi = "0"+this.getMinutoFinal();
+    } else {
+      mi += this.getMinutoFinal();
+    }
+    if(this.getMinutoFinal() < 10){
+      hi = "0"+this.getHoraFinal();
+    } else {
+      hi += this.getHoraFinal();
+    }
   }
   
 }

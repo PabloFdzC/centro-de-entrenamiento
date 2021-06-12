@@ -22,14 +22,23 @@ $('body').ready(function(){
   })
 
   $('body').on('click', '.activaModal', function(event){
+    var tipo = localStorage.getItem("tipo");
     if($(this).attr('value') == "CREAR"){
       esModificar = false;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Crear clase");
+      if(tipo == "Instructor"){
+        $('#checkAplicarTodas').addClass('esconde');
+        $('#contRepeticion').removeClass('esconde');
+      }
     } else {
       esModificar = true;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Modificar clase");
+      if(tipo == "Instructor"){
+        $('#contRepeticion').addClass('esconde');
+        $('#checkAplicarTodas').removeClass('esconde');
+      }
     }
     modal.show();
   });
@@ -39,6 +48,14 @@ $('body').ready(function(){
     let form = $('#formClase')[0];
     if(form.checkValidity()){
       let info = new FormData(form);
+      let s = info.get("horaInicio").split(":");
+      info.delete("horaInicio");
+      info.set("horaInicio", s[0]);
+      info.set("minutoInicio", s[1]);
+      s = info.get("horaFinal").split(":");
+      info.delete("horaFinal");
+      info.set("horaFinal", s[0]);
+      info.set("minutoFinal", s[1]);
       if(esModificar)
         cec.modificarClase(info);
       else
