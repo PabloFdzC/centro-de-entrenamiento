@@ -27,8 +27,12 @@ $('body').ready(function(){
     calendario = [];
     if($(this).attr('value') == "CREAR"){
       esModificar = false;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Crear sala");
     } else {
       esModificar = true;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Modificar sala");
     }
   });
   

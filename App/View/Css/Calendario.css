@@ -1,6 +1,9 @@
+.cardDia{
+  height: 7rem;
+}
+
 .calendario{
-  width: 60rem;
-  height: 35rem;
+  width: 62rem;
 }
 
 .diaAmarillo{

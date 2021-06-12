@@ -17,8 +17,12 @@ $('body').ready(function(){
     servicioActual = $(this).attr('value');
     if(servicioActual == "CREAR"){
       esModificar = false;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Crear servicio");
     } else {
       esModificar = true;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Modificar servicio");
     }
   });
 

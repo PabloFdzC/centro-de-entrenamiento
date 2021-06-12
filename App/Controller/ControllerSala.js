@@ -346,7 +346,7 @@ class ControllerSala{
   }
 
   async jornadasDeMes(mes){
-    return new Promise(function(resolve, reject){
+    return new Promise(async function(resolve, reject){
       connection.query('CALL GetJornadasMes(?)',[mes], function(error, result){
         if(error){
           reject(error);
@@ -357,7 +357,7 @@ class ControllerSala{
           for(i = 0; i < listajornadasresult.length; i++){
             var jornadaresult = listajornadasresult[i];
             var intervalo = new IntervaloTiempo(jornadaresult.hora_inicio, jornadaresult.minuto_inicio, jornadaresult.hora_final, jornadaresult.minuto_final);
-            var listaclases = clasesDeJornada(jornadaresult.id_jornada);
+            var listaclases = await this.clasesDeJornada(jornadaresult.id_jornada);
             var jornada = new Jornada(jornadaresult.id_jornada, jornadaresult.dia, intervalo, listaclases);
             listajornadas.push(jornada);
           }

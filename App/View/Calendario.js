@@ -1,29 +1,38 @@
 class Calendario{
   
-  mostrarClasesPorMes() {
-    Utilidades.ajaxCall('/mostrarClasesPorMes', 'GET', {}, function(calendario){
-      
-    }, function(xhr, status, error){
-      console.log(xhr);
-      muestraMensaje("Fallo", xhr.responseText);
+  async mostrarJornadasDelMes(mes) {
+    return new Promise(function(resolve) {
+      Utilidades.ajaxCall('/mostrarJornadasDelMes/'+mes, 'GET', {}, function(jornadasDelMes){
+        resolve(jornadasDelMes);
+      }, function(xhr, status, error){
+        console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
+        resolve(null);
+      });
     });
   }
 
-  mostrarListadoReservas(){
-    Utilidades.ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
-
-    }, function(xhr, status, error){
-      console.log(xhr);
-      muestraMensaje("Fallo", xhr.responseText);
+  async mostrarListadoReservas(idClase){
+    return new Promise(function(resolve) {
+      Utilidades.ajaxCall('/mostrarReservas/'+idClase, 'GET', {}, function(reservas){
+        resolve(reservas);
+      }, function(xhr, status, error){
+        console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
+        resolve(null);
+      });
     });
   }
 
-  mostrarClase(){
-    Utilidades.ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
-
-    }, function(xhr, status, error){
-      console.log(xhr);
-      muestraMensaje("Fallo", xhr.responseText);
+  async mostrarClase(idClase){
+    return new Promise(function(resolve) {
+      Utilidades.ajaxCall('/mostrarClase/'+idClase, 'GET', {}, function(clase){
+        resolve(clase);
+      }, function(xhr, status, error){
+        console.log(xhr);
+        muestraMensaje("Fallo", xhr.responseText);
+        resolve(null);
+      });
     });
   }
   

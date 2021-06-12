@@ -2,17 +2,23 @@
   <body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/mathieu-chassara-0b3Nkg9oisc-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
     <%- include('Navegacion.ejs', {ventana:"CALENDARIO", tipo_usuario:tipo}); %>
     <div class="d-flex justify-content-between">
-      <div class="botonesCalendario">IZQ</div>
+      <button class="btn botonesCalendario" id="mesAnterior"><i class="fas fa-arrow-left"></i></button>
       <div class="card text-center mx-auto my-auto background calendario">
         <div class="card-body">
-          <h5 class="card-title" id="mes">Abril 2021</h5>
-          <button class="activaModal" value="CREAR">Crear clase</button>
+          <div class="row justify-content-end">
+            <div class="col-8">
+              <h5 class="card-title" id="mesAnno">Abril 2021</h5>
+            </div>
+            <div class="col-2">
+              <button class="btn btn-primary activaModal" value="CREAR">Crear clase</button>
+            </div>
+          </div>
           <div class="ps-4 pe-4 pt-2" id="calendarioCont">
             
           </div>
         </div>
       </div>
-      <div class="botonesCalendario">DER</div>
+      <button class="btn botonesCalendario" id="mesSiguiente"><i class="fas fa-arrow-right"></i></button>
     </div>
     <% if(tipo === "Administrador" || tipo === "Instructor"){ %>
     <div class="modal fade" id="modalClase" tabindex="-1" aria-labelledby="crearEditarModal" aria-hidden="true">
@@ -204,8 +210,9 @@
     <script src="../Calendario.js"></script>
     <script src="../Js/Calendario.js"></script>
     <% if(tipo === "Administrador" || tipo === "Instructor"){ %>
-      <script src="../Js/CrearEditarClase.js"></script>
+      <script src="../Servicios.js"></script>
       <script src="../CrearEditarClase.js"></script>
+      <script src="../Js/CrearEditarClase.js"></script>
     <% } %>
   </body>
 </html>

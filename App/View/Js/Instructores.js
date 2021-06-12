@@ -26,8 +26,12 @@ $('body').ready(function(){
     var val = $(this).attr('value');
     if(val == "CREAR"){
       esModificar = false;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Crear instructor");
     } else {
       esModificar = true;
+      $('#crearEditar').empty();
+      $('#crearEditar').append("Modificar instructor");
       let instr = await instructores.mostrarInstructor(val);
       $('#primerNombre').val(instr.getPrimerNombre());
       $('#segundoNombre').val(instr.getSegundoNombre());

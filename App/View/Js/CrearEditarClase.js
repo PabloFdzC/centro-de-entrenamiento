@@ -7,8 +7,12 @@ $('body').ready(function(){
   $('body').on('click', '.activaModal', function(event){
     if($(this).attr('value') == "CREAR"){
       esModificar = false;
+      $('#crearEditarModal').empty();
+      $('#crearEditarModal').append("Crear clase");
     } else if($(this).attr('value') == "MODIFICAR"){
       esModificar = true;
+      $('#crearEditarModal').empty();
+      $('#crearEditarModal').append("Modificar clase");
     }
   });
 
@@ -25,14 +29,13 @@ $('body').ready(function(){
     }
   });
 
-  $('#servicio').ready(async function(){
-    var servs = await servicios.mostrarListadoServicios(true);
-    for(let s in servs){
-      $(this).append(`
-      <option value="`+s.getNombre()+`">`+s.getNombre()+`</option>
-      `);
+  cargar = async function(){
+    var res = await servicios.mostrarListadoServicios(true);
+    if(res){
+      $('#servicio').append(res);
     }
-  });
+  };
 
+  cargar();
 
 });
