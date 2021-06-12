@@ -4,16 +4,34 @@ $('body').ready(function(){
   var esModificar = false;
   var modal = new bootstrap.Modal(document.getElementById('modalClase'));
 
+  limpiarModal = function(){
+    $('#capacidad').val("");
+    $('#dia').val("");
+    $('#horaInicio').val("");
+    $('#horaFinal').val("");
+    $('#servicio').val("");
+    $('#repeticion').val("");
+    $('#estado').val("");
+    $('#instructor').val("");
+    $('#instructorTemporal').val("");
+    $('#aplicarTodas').val("");
+  }
+
+  $('#modalClase').on('hidden.bs.modal', function (e) {
+    limpiarModal();
+  })
+
   $('body').on('click', '.activaModal', function(event){
     if($(this).attr('value') == "CREAR"){
       esModificar = false;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Crear clase");
-    } else if($(this).attr('value') == "MODIFICAR"){
+    } else {
       esModificar = true;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Modificar clase");
     }
+    modal.show();
   });
 
   $('#formClase').submit(function(event){

@@ -26,7 +26,7 @@ class Instructores{
 
   async mostrarInstructor(email){
     return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/getInstructor/'+email, 'GET', {}, function(instructor){
+      Utilidades.ajaxCall('/mostrarInstructor/'+email, 'GET', {}, function(instructor){
         resolve(instructor);
       }, function(xhr, status, error){
         console.log(xhr);
@@ -48,8 +48,9 @@ class Instructores{
   }
 
   async eliminarInstructor(email){
+    var d = Utilidades.convertirAJSON({email});
     return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/eliminarInstructor', 'POST', {email}, function(r){
+      Utilidades.ajaxCall('/eliminarInstructor', 'POST', d, function(r){
         console.log(r);
         muestraMensaje("Exito", "Se eliminó el instructor");
         resolve(true);

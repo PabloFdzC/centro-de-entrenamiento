@@ -177,7 +177,6 @@ class ControllerSala{
     for(var i = 0; i < elem.length; i++){
       var dia = new Date(elem[i].dia);
       mes = dia.getMonth();
-      console.log(mes);
       if(elem[i].repeticion == "CADASEMANADELMES"){
         j = 7;
         while(dia.getDate() - j > 0){

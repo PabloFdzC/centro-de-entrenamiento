@@ -3,6 +3,7 @@ $('body').ready(function(){
   var servicios = new Servicios();
   var esModificar = false;
   var listaServicios = [];
+  var modalCrearEditar = new bootstrap.Modal(document.getElementById('modalCrearEditar'));
 
   cargarServicios = async function(){
     var res = await servicios.mostrarListadoServicios(true);
@@ -27,7 +28,21 @@ $('body').ready(function(){
         `+val+`
       </div>`);
     }
-  }
+  };
+
+  limpiarModal = function(){
+    $('#primerNombre').val("");
+    $('#segundoNombre').val("");
+    $('#primerApellido').val("");
+    $('#segundoApellido').val("");
+    $('#identificacion').val("");
+    $('#fechaNacimiento').val("");
+    $('#telefono').val("");
+    $('#email').val("");
+    $('#annadirServicio').val("");
+    $('#serviciosEscogidos').empty();
+    listaServicios = [];
+  };
 
   $('body').on('click', '.activaModal', async function(event){
     listaServicios = [];
@@ -41,14 +56,21 @@ $('body').ready(function(){
       $('#crearEditar').empty();
       $('#crearEditar').append("Modificar instructor");
       let instr = await instructores.mostrarInstructor(val);
-      $('#primerNombre').val(instr.getPrimerNombre());
-      $('#segundoNombre').val(instr.getSegundoNombre());
-      $('#primerApellido').val(instr.getPrimerApellido());
-      $('#segundoApellido').val(instr.getSegundoApellido());
-      $('#identificacion').val(instr.getIdentificacion());
-      $('#fechaNacimiento').val(instr.getFechaNacimiento());
-      $('#telefono').val(instr.getTelefono());
-      $('#email').val(instr.getEmail());
+      instr = JSON.parse(instr);
+      console.log(instr);
+      if(instr){
+        $('#primerNombre').val(instr.primerNombre);
+        $('#segundoNombre').val(instr.segundoNombre);
+        $('#primerApellido').val(instr.primerApellido);
+        $('#segundoApellido').val(instr.segundoApellido);
+        $('#identificacion').val(instr.identificacion);
+        $('#fechaNacimiento').val(instr.fechaNacimiento);
+        $('#telefono').val(instr.telefono);
+        $('#email').val(instr.email);
+        for(let s of instr.servicios){
+          insertaServicioHtml(s);
+        }
+      }
       
     }
   });
@@ -61,6 +83,10 @@ $('body').ready(function(){
       card.remove();
     }
   });
+
+  $('#modalCrearEditar').on('hidden.bs.modal', function (e) {
+    limpiarModal();
+  })
 
   $('#formInstructor').submit(function(event){
     event.preventDefault();
@@ -77,6 +103,7 @@ $('body').ready(function(){
         instructores.crearInstructor(info, listaServicios);
         cargarInstructores();
       }
+      modalCrearEditar.hide();
     }
   });
 

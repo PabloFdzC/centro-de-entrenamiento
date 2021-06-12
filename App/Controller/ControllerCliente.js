@@ -33,12 +33,25 @@ class ControllerCliente{
     });
   }
 
-  eliminar(elem){
-    
-  }
-
-  mostrarClientes(elem){
-
+  mostrarClientes(){
+    return new Promise(function(resolve, reject){
+      connection.query('CALL GetClientes()',[], async function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          var listaclientesresult = result[0];
+          var i;
+          var listaClientes = [];
+          for(i = 0; i < listaclientesresult.length; i++){
+            var clienteresult = listaclientesresult[i];
+            var cliente = new Cliente(clienteresult.primerNombre, clienteresult.segundoNombre, clienteresult.primerApellido, clienteresult.segundoApellido,
+              clienteresult.fechaNacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
+            listaClientes.push(cliente);
+          }
+          resolve(listaClientes);
+        }
+      });
+    });
   }
 
   mostrarClientesEnClase(elem){

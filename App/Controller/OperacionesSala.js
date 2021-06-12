@@ -70,10 +70,6 @@ OperacionesSala.get('/mostrarSala/:idSala', async function(req, res){
 OperacionesSala.get('/mostrarJornadasDelMes/:mes', async function(req, res){
   try{
     var jornadas = await ctrlSala.jornadasDeMes(req.params.mes);
-    console.log(jornadas);
-    for(var i of jornadas){
-      console.log(i.getDia());
-    }
     res.send(jornadas);
   }catch(err){
     console.log(err);

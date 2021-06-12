@@ -1,3 +1,14 @@
+<% if(lista.length == 0) { %>
+  <div class="card mx-auto background cardLista mt-2">
+    <div class="card-body" id="cardB">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="card-title tituloElementoLista text-center">Nada para mostrar</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
 <% for(let servicio of lista){ %>
   <div class="card mx-auto background cardLista mt-2">
     <div class="card-body" id="cardB">

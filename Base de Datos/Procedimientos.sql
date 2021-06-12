@@ -375,6 +375,8 @@ BEGIN
     WHERE email_instructor = pvEmail;
     DELETE FROM Instructor
     WHERE email = pvEmail;
+    DELETE FROM Llaves
+    WHERE email_usuario = pvEmail;
     COMMIT;
 END //
 

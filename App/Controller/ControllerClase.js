@@ -62,10 +62,6 @@ class ControllerClase{
     });
   }
 
-  eliminar(elem){
-    
-  }
-
   async clasesPorMes(mes){
     let ctrlInstructor = this.#ctrlInstructor;
     var ctrlClase = this;

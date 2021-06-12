@@ -36,7 +36,7 @@ OperacionesInstructor.post('/modificarInstructor', async function(req, res){
 OperacionesInstructor.get('/mostrarInstructor/:email', async function(req, res){
   try{
     var instructor = await ctrlInstr.consultar(req.params.email);
-    res.send(instructor);
+    res.send(instructor.convertirAJSONString());
   }catch(err){
     console.log(err);
     res.status(400);

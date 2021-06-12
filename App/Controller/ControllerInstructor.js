@@ -19,7 +19,6 @@ class ControllerInstructor{
         if(error){
           reject(error);
         }else{
-          console.log(password);
           ctrlInstr.crearServiciosDeInstructor(elem.email, elem.servicios);
           resolve(password);
         }
@@ -28,15 +27,20 @@ class ControllerInstructor{
   }
 
   async consultar(email){
+    var ctrlInstr = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL GetInstructor(?)',[email], function(error, result){
+      connection.query('CALL GetInstructor(?)',[email], async function(error, result){
         if(error){
           reject(error);
         }else{
-          let instructorresult = result[0][0];
-          var listaServicios = serviciosDeInstructor(email);
-          var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
-          resolve(instructor);
+          try{
+            let instructorresult = result[0][0];
+            var listaServicios = await ctrlInstr.serviciosDeInstructor(email);
+            var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
+            resolve(instructor);
+          }catch(err){
+            reject(err);
+          }
         }
       });
     });
@@ -45,12 +49,16 @@ class ControllerInstructor{
   async modificar(elem){
     var ctrlInstr = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL modificarInstructor(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], function(error, result){
+      connection.query('CALL modificarInstructor(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], async function(error, result){
         if(error){
           reject(error);
         }else{
-          ctrlInstr.modificarServiciosDeInstructor(elem.email, elem.serviciosBorrar, elem.servicios);
-          resolve(result);
+          try{
+            await ctrlInstr.modificarServiciosDeInstructor(elem.email, elem.serviciosBorrar, elem.servicios);
+            resolve(result);
+          }catch(err){
+            reject(err);
+          }
         }
       });
     });
@@ -71,7 +79,7 @@ class ControllerInstructor{
   async mostrarInstructores(){
     var ctrlInstr = this;
     return new Promise(function(resolve, reject){
-      connection.query('CALL GetInstructores()',[], function(error, result){
+      connection.query('CALL GetInstructores()',[], async function(error, result){
         if(error){
           reject(error);
         }else{
@@ -80,9 +88,13 @@ class ControllerInstructor{
           var listaInstructores = [];
           for(i = 0; i < listainstructoresresult.length; i++){
             let instructorresult = listainstructoresresult[i];
-            let listaServicios = ctrlInstr.serviciosDeInstructor(instructorresult.email);
-            var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
-            listaInstructores.push(instructor);
+            try{
+              let listaServicios = await ctrlInstr.serviciosDeInstructor(instructorresult.email);
+              var instructor = new Instructor(instructorresult.primer_nombre, instructorresult.segundo_nombre, instructorresult.primer_apellido, instructorresult.segundo_apellido, instructorresult.fecha_nacimiento, instructorresult.telefono, instructorresult.email, instructorresult.identificacion, listaServicios);
+              listaInstructores.push(instructor);
+            }catch(err){
+              reject(err);
+            }
           }
           resolve(listaInstructores);
         }
@@ -110,7 +122,7 @@ class ControllerInstructor{
     });
   }
 
-  crearServiciosDeInstructor(email, servicios){
+  async crearServiciosDeInstructor(email, servicios){
     return new Promise(function(resolve, reject){
       var sql = "INSERT INTO Servicios_de_Instructor(email_instructor, nombre_servicio) VALUES ?";
       var values = [];
@@ -130,7 +142,7 @@ class ControllerInstructor{
     });
   }
 
-  modificarServiciosDeInstructor(email, serviciosBorrar, servicios){
+  async modificarServiciosDeInstructor(email, serviciosBorrar, servicios){
     return new Promise(function(resolve, reject){
       var sql1 = "DELETE FROM Servicios_de_Instructor WHERE (email_instructor, nombre_servicio) IN (?)";
       var values1 = [];
@@ -146,17 +158,28 @@ class ControllerInstructor{
         value = [email, servicios[i]];
         values2.push(value);
       }
-      connection.query(sql1,[values1], function(error, result){
+      connection.query(sql1,[values1], async function(error, result){
         if(error){
           reject(error);
         }else{
-          connection.query(sql2,[values2], function(error, result){
-            if(error){
-              reject(error);
-            }else{
-              resolve(result);
-            }
-          });
+          try{
+            var r = await modificarServiciosDeInstructorAux(sql2,values2);
+            resolve(r);
+          }catch(err){
+            reject(err);
+          }
+        }
+      });
+    });
+  }
+
+  async modificarServiciosDeInstructorAux(sql2,values2){
+    return new Promise(function(resolve, reject){
+      connection.query(sql2,[values2], function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
         }
       });
     });

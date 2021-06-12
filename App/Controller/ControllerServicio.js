@@ -6,7 +6,6 @@ class ControllerServicio{
   constructor(){}
 
   async agregar(elem){
-    console.log(elem);
     return new Promise(function(resolve, reject){
       connection.query('CALL CrearServicio(?,?)',[elem.nombre, elem.costo], function(error, result){
         if(error){

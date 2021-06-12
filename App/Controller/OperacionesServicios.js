@@ -34,8 +34,6 @@ OperacionesServicios.post('/modificarServicio', async function(req, res){
 OperacionesServicios.get('/mostrarServicios/:esLista', async function(req, res){
   try{
     var lista = await ctrlServicio.listadoServicios();
-    console.log("SERVICIOSSSSSSSSSSSSSSS");
-    console.log(req.params.esLista);
     if(req.params.esLista === "true"){
       res.render('ServiciosLista.ejs', {lista});
     } else {

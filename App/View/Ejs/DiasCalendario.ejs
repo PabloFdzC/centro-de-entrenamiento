@@ -1,4 +1,18 @@
-<% let d = new Date(annoUsuario, mesUsuario, 1);
+<% const meses = Array(
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Setiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+  );
+let d = new Date(annoUsuario, mesUsuario, 1);
 let empiezaEn = d.getDay();
 let dAnt = new Date(annoUsuario, mesUsuario, 0);
 let antTerminaEn = dAnt.getDate();
@@ -25,7 +39,7 @@ let habil = false;
       <div class="col">
     <% if(habil){let total = 0;
     if(annoUsuario === annoActual && mesUsuario === mesActual && contar === diaActual){ %>
-      <div class="card diaVerde cardDia">
+      <div class="card diaVerde cardDia" title="<%= contar %> <%= meses[mesActual] %> <%= annoActual %>">
         <div class="card-body" style="padding-left: 0;padding-right: 0;">
           <div class="container">
             <h5 class="card-title tituloDia"><%= contar %></h5>
@@ -44,7 +58,7 @@ let habil = false;
       </div>
     </div>
     <% } else { %>
-        <div class="card diaBlanco cardDia">
+        <div class="card diaBlanco cardDia" title="<%= contar %> <%= meses[mesActual] %> <%= annoActual %>">
             <div class="card-body" style="padding-left: 0;padding-right: 0;">
               <div class="container">
                 <h5 class="card-title tituloDia"><%= contar %></h5>

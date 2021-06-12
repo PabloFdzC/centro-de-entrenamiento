@@ -1,5 +1,6 @@
 $('body').ready(function(){
   var cal = new Calendario();
+  var modalVerDia = new bootstrap.Modal(document.getElementById('modalVerDia'));
 
   let dUsuario = new Date();
   let mesUsuario = dUsuario.getMonth();
@@ -57,6 +58,20 @@ $('body').ready(function(){
       annoUsuario+=1;
     }
     construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
+  });
+
+
+  $('#calendarioCont').on('click', '.diaVerde',function(){
+    let val = $(this).attr('title');
+    $('#verDiaModal').empty();
+    $('#verDiaModal').append(val);
+    modalVerDia.show();
+  });
+  $('#calendarioCont').on('click', '.diaBlanco',function(){
+    let val = $(this).attr('title');
+    $('#verDiaModal').empty();
+    $('#verDiaModal').append(val);
+    modalVerDia.show();
   });
 
   construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);

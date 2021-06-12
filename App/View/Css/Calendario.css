@@ -16,9 +16,16 @@
   background: #0DFF00;
 }
 
+.diaVerde:hover{
+  cursor: pointer;
+}
+
 .diaBlanco{
   color: #383D3E;
   background: #FFFFFF;
+}
+.diaBlanco:hover{
+  cursor: pointer;
 }
 
 .tituloDia{
