@@ -78,18 +78,16 @@ class ControllerSala{
         if(error){
           reject(error);
         }else{
-          salalistaresult = result[0];
-          console.log({salalistaresult});
+          var salalistaresult = result[0];
           var i;
           var listaSalas = [];
           for(i = 0; i < salalistaresult.length; i++){
-            salaresult = salalistaresult[i];
-            listaJornadas = ctrlSala.jornadasDeSala(salaresult.id_sala);
-            listaServicios = ctrlSala.serviciosDeSala(salaresult.id_sala);
-            sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula/*, listaJornadas, listaServicios*/);
+            var salaresult = salalistaresult[i];
+            var listaJornadas = ctrlSala.jornadasDeSala(salaresult.id_sala);
+            var listaServicios = ctrlSala.serviciosDeSala(salaresult.id_sala);
+            var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula/*, listaJornadas, listaServicios*/);
             listaSalas.push(sala);
           }
-          console.log({listaSalas});
           resolve(listaSalas);
         }
       });

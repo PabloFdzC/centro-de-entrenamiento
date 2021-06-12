@@ -73,7 +73,7 @@
                 <label for="AñadirDíaCalendario" class="form-label">Añadir día de calendario</label>
                 <div class="row">
                   <div class="d-grid col-2">
-                    <button type="button" class="btn btn-secondary" aria-describedby="AñadirDíaCalendario" data-bs-toggle="modal" data-bs-target="#modalCrearCalendario">Añadir</button>
+                    <button type="button" class="btn btn-secondary" id="annadirCalendario" aria-describedby="AñadirDíaCalendario" data-bs-toggle="modal" data-bs-target="#modalCrearCalendario">Añadir</button>
                   </div>
                 </div>
               </div>
@@ -115,7 +115,6 @@
               <div class="d-grid col-6">
                 <label for="horaInicio" class="form-label">Hora inicio</label>
                 <select name="horaInicio" id="horaInicio" class="form-control" aria-describedby="Hora Inicio" required>
-                  <option value="" disabled selected hidden>Hora inicio</option>
                   <% for(let i = 1; i <= 23; i++) { %>
                     <% for(let j = 0; j < 59; j+=5) { %>
                       <% if(j < 10) { %>
@@ -133,7 +132,6 @@
               <div class="d-grid col-6">
                 <label for="horaFinal" class="form-label">Hora inicio</label>
                 <select name="horaFinal" id="horaFinal" class="form-control" aria-describedby="Hora Final" required>
-                  <option value="" disabled selected hidden>Hora final</option>
                   <% for(let i = 1; i <= 23; i++) { %>
                     <% for(let j = 0; j < 59; j+=5) { %>
                       <% if(j < 10) { %>
@@ -152,7 +150,6 @@
             <div>
               <label for="repeticion" class="form-label">Repetición</label>
               <select id="repeticion" name="repeticion" class="form-control" aria-describedby="Repeticion" required>
-                <option value="" disabled selected hidden>Repetición</option>
                 <option value="CADASEMANADELMES">Cada semana del mes</option>
                 <option value="TODOSLOSDIASDELMES">Todos los días del mes</option>
                 <option value="NOSEREPITE">No se repite</option>

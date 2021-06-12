@@ -39,12 +39,12 @@ class Sala{
   }
 
   mostrarSalas(){
-    /*Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
+    Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
       $('#sala').append(html);
     }, function(xhr, status, error){
       console.log(xhr);
       muestraMensaje("Fallo", xhr.responseText);
-    });*/
+    });
   }
 
 }

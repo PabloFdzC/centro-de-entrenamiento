@@ -30,18 +30,17 @@ $('body').ready(function(){
       u = await instructores.mostrarInstructor(val);
     }
     if(u){
-      if((typeof u) === "string"){
-        $('#email').val(u);
-      } else {
-        $('#primerNombre').val(u.getPrimerNombre());
-        $('#segundoNombre').val(u.getSegundoNombre());
-        $('#primerApellido').val(u.getPrimerApellido());
-        $('#segundoApellido').val(u.getSegundoApellido());
-        $('#identificacion').val(u.getIdentificacion());
-        $('#fechaNacimiento').val(u.getFechaNacimiento());
-        $('#telefono').val(u.getTelefono());
-        $('#email').val(u.getEmail());
-      }
+      $('#primerNombre').val(u.getPrimerNombre());
+      $('#segundoNombre').val(u.getSegundoNombre());
+      $('#primerApellido').val(u.getPrimerApellido());
+      $('#segundoApellido').val(u.getSegundoApellido());
+      $('#identificacion').val(u.getIdentificacion());
+      $('#fechaNacimiento').val(u.getFechaNacimiento());
+      $('#telefono').val(u.getTelefono());
+      $('#email').val(u.getEmail());
+    } else {
+      $('#email').val(localStorage.getItem('email'));
+      $('#email').prop('disabled', true);
     }
   };
 
