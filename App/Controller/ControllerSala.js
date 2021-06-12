@@ -12,7 +12,7 @@ class ControllerSala{
 
   async agregar(elem){
     return new Promise(function(resolve, reject){
-      connection.query('CALL CrearSala(?,?,?)',[elem.costoMatricula, elem.capacidad, elem.aforo], function(error, result){
+      connection.query('CALL CrearSala(?,?,?)',[elem.costo, elem.capacidad, elem.aforo], function(error, result){
         if(error){
           reject(error);
         }else{
@@ -40,7 +40,7 @@ class ControllerSala{
 
   async modificar(elem){
     return new Promise(function(resolve, reject){
-      connection.query('CALL editarSala(?,?,?,?)',[elem.idSala, elem.costoMatricula, elem.capacidad, elem.aforo], function(error, result){
+      connection.query('CALL editarSala(?,?,?,?)',[elem.idSala, elem.costo, elem.capacidad, elem.aforo], function(error, result){
         if(error){
           reject(error);
         }else{
@@ -50,10 +50,7 @@ class ControllerSala{
     });
   }
 
-  eliminar(elem){
-    
-  }
-
+  //elem es una lista
   async crearCalendario(elem){
     var dia = new Date(elem.dia);
     var horaInicio = elem.horaInicio;
@@ -118,7 +115,8 @@ class ControllerSala{
     });
   }
 
-  modificarCalendario(elem){
+  //calendario es una lista
+  modificarCalendario(calendario){
     
   }
 
@@ -192,6 +190,11 @@ class ControllerSala{
         }
       });
     });
+  }
+
+  //servicios es una lista
+  crearServiciosDeSala(servicios){
+
   }
 
 }

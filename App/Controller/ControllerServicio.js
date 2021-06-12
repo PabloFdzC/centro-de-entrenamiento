@@ -6,8 +6,9 @@ class ControllerServicio{
   constructor(){}
 
   async agregar(elem){
+    console.log(elem);
     return new Promise(function(resolve, reject){
-      connection.query('CALL CrearServicio(?,?)',[elem.nombreServicio, elem.costoMatricula], function(error, result){
+      connection.query('CALL CrearServicio(?,?)',[elem.nombre, elem.costo], function(error, result){
         if(error){
           reject(error);
         }else{
@@ -23,7 +24,7 @@ class ControllerServicio{
 
   async modificar(elem){
     return new Promise(function(resolve, reject){
-      connection.query('CALL ModificarServicio(?,?)',[elem.nombreServicio, elem.costoMatricula], function(error, result){
+      connection.query('CALL ModificarServicio(?,?)',[elem.nombre, elem.costo], function(error, result){
         if(error){
           reject(error);
         }else{

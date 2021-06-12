@@ -1,7 +1,8 @@
 class Registrarse{
 
   registrarse(info){
-    ajaxCall('/crearCliente', 'POST', info, function(r){
+    let i = Utilidades.convertirAJSON(info);
+    Utilidades.ajaxCall('/crearCliente', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Cuenta creada con éxito");
     }, function(xhr, status, error){

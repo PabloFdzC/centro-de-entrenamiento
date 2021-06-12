@@ -4,12 +4,18 @@ $('body').ready(function(){
   $('#formPagar').submit(function(event){
     event.preventDefault();
     let form = $('#formPagar')[0];
-    let info = new FormData(form);
-    pagos.confirmarPago(info);
+    if(form.checkValidity()){
+      let info = new FormData(form);
+      pagos.confirmarPago(info);
+    }
   });
 
-  var res = pagos.mostrarPendientes();
-  if(res){
-    $('#pagos').append(res);
-  }
+  cargar = async function(){
+    var res = await pagos.mostrarPendientes();
+    if(res){
+      $('#pagos').append(res);
+    }
+  };
+
+  cargar();
 });

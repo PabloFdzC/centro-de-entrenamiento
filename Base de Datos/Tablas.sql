@@ -1,11 +1,13 @@
 
 CREATE SCHEMA sistemaentrenamiento;
-
+SET GLOBAL validate_password_length = 4;
 SET GLOBAL log_bin_trust_function_creators = 1;
 
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1234';
 
 flush privileges;
+
+use sistemaentrenamiento;
 
 DROP TABLE IF EXISTS Clases_en_Jornada;
 DROP TABLE IF EXISTS Jornada;

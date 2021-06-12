@@ -3,7 +3,9 @@ $('body').ready(function(){
   $('#formNuevoAdmin').submit(function(event){
     event.preventDefault();
     let form = $('#formNuevoAdmin')[0];
-    let info = new FormData(form);
-    na.enviarCorreo(info);
+    if(form.checkValidity()){
+      let info = new FormData(form);
+      na.enviarCorreo(info);
+    }
   });
 });

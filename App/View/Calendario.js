@@ -1,7 +1,7 @@
 class Calendario{
   
   mostrarClasesPorMes() {
-    ajaxCall('/mostrarClasesPorMes', 'GET', {}, function(calendario){
+    Utilidades.ajaxCall('/mostrarClasesPorMes', 'GET', {}, function(calendario){
       
     }, function(xhr, status, error){
       console.log(xhr);
@@ -10,7 +10,7 @@ class Calendario{
   }
 
   mostrarListadoReservas(){
-    ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
+    Utilidades.ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
 
     }, function(xhr, status, error){
       console.log(xhr);
@@ -19,7 +19,7 @@ class Calendario{
   }
 
   mostrarClase(){
-    ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
+    Utilidades.ajaxCall('/mostrarReservas', 'GET', {}, function(reservas){
 
     }, function(xhr, status, error){
       console.log(xhr);

@@ -1,7 +1,8 @@
 class CrearEditarClase{
   
   crearClase(info){
-    ajaxCall('/crearClase', 'POST', info, function(r){
+    let i = Utilidades.convertirAJSON(info);
+    Utilidades.ajaxCall('/crearClase', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Clase creada con éxito");
     }, function(xhr, status, error){
@@ -11,7 +12,8 @@ class CrearEditarClase{
   }
 
   modificarClase(info){
-    ajaxCall('/modificarClase', 'POST', info, function(r){
+    let i = Utilidades.convertirAJSON(info);
+    Utilidades.ajaxCall('/modificarClase', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Clase modificada con éxito");
     }, function(xhr, status, error){

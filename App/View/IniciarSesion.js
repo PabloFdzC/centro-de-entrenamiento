@@ -1,7 +1,8 @@
 class IniciarSesion{
   
   iniciarSesion(info){
-    ajaxCall('/iniciarSesion', 'POST', info, function(u){
+    let i = Utilidades.convertirAJSON(info);
+    Utilidades.ajaxCall('/iniciarSesion', 'POST', i, function(u){
       localStorage.setItem("email", u.email);  
       localStorage.setItem("tipo", u.tipo_usuario);
       window.location.href = "/Calendario/"+u.tipo_usuario;

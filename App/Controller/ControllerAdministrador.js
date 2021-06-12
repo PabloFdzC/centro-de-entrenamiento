@@ -22,14 +22,6 @@ class ControllerAdministrador{
     });
   }
 
-  consultar(elem){
-
-  }
-
-  eliminar(elem){
-    
-  }
-
   async modificarContrasenna(elem){
     return new Promise(function(resolve, reject){
       connection.query('CALL modificarContrasennaAdministrador(?,?)',[elem.email, elem.contrasenna], function(error, result){

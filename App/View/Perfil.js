@@ -1,11 +1,12 @@
 class Perfil{
   modificarPerfil(info){
     let tipo = localStorage.getItem('tipo_usuario');
+    let i = Utilidades.convertirAJSON(info);
     if(tipo == "Instructor"){
-      let i = Instructores();
-      i.modificarInstructor(info);
+      let instructores = Instructores();
+      instructores.modificarInstructor(i);
     } else if(tipo == "Cliente"){
-      ajaxCall('/modificarCliente', 'POST', info, function(r){
+      Utilidades.ajaxCall('/modificarCliente', 'POST', i, function(r){
         console.log(r);
         muestraMensaje("Exito", "Datos modificados con éxito");
       }, function(xhr, status, error){
@@ -18,6 +19,7 @@ class Perfil{
   modificarContrasenna(info){
     let tipo = localStorage.getItem('tipo_usuario');
     let ruta = "";
+    let i = Utilidades.convertirAJSON(info);
     if(tipo == "Instructor"){
       ruta = "/modificarContrasennaInstructor"
     } else if(tipo == "Cliente"){
@@ -26,7 +28,7 @@ class Perfil{
       ruta = "/modificarContrasennaAdministrador"
     }
     if(ruta != ""){
-      ajaxCall(ruta, 'POST', info, function(r){
+      Utilidades.ajaxCall(ruta, 'POST', i, function(r){
         console.log(r);
         muestraMensaje("Exito", "Contraseña modificada con éxito");
       }, function(xhr, status, error){

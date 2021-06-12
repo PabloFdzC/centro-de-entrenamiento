@@ -17,15 +17,19 @@ $('body').ready(function(){
   $('#formIniciarSesion').submit(function(event){
     event.preventDefault();
     let form = $('#formIniciarSesion')[0];
-    let info = new FormData(form);
-    ini.iniciarSesion(info);
+    if(form.checkValidity()){
+      let info = new FormData(form);
+      ini.iniciarSesion(info);
+    }
   });
 
   $('#formRegistrarse').submit(function(event){
     event.preventDefault();
     let form = $('#formRegistrarse')[0];
-    let info = new FormData(form);
-    reg.registrarse(info);
+    if(form.checkValidity()){
+      let info = new FormData(form);
+      reg.registrarse(info);
+    }
   });
 
   muestraIniciarSesion();

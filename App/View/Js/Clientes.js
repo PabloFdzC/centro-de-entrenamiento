@@ -1,9 +1,10 @@
 $('body').ready(function(){
   var clientes = new Clientes();
-
-  var res = clientes.verClientes();
-  if(res){
-    $('#clientes').append(res);
+  cargar = async function(){
+    var res = await clientes.verClientes();
+    if(res){
+      $('#clientes').append(res);
+    }
   }
 
 });

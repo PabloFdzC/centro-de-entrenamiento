@@ -4,10 +4,12 @@ $('body').ready(function(){
   var esModificar = false;
   var listaServicios = [];
 
-  var res = servicios.mostrarListadoServicios(true);
-  if(res){
-    $('#annadirServicio').append(res);
-  }
+  cargar = async function(){
+    var res = await servicios.mostrarListadoServicios(true);
+    if(res){
+      $('#annadirServicio').append(res);
+    }
+  };
 
   insertaServicioHtml = function(val){
     if(val != ""){
@@ -19,14 +21,14 @@ $('body').ready(function(){
     }
   }
 
-  $('body').on('click', '.activaModal', function(event){
+  $('body').on('click', '.activaModal', async function(event){
     listaServicios = [];
     var val = $(this).attr('value');
     if(val == "CREAR"){
       esModificar = false;
     } else {
       esModificar = true;
-      let instr = instructores.mostrarInstructor(val);
+      let instr = await instructores.mostrarInstructor(val);
       $('#primerNombre').val(instr.getPrimerNombre());
       $('#segundoNombre').val(instr.getSegundoNombre());
       $('#primerApellido').val(instr.getPrimerApellido());
@@ -35,13 +37,14 @@ $('body').ready(function(){
       $('#fechaNacimiento').val(instr.getFechaNacimiento());
       $('#telefono').val(instr.getTelefono());
       $('#email').val(instr.getEmail());
-      //servicios
+      
     }
   });
 
-  $('body').on('click', '.eliminarInstructor', function(event){
+  $('body').on('click', '.eliminarInstructor', async function(event){
     let val = $(this).attr('value');
-    if(instructores.eliminarInstructor(val)){
+    let r = await instructores.eliminarInstructor(val);
+    if(r){
       const card = $(this).parent().parent().parent().parent().parent().parent();
       card.remove();
     }
@@ -50,11 +53,17 @@ $('body').ready(function(){
   $('#formInstructor').submit(function(event){
     event.preventDefault();
     let form = $('#formInstructor')[0];
-    let info = new FormData(form);
-    if(esModificar)
-      instructores.modificarInstructor(info);
-    else
-      instructores.crearInstructor(info);
+    let pasa = listaServicios.length > 0;
+    if(!pasa){
+      muestraMensaje("Fallo", "Debe haber por lo menos 1 servicio");
+    }
+    if(form.checkValidity() && pasa){
+      let info = new FormData(form);
+      if(esModificar)
+        instructores.modificarInstructor(info, listaServicios);
+      else
+        instructores.crearInstructor(info, listaServicios);
+    }
   });
 
   $('#formInstructor').on('click', '.servicio', function(event){
@@ -71,4 +80,5 @@ $('body').ready(function(){
     insertaServicioHtml(val);
   });
 
+  cargar();
 });

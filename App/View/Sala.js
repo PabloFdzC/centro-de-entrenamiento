@@ -2,8 +2,11 @@ class Sala{
 
   constructor(){}
 
-  crearSala(info){
-    ajaxCall('/crearSala', 'POST', info, function(r){
+  crearSala(info, listaServicios, calendario){
+    let i = Utilidades.convertirAJSON(info);
+    i.servicios = listaServicios;
+    i.calendario = calendario;
+    Utilidades.ajaxCall('/crearSala', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Sala creada con éxito");
     }, function(xhr, status, error){
@@ -12,8 +15,11 @@ class Sala{
     });
   }
 
-  modificarSala(info){
-    ajaxCall('/modificarSala', 'POST', info, function(r){
+  modificarSala(info, listaServicios, calendario){
+    let i = Utilidades.convertirAJSON(info);
+    i.servicios = listaServicios;
+    i.calendario = calendario;
+    Utilidades.ajaxCall('/modificarSala', 'POST', i, function(r){
       console.log(r);
       muestraMensaje("Exito", "Sala modificada con éxito");
     }, function(xhr, status, error){
@@ -23,7 +29,7 @@ class Sala{
   }
 
   mostrarSala(){
-    ajaxCall('/mostrarSala', 'GET', {}, function(html){
+    Utilidades.ajaxCall('/mostrarSala', 'GET', {}, function(html){
       $('#sala').append(html);
     }, function(xhr, status, error){
       console.log(xhr);
@@ -33,7 +39,7 @@ class Sala{
   }
 
   mostrarSalas(){
-    /*ajaxCall('/mostrarSalas', 'GET', {}, function(html){
+    /*Utilidades.ajaxCall('/mostrarSalas', 'GET', {}, function(html){
       $('#sala').append(html);
     }, function(xhr, status, error){
       console.log(xhr);

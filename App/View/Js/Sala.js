@@ -3,11 +3,14 @@ $('body').ready(function(){
   var servicios = new Servicios();
   var esModificar = false;
   var listaServicios = [];
+  var calendario = [];
 
-  var res = servicios.mostrarListadoServicios(true);
-  if(res){
-    $('#annadirServicio').append(res);
-  }
+  cargar = async function(){
+    var res = await servicios.mostrarListadoServicios(true);
+    if(res){
+      $('#annadirServicio').append(res);
+    }
+  };
 
   insertaServicioHtml = function(val){
     if(val != ""){
@@ -21,6 +24,7 @@ $('body').ready(function(){
 
   $('body').on('click', '.activaModal', function(event){
     listaServicios = [];
+    calendario = [];
     if($(this).attr('value') == "CREAR"){
       esModificar = false;
     } else {
@@ -31,11 +35,24 @@ $('body').ready(function(){
   $('#formSala').submit(function(event){
     event.preventDefault();
     let form = $('#formSala')[0];
-    let info = new FormData(form);
-    if(esModificar)
-      sala.modificarSala(info);
-    else
-      sala.crearSala(info);
+    let pasa = listaServicios.length > 0;
+    let pasa2 = calendario.length > 0;
+    let errorM = "";
+    if(!pasa){
+      errorM += "Se necesita por lo menos 1 servicio.";
+    }
+    if(!pasa2){
+      errorM += "Se necesita por lo menos 1 fecha en el calendario.";
+    }
+    if(form.checkValidity() && pasa && pasa2){
+      let info = new FormData(form);
+      if(esModificar)
+        sala.modificarSala(info, listaServicios, calendario);
+      else
+        sala.crearSala(info, listaServicios, calendario);
+    } else {
+      muestraMensaje("Fallo", errorM);
+    }
   });
 
   var res = sala.mostrarSalas();
@@ -57,4 +74,5 @@ $('body').ready(function(){
     insertaServicioHtml(val);
   });
 
+  cargar();
 });

@@ -1,18 +1,21 @@
 $('body').ready(function(){
   var servicios = new Servicios();
   var esModificar = false;
-  $('#costo').attr({'disabled': 'disabled'});
+  var servicioActual = "";
+  var modal = new bootstrap.Modal(document.getElementById('modalServicio'));
+  $('#costo').prop('disabled', true);
 
-  cargar = function(){
-    var res = servicios.mostrarListadoServicios(false);
+  cargar = async function(){
+    var res = await servicios.mostrarListadoServicios(false);
     if(res){
       $('#servicios').empty();
       $('#servicios').append(res);
     }
-  }
+  };
 
   $('body').on('click', '.activaModal', function(event){
-    if($(this).attr('value') == "CREAR"){
+    servicioActual = $(this).attr('value');
+    if(servicioActual == "CREAR"){
       esModificar = false;
     } else {
       esModificar = true;
@@ -21,20 +24,26 @@ $('body').ready(function(){
 
   $('#costoServicio').change(function(){
     if(this.checked) {
-      $('#costo').attr({'disabled': 'disabled'});
+      $('#costo').prop('disabled', true);
     } else {
-      $('#costo').attr({'disabled': 'disabled'});
+      $('#costo').removeAttr('disabled');
     }
   });
   
   $('#formServicio').submit(function(event){
     event.preventDefault();
     let form = $('#formServicio')[0];
-    let info = new FormData(form);
-    if(esModificar)
-      servicios.modificarServicio(info);
-    else
-      servicios.crearServicio(info);
+    if(form.checkValidity()){
+      let info = new FormData(form);
+      //console.log(Array.from(info));
+      if(esModificar){
+        servicios.modificarServicio(info);
+      }
+      else {
+        servicios.crearServicio(info);
+      }
+      modal.hide();
+    }
   });
 
   cargar();

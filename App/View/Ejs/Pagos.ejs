@@ -19,14 +19,17 @@
       <div class="modal-content background">
         <div class="modal-body d-grid gap-4">
           <h3 class="text-center" id="pagarModal">Pagar</h3>
-          <form class="d-grid col-9 mx-auto gap-2" id="formPagar">
+          <form class="d-grid col-9 mx-auto gap-2 needs-validation" novalidate id="formPagar">
             <div>
               <label for="formaDePago" class="form-label">Forma de pago</label>
-              <select name="formaDePago" id="formaDePago" class="form-control" aria-describedby="formaDePago">
+              <select name="formaDePago" id="formaDePago" class="form-control" aria-describedby="formaDePago" required>
                 <option value="" disabled selected hidden>Forma de pago</option>
                 <option value="SINPE">SINPE</option>
                 <option value="EFECTIVO">Efectivo</option>
               </select>
+              <div class="invalid-feedback">
+                El campo no puede estar vacío.
+              </div>
             </div>
             <div class="row justify-content-end">
               <div class="col-3">
@@ -44,7 +47,7 @@
   <%- include('Mensaje.ejs'); %>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="../usar-ajax.js"></script>
+  <script src="../Utilidades.js"></script>
   <script src="../Js/Mensaje.js"></script>
   <script src="../Pagos.js"></script>
   <script src="../Js/Pagos.js"></script>
