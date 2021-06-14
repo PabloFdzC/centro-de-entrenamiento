@@ -1,4 +1,5 @@
-const connection = require("./ConexionBaseDatos.js");
+const ConexionSng = require("./ConexionBaseDatosSng.js");
+const ConexionServicios = ConexionSng.getConexionServicios();
 Servicio = require("./../Model/Servicio.js");
 
 class ControllerServicio{
@@ -6,15 +7,12 @@ class ControllerServicio{
   constructor(){}
 
   async agregar(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL CrearServicio(?,?)',[elem.nombre, elem.costo], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionServicios.agregar(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
   consultar(elem){
@@ -22,47 +20,38 @@ class ControllerServicio{
   }
 
   async modificar(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL ModificarServicio(?,?)',[elem.nombre, elem.costo], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionServicios.modificar(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
   async eliminar(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL EliminarServicio(?)',[elem.id], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionServicios.eliminar(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
   async listadoServicios(){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL GetServicios()',[], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          var listaserviciosresult = result[0];
-          var i;
-          var listaServicios = [];
-          for(i = 0; i < listaserviciosresult.length; i++){
-            var servicioresult = listaserviciosresult[i];
-            var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
-            listaServicios.push(servicio);
-          }
-          resolve(listaServicios);
-        }
-      });
-    });
+    try{
+      var result = await ConexionServicios.listadoServicios();
+      var listaserviciosresult = result[0];
+      var i;
+      var listaServicios = [];
+      for(i = 0; i < listaserviciosresult.length; i++){
+        var servicioresult = listaserviciosresult[i];
+        var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+        listaServicios.push(servicio);
+      }
+      return listaServicios;
+    }catch(err){
+      throw err;
+    }
   }
 
 }

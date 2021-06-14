@@ -1,24 +1,23 @@
-const connection = require("./ConexionBaseDatos.js");
+const ConexionSng = require("./ConexionBaseDatosSng.js");
+const ConexionUsuario = ConexionSng.getConexionUsuario();
 class ControllerPersona{
   
   constructor(){}
 
   async iniciarSesion(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL LogIn(?,?)',[elem.email, elem.contrasenna], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          var usuarioresult = result[0][0];
-          if(usuarioresult.email && usuarioresult.tipo_usuario){
-            var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
-            resolve(usuario);
-          }
-          else
-            reject({code: "Email o contraseña incorrecta"});
-        }
-      });
-    });
+    try{
+      var result = await ConexionUsuario.iniciarSesion(elem);
+      var usuarioresult = result[0][0];
+      if(usuarioresult.email && usuarioresult.tipo_usuario){
+        var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
+        return usuario;
+      }
+      else{
+        throw {code: "Email o contraseña incorrecta"}
+      }
+    }catch(err){
+      throw err;
+    }
   }
   
 }

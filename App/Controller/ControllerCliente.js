@@ -1,4 +1,5 @@
-const connection = require("./ConexionBaseDatos.js");
+const ConexionSng = require("./ConexionBaseDatosSng.js");
+const ConexionCliente = ConexionSng.getConexionCliente();
 Cliente = require("./../Model/Cliente.js");
 
 class ControllerCliente{
@@ -6,79 +7,60 @@ class ControllerCliente{
   constructor(){}
 
   async agregar(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL RegistroCliente(?,?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionCliente.agregar(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
   consultar(email){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL GetCliente(?)',[email], async function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          var clienteresult = result[0][0];
-          var cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido,
-            clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
-          resolve(cliente);
-        }
-      });
-    });
+      try{
+        var result = await ConexionCliente.consultar(email);
+        var clienteresult = result[0][0];
+        var cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido,
+          clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
+        return cliente;
+      }catch(err){
+        throw err;
+      }
   }
 
   async modificar(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL modificarCliente(?,?,?,?,?,?,?,?)',[elem.email, elem.identificacion, elem.primerNombre, elem.segundoNombre, elem.primerApellido, elem.segundoApellido, elem.fechaNacimiento, elem.contrasenna, elem.telefono], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionCliente.modificar(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
   mostrarClientes(){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL GetClientes()',[], async function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          var listaclientesresult = result[0];
-          var i;
-          var listaClientes = [];
-          for(i = 0; i < listaclientesresult.length; i++){
-            var clienteresult = listaclientesresult[i];
-            var cliente = new Cliente(clienteresult.primerNombre, clienteresult.segundoNombre, clienteresult.primerApellido, clienteresult.segundoApellido,
-              clienteresult.fechaNacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
-            listaClientes.push(cliente);
-          }
-          resolve(listaClientes);
-        }
-      });
-    });
-  }
-  
-  mostrarClientesEnClase(elem){
-
+    try{
+      var result = await ConexionCliente.mostrarClientes();
+      var listaclientesresult = result[0];
+      var i;
+      var listaClientes = [];
+      for(i = 0; i < listaclientesresult.length; i++){
+        var clienteresult = listaclientesresult[i];
+        var cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido,
+          clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
+        listaClientes.push(cliente);
+      }
+      return listaClientes;
+    }catch(err){
+      throw err;
+    }
   }
 
   async modificarContrasenna(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL modificarContrasennaCliente(?,?)',[elem.email, elem.contrasenna], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionCliente.modificarContrasenna(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
 }

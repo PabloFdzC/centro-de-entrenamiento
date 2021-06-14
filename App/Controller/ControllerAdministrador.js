@@ -1,4 +1,5 @@
-const connection = require("./ConexionBaseDatos.js");
+const ConexionSng = require("./ConexionBaseDatosSng.js");
+const ConexionAdministrador = ConexionSng.getConexionAdministrador();
 class ControllerAdministrador{
   
   constructor(){}
@@ -11,27 +12,21 @@ class ControllerAdministrador{
     for ( var i = 0; i < 10; i++ ) {
       password += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    return new Promise(function(resolve, reject){
-      connection.query('CALL RegistroAdministrador(?,?)',[elem.email, password], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(password);
-        }
-      });
-    });
+    try{
+      var result = await ConexionAdministrador.agregar(elem, password);
+      return password;
+    }catch(err){
+      throw err;
+    }
   }
 
   async modificarContrasenna(elem){
-    return new Promise(function(resolve, reject){
-      connection.query('CALL modificarContrasennaAdministrador(?,?)',[elem.email, elem.contrasenna], function(error, result){
-        if(error){
-          reject(error);
-        }else{
-          resolve(result);
-        }
-      });
-    });
+    try{
+      var result = await ConexionAdministrador.modificarContrasenna(elem);
+      return result;
+    }catch(err){
+      throw err;
+    }
   }
 
 }
