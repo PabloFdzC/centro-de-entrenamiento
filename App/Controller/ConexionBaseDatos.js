@@ -1,21 +1,40 @@
 const mysql = require('mysql');
 
-const parametrosConexion = {
+class ConexionBaseDatos{
+  #parametrosConexion = {
     host: 'localhost',
     user: 'root',
     password: '1234',
     database: 'sistemaentrenamiento',
     dateStrings: true
-};
+  };
 
-const connection = mysql.createConnection(parametrosConexion);
-
-connection.connect(function(error){
-    if(!!error){
+  #conexion = null;
+  
+  constructor(){
+    this.#conexion = mysql.createConnection(this.#parametrosConexion);
+  
+    this.#conexion.connect(function(error){
+      if(!!error){
         console.log('Error');
-    } else {
+      } else {
         console.log('Connected');
-    }
-});
+      }
+    });
+  }
 
-module.exports = connection;
+  async query(s, params){
+    return new Promise(function(resolve, reject){
+      this.#conexion.query(s, params, function(error, result){
+        if(error){
+          reject(error);
+        }else{
+          resolve(result);
+        }
+      });
+    });
+  }
+  
+}
+
+module.exports = ConexionBaseDatos;
