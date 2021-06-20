@@ -1,25 +1,21 @@
-const ConexionSng = require("./ConexionBaseDatosSng.js");
-const ConexionUsuario = ConexionSng.getConexionUsuario();
-class ControllerPersona{
+const TransaccionUsuario = require("./TransaccionUsuario.js");
+class ControllerUsuario{
+  #transaccionUsuario = null;
   
-  constructor(){}
+  constructor(){
+    this.#transaccionUsuario = new TransaccionUsuario();
+  }
 
   async iniciarSesion(elem){
-    try{
-      var result = await ConexionUsuario.iniciarSesion(elem);
-      var usuarioresult = result[0][0];
-      if(usuarioresult.email && usuarioresult.tipo_usuario){
-        var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
-        return usuario;
-      }
-      else{
-        throw {code: "Email o contraseña incorrecta"}
-      }
-    }catch(err){
-      throw err;
+    var usuarioresult = await this.#transaccionUsuario.iniciarSesion(elem);
+    if(usuarioresult.email && usuarioresult.tipo_usuario){
+      var usuario = {email: usuarioresult.email, tipo_usuario: usuarioresult.tipo_usuario};
+      return usuario;
+    } else {
+      throw {code: "ER_LOGIN"};
     }
   }
   
 }
 
-module.exports = ControllerPersona;
+module.exports = ControllerUsuario;

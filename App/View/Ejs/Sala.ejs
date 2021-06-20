@@ -117,10 +117,26 @@
                 <select name="horaInicio" id="horaInicio" class="form-control" aria-describedby="Hora Inicio" required>
                   <% for(let i = 1; i <= 23; i++) { %>
                     <% for(let j = 0; j < 59; j+=5) { %>
-                      <% if(j < 10) { %>
-                        <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                      <% if(i > 12) { %>
+                        <% if(j < 10) { %>
+                          <option value="<%=i%>:<%=j%>"><%=i-12%>:0<%=j%>pm</option>
+                        <% } else { %>
+                          <option value="<%=i%>:<%=j%>"><%=i-12%>:<%=j%>pm</option>
+                        <% } %>
                       <% } else { %>
-                        <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                        <% if(i == 12) { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>md</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>md</option>
+                          <% } %>
+                        <% } else { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>am</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>am</option>
+                          <% } %>
+                        <% } %>
                       <% } %>    
                     <% } %>
                   <% } %>
@@ -134,10 +150,26 @@
                 <select name="horaFinal" id="horaFinal" class="form-control" aria-describedby="Hora Final" required>
                   <% for(let i = 1; i <= 23; i++) { %>
                     <% for(let j = 0; j < 59; j+=5) { %>
-                      <% if(j < 10) { %>
-                        <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                      <% if(i > 12) { %>
+                        <% if(j < 10) { %>
+                          <option value="<%=i%>:<%=j%>"><%=i-12%>:0<%=j%>pm</option>
+                        <% } else { %>
+                          <option value="<%=i%>:<%=j%>"><%=i-12%>:<%=j%>pm</option>
+                        <% } %>
                       <% } else { %>
-                        <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                        <% if(i == 12) { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>md</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>md</option>
+                          <% } %>
+                        <% } else { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>am</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>am</option>
+                          <% } %>
+                        <% } %>
                       <% } %>    
                     <% } %>
                   <% } %>
@@ -174,6 +206,7 @@
   <%- include('Mensaje.ejs'); %>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="../Js/Horas.js"></script>
   <script src="../Utilidades.js"></script>
   <script src="../Js/Mensaje.js"></script>
   <script src="../Servicios.js"></script>

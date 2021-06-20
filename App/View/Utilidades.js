@@ -1,26 +1,36 @@
 class Utilidades{
-  static ajaxCall(url, type, data, successFunc, errorFunc){
+  static ajaxCall(url, tipo, datos, fExito, fError){
     $.ajax({
       url: url,
-      type: type,
-      data: data,
+      type: tipo,
+      data: datos,
       contentType: "application/json; charset=utf-8",
-      success: successFunc,
-      error: errorFunc,
-      complete: function(response, textStatus) {
-        console.log(textStatus);
-        console.log(response);
-      }
+      success: fExito,
+      error: fError
     });
   }
 
-  static convertirAJSON(data){
-    console.log(Array.from(data));
+  static convertirAJSON(datos){
+    //console.log(Array.from(datos));
     try{
-      return JSON.stringify(Object.fromEntries(data));
+      return JSON.stringify(Object.fromEntries(datos));
     } catch(e){
       console.log("No se pudo convertir a JSON");
       return {};
+    }
+  }
+
+  static objetoAParametrosGet(datos){
+    let s = "?";
+    for(let p in datos){
+      if(datos[p]){
+        s += p + "=" + datos[p] + "&";
+      }
+    }
+    if(s.length === 1){
+      return "";
+    } else {
+      return s.slice(0, -1);
     }
   }
 

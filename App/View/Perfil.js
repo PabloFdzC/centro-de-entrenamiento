@@ -7,10 +7,8 @@ class Perfil{
       instructores.modificarInstructor(i);
     } else if(tipo == "Cliente"){
       Utilidades.ajaxCall('/modificarCliente', 'POST', i, function(r){
-        console.log(r);
         muestraMensaje("Exito", "Datos modificados con éxito");
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
       });
     }
@@ -29,10 +27,8 @@ class Perfil{
     }
     if(ruta != ""){
       Utilidades.ajaxCall(ruta, 'POST', i, function(r){
-        console.log(r);
         muestraMensaje("Exito", "Contraseña modificada con éxito");
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
       });
     }

@@ -1,8 +1,12 @@
-const ConexionSng = require("./ConexionBaseDatosSng.js");
-const ConexionAdministrador = ConexionSng.getConexionAdministrador();
+const TransaccionAdministrador = require('./TransaccionAdministrador.js');
+
 class ControllerAdministrador{
+
+  #transaccionAdministrador = null;
   
-  constructor(){}
+  constructor(){
+    this.#transaccionAdministrador = new TransaccionAdministrador();
+  }
 
   async agregar(elem){
     var password = '';
@@ -12,21 +16,20 @@ class ControllerAdministrador{
     for ( var i = 0; i < 10; i++ ) {
       password += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    try{
-      var result = await ConexionAdministrador.agregar(elem, password);
-      return password;
-    }catch(err){
-      throw err;
-    }
+
+    elem.password = password;
+    await this.#transaccionAdministrador.agregar(elem);
+    return password;
   }
 
   async modificarContrasenna(elem){
-    try{
-      var result = await ConexionAdministrador.modificarContrasenna(elem);
-      return result;
-    }catch(err){
-      throw err;
-    }
+    var result = await this.#transaccionAdministrador.modificarContrasenna(elem);
+    return result;
+  }
+
+  async contar(){
+    var r = await this.#transaccionAdministrador.contar();
+    return r;
   }
 
 }

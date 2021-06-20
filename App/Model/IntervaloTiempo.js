@@ -1,11 +1,12 @@
 class IntervaloTiempo {
-  
+  #id;
   #horaInicio;
   #minutoInicio;
   #horaFinal;
   #minutoFinal;
 
-  constructor(horaInicio, minutoInicio, horaFinal, minutoFinal){
+  constructor(id,horaInicio, minutoInicio, horaFinal, minutoFinal){
+    this.#id = id;
     this.#horaInicio = horaInicio;
     this.#minutoInicio = minutoInicio;
     this.#horaFinal = horaFinal;
@@ -52,10 +53,21 @@ class IntervaloTiempo {
     } else {
       mi += this.getMinutoInicio();
     }
-    if(this.getMinutoInicio() < 10){
+    if(this.getHoraInicio() < 10){
       hi = "0"+this.getHoraInicio();
     } else {
-      hi += this.getHoraInicio();
+      if(this.getHoraInicio() > 12){
+        hi += this.getHoraInicio() - 12;
+      } else {
+        hi += this.getHoraInicio();
+      }
+    }
+    if(this.getHoraInicio() > 12){
+      return hi+":"+mi+"pm";
+    } else if(this.getHoraInicio() == 12){
+      return hi+":"+mi+"md";
+    } else {
+      return hi+":"+mi+"am";
     }
   }
 
@@ -67,11 +79,35 @@ class IntervaloTiempo {
     } else {
       mi += this.getMinutoFinal();
     }
-    if(this.getMinutoFinal() < 10){
+    if(this.getHoraFinal() < 10){
       hi = "0"+this.getHoraFinal();
     } else {
-      hi += this.getHoraFinal();
+      if(this.getHoraFinal() > 12){
+        hi += this.getHoraFinal() - 12;
+      } else {
+        hi += this.getHoraFinal();
+      }
     }
+    if(this.getHoraFinal() > 12){
+      return hi+":"+mi+"pm";
+    } else if(this.getHoraFinal() == 12){
+      return hi+":"+mi+"md";
+    } else {
+      return hi+":"+mi+"am";
+    }
+  }
+
+  convertirAVista(){
+    var obj = {
+      id:this.#id,
+      horaInicio:this.#horaInicio,
+      minutoInicio:this.#minutoInicio,
+      horaFinal:this.#horaFinal,
+      minutoFinal:this.#minutoFinal,
+      horaMinutosInicio:this.getHoraMinutosInicio(),
+      horaMinutosFinal:this.getHoraMinutosFinal()
+    }
+    return obj;
   }
   
 }

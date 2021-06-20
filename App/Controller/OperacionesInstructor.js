@@ -1,7 +1,8 @@
 const { Router} = require('express');
 const ControllersSng = require('./ControllersSng.js');
 const OperacionesInstructor = Router({caseSensitive:true});
-const ctrlInstr = ControllersSng.getControllerInstructor();
+const ctrlSng = ControllersSng.getInstance();
+const ctrlInstr = ctrlSng.getControllerInstructor();
 
 OperacionesInstructor.post('/crearInstructor', async function(req, res){
   try{
@@ -13,6 +14,20 @@ OperacionesInstructor.post('/crearInstructor', async function(req, res){
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
       res.send("Ya existe un instructor con ese correo");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesInstructor.get('/mostrarInstructor', async function(req, res){
+  try{
+    var instructor = await ctrlInstr.consultar(req.query.email);
+    res.send(instructor.convertirAVista());
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
     else
       res.send("Algo salió mal");
   }
@@ -33,42 +48,28 @@ OperacionesInstructor.post('/modificarInstructor', async function(req, res){
   }
 });
 
-OperacionesInstructor.get('/mostrarInstructor/:email', async function(req, res){
-  try{
-    var instructor = await ctrlInstr.consultar(req.params.email);
-    res.send(instructor.convertirAJSONString());
-  }catch(err){
-    console.log(err);
-    res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
-  }
-});
-
-OperacionesInstructor.get('/mostrarInstructores/:esLista', async function(req, res){
-  try{
-    var lista = await ctrlInstr.mostrarInstructores();
-    if(req.params.esLista === "true"){
-      res.render('InstructoresLista.ejs', {lista});
-    } else {
-      res.render('InstructoresCards.ejs', {lista});
-    }
-  }catch(err){
-    console.log(err);
-    res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
-  }
-});
-
 OperacionesInstructor.post('/eliminarInstructor', async function(req, res){
   try{
     var r = await ctrlInstr.eliminar(req.body);
     res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    if(err.code == 'ER_DUP_ENTRY')
+      res.send("No se pudo crear el administrador");
+    else
+      res.send("Algo salió mal");
+  }
+});
+
+OperacionesInstructor.get('/mostrarInstructores', async function(req, res){
+  try{
+    var lista = await ctrlInstr.mostrarTodos();
+    if(req.query.esLista === "true"){
+      res.render('InstructoresLista.ejs', {lista});
+    } else {
+      res.render('InstructoresCards.ejs', {lista});
+    }
   }catch(err){
     console.log(err);
     res.status(400);

@@ -1,25 +1,23 @@
 class Clientes{
 
   async verClientes(){
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
       Utilidades.ajaxCall('/mostrarClientes', 'GET', {}, function(html){
         resolve(html);
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
+        reject(xhr);
       });
     });
   }
 
   async mostrarCliente(email){
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarCliente/'+email, 'GET', {}, function(c){
+    return new Promise(function(resolve, reject) {
+      Utilidades.ajaxCall('/mostrarCliente?email='+email, 'GET', {}, function(c){
         resolve(c);
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
+        reject(xhr);
       });
     });
   }

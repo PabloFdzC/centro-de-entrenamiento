@@ -1,5 +1,6 @@
 $('body').ready(function(){
   var modalCc = new bootstrap.Modal(document.getElementById('modalCrearCalendario'));
+  var modalCs = new bootstrap.Modal(document.getElementById('modalCrearSala'));
   var sala = new Sala();
   var servicios = new Servicios();
   var esModificar = false;
@@ -19,18 +20,18 @@ $('body').ready(function(){
     "Domingo",
     );
 
-  cargar = async function(){
+  const cargar = async function(){
     var res = await servicios.mostrarListadoServicios(true);
     if(res){
       $('#annadirServicio').append(res);
     }
   };
 
-  insertaServicioHtml = function(val){
+  const insertaServicioHtml = function(val){
     if(val != ""){
       if(esModificar){
         listaServiciosA.push(val);
-      }else{ 
+      }else{
         listaServicios.push(val);
       }
       $('#serviciosEscogidos').append(`
@@ -38,7 +39,7 @@ $('body').ready(function(){
         `+val+`
       </div>`);
     }
-  }
+  };
 
   $('body').on('click', '.activaModal', function(event){
     listaServicios = [];
@@ -54,7 +55,7 @@ $('body').ready(function(){
     }
   });
   
-  $('#formSala').submit(function(event){
+  $('#formSala').submit(async function(event){
     event.preventDefault();
     let form = $('#formSala')[0];
     let pasa = listaServicios.length > 0;
@@ -68,12 +69,18 @@ $('body').ready(function(){
     }
     if(form.checkValidity() && pasa && pasa2){
       let info = new FormData(form);
-      if(esModificar){
-        sala.modificarSala(info, listaServiciosE, listaServiciosA, calendarioE, calendarioA);
-      }else{
-        sala.crearSala(info, listaServicios, calendario);
+      let r;
+      try{
+        if(esModificar){
+          r = await sala.modificarSala(info, listaServiciosE, listaServiciosA, calendarioE, calendarioA);
+        }else{
+          r = await sala.crearSala(info, listaServicios, calendario);
+        }
+        cargarSalas();
+        modalCs.hide();
+      }catch(err){
+        
       }
-      cargarSalas();
     } else {
       muestraMensaje("Fallo", errorM);
     }
@@ -87,7 +94,7 @@ $('body').ready(function(){
     }
   };
 
-  $('#formSala').on('click', '.servicio', function(event){
+  $('#formSala').on('click', '.servicio', function(){
     let val = $(this).attr('title');
     if(esModificar){
       listaServiciosE.push(val);
@@ -129,14 +136,8 @@ $('body').ready(function(){
     if(form.checkValidity()){
       let ultimo;
       let info = new FormData(form);
-      let s = info.get("horaInicio").split(":");
-      info.delete("horaInicio");
-      info.set("horaInicio", s[0]);
-      info.set("minutoInicio", s[1]);
-      s = info.get("horaFinal").split(":");
-      info.delete("horaFinal");
-      info.set("horaFinal", s[0]);
-      info.set("minutoFinal", s[1]);
+      info = separarHoraForm(info, "horaInicio", "minutoInicio");
+      info = separarHoraForm(info, "horaFinal", "minutoFinal");
       if(esModificar){
         ultimo = calendarioA.length;
         calendarioA.push(Utilidades.convertirAJSON(info));
@@ -177,7 +178,6 @@ $('body').ready(function(){
     $('#horaInicio').val("");
     $('#horaFinal').val("");
     $('#repeticion').val("");
-
   });
 
   cargar();

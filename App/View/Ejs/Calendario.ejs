@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
       <button class="btn botonesCalendario" id="mesAnterior"><i class="fas fa-arrow-left"></i></button>
       <div class="card text-center mx-auto my-auto background calendario">
-        <div class="card-body">
+        <div class="card-body" style="padding: 0.5rem 0.5rem;">
           <div class="row justify-content-end">
             <div class="col-8">
               <h5 class="card-title" id="mesAnno">Abril 2021</h5>
@@ -27,45 +27,21 @@
         <div class="modal-content background">
           <div class="modal-body d-grid gap-4">
             <h3 class="text-center" id="verDiaModal">19 de abril 2021</h3>
-            <div class="d-grid col-9 mx-auto gap-2">
-              <a class="linkDatosClase" data-bs-toggle="collapse" href="#datosClase1" role="button" aria-expanded="false" aria-controls="datosClase1">
-                <div class="d-flex justify-content-between">
-                  <div class="col-6">
-                    <div class="row justify-content-begining">
-                      Yoga - Publicada 
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="row justify-content-end">
-                        08:00 - 09:00
-                    </div>
-                  </div>
-                </div>
-              </a>
-              <div class="collapse" id="datosClase1">
-                <div class="card card-body" style="background-color: #383D3E; border: transparent;">
-                  <div class="row">
-                    <div class="col-9">
-                      - Sonia Álvarez Matarrita <br>
-                      - Carlos Esteban Villegas Gómez
-                    </div>
-                    <div class="col-3">
-                      <button class="btn btn-tertiary activaModal">Editar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row justify-content-end">
-                <div class="col-3">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
-                </div>
+            <div id="infoDia">
+
+            </div>
+            <div class="row justify-content-end">
+              <div class="col-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <% if(tipo === "Administrador" || tipo === "Instructor"){ %>
+    <% if(tipo === "Administrador" || tipo === "Instructor"){ 
+      let d = new Date();
+      %>
     <div class="modal fade" id="modalClase" tabindex="-1" aria-labelledby="crearEditarModal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content background">
@@ -73,30 +49,38 @@
             <h3 class="text-center" id="crearEditarModal">Crear clase</h3>
             <form class="d-grid col-9 mx-auto gap-2 needs-validation" novalidate id="formClase">
               <div>
-                <label for="capacidad" class="form-label">Capacidad</label>
-                <input type="text" class="form-control" id="capacidad" name="" aria-describedby="Capacidad Clase" required>
+                <label for="dia" class="form-label">Día</label>
+                <input type="date" class="form-control" id="dia" name="dia" aria-describedby="día" required>
                 <div class="invalid-feedback">
                   El campo no puede estar vacío.
                 </div>
               </div>
               <div class="row">
-                <div class="col-4">
-                  <label for="dia" class="form-label">Día</label>
-                  <input type="date" class="form-control" id="dia" name="" aria-describedby="día" required>
-                  <div class="invalid-feedback">
-                    El campo no puede estar vacío.
-                  </div>
-                </div>
-                <div class="col-4">
+                <div class="col-6">
                   <label for="horaInicio" class="form-label">Hora inicio</label>
                   <select name="horaInicio" id="horaInicio" class="form-control" aria-describedby="Hora Inicio" required>
-                    <option value="" disabled selected hidden>Hora inicio</option>
                     <% for(let i = 1; i <= 23; i++) { %>
                       <% for(let j = 0; j < 59; j+=5) { %>
-                        <% if(j < 10) { %>
-                          <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                        <% if(i > 12) { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i-12%>:0<%=j%>pm</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i-12%>:<%=j%>pm</option>
+                          <% } %>
                         <% } else { %>
-                          <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                          <% if(i == 12) { %>
+                            <% if(j < 10) { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>md</option>
+                            <% } else { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>md</option>
+                            <% } %>
+                          <% } else { %>
+                            <% if(j < 10) { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>am</option>
+                            <% } else { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>am</option>
+                            <% } %>
+                          <% } %>
                         <% } %>    
                       <% } %>
                     <% } %>
@@ -105,16 +89,31 @@
                     El campo no puede estar vacío.
                   </div>
                 </div>
-                <div class="col-4">
+                <div class="col-6">
                   <label for="horaFinal" class="form-label">Hora final</label>
                   <select name="horaFinal" id="horaFinal" class="form-control" aria-describedby="Hora Final" required>
-                    <option value="" disabled selected hidden>Hora final</option>
                     <% for(let i = 1; i <= 23; i++) { %>
                       <% for(let j = 0; j < 59; j+=5) { %>
-                        <% if(j < 10) { %>
-                          <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%></option>
+                        <% if(i > 12) { %>
+                          <% if(j < 10) { %>
+                            <option value="<%=i%>:<%=j%>"><%=i-12%>:0<%=j%>pm</option>
+                          <% } else { %>
+                            <option value="<%=i%>:<%=j%>"><%=i-12%>:<%=j%>pm</option>
+                          <% } %>
                         <% } else { %>
-                          <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%></option>
+                          <% if(i == 12) { %>
+                            <% if(j < 10) { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>md</option>
+                            <% } else { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>md</option>
+                            <% } %>
+                          <% } else { %>
+                            <% if(j < 10) { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:0<%=j%>am</option>
+                            <% } else { %>
+                              <option value="<%=i%>:<%=j%>"><%=i%>:<%=j%>am</option>
+                            <% } %>
+                          <% } %>
                         <% } %>    
                       <% } %>
                     <% } %>
@@ -124,20 +123,16 @@
                   </div>
                 </div>
               </div>
-              <div>
-                <label for="servicio" class="form-label">Servicio</label>
-                <select name="servicio" id="servicio" class="form-control" aria-describedby="Servicio" required>
-                  <option value="" disabled selected hidden>Servicio</option>
-                </select>
-                <div class="invalid-feedback">
-                  El campo no puede estar vacío.
-                </div>
+              <div class="form-check" id="checkAplicarTodas">
+                <input class="form-check-input" type="checkbox" value="" name="aplicarTodas" id="aplicarTodas">
+                <label class="form-check-label" for="aplicarTodas">
+                  Aplicar horario a todas
+                </label>
               </div>
               <% if(tipo === "Instructor") { %>
                 <div id="contRepeticion">
                   <label for="repeticion" class="form-label">Repetición</label>
-                  <select name="repeticion" id="repeticion" class="form-control" aria-describedby="Repetición" required>
-                    <option value="" disabled selected hidden>Repeticion</option>
+                  <select name="repeticion" id="repeticion" class="form-control" aria-describedby="Repetición">
                     <option value="CADASEMANADELMES">Cada semana del mes</option>
                     <option value="TODOSLOSDIASDELMES">Todos los días del mes</option>
                     <option value="NOSEREPITE">No se repite</option>
@@ -147,6 +142,21 @@
                   </div>
                 </div>
               <% } %>
+              <div>
+                <label for="capacidad" class="form-label">Capacidad</label>
+                <input type="number" min="0" class="form-control" id="capacidad" name="capacidad" aria-describedby="Capacidad Clase" required>
+                <div class="invalid-feedback">
+                  El campo no puede estar vacío.
+                </div>
+              </div>
+              <div>
+                <label for="servicio" class="form-label">Servicio</label>
+                <select name="servicio" id="servicio" class="form-control" aria-describedby="Servicio" required>
+                </select>
+                <div class="invalid-feedback">
+                  El campo no puede estar vacío.
+                </div>
+              </div>
               <% if(tipo === "Administrador"){ %>
                 <div>
                   <label for="estado" class="form-label">Estado</label>
@@ -163,25 +173,18 @@
                 <div>
                   <label for="instructor" class="form-label">Instructor</label>
                   <select name="instructor" id="instructor" class="form-control" aria-describedby="Instructor" required>
-                    <option value="" disabled selected hidden>Instructor</option>
                   </select>
                   <div class="invalid-feedback">
                     El campo no puede estar vacío.
                   </div>
                 </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" name="instructorTemporal" id="instructorTemporal">
-                  <label class="form-check-label" for="instructorTemporal">
-                    Instructor temporal
-                  </label>
+                <div>
+                  <label for="instructorTemporal" class="form-label">Instructor temporal</label>
+                  <select name="instructorTemporal" id="instructorTemporal" class="form-control" aria-describedby="instructorTemporal">
+                    <option value="" selected>Ninguno</option>
+                  </select>
                 </div>
                 <% } %>
-                <div class="form-check" id="checkAplicarTodas">
-                  <input class="form-check-input" type="checkbox" value="" name="aplicarTodas" id="aplicarTodas">
-                  <label class="form-check-label" for="aplicarTodas">
-                    Aplicar a todas
-                  </label>
-                </div>
               <div class="row justify-content-end">
                 <div class="col-3">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
@@ -201,13 +204,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../Utilidades.js"></script>
     <script src="../Js/Mensaje.js"></script>
+    <script src="../Sala.js"></script>
     <script src="../Calendario.js"></script>
     <script src="../Js/Calendario.js"></script>
     <script src="../Js/Navegacion.js"></script>
-    <% if(tipo === "Administrador" || tipo === "Instructor"){ %>
-      <script src="../Servicios.js"></script>
-      <script src="../CrearEditarClase.js"></script>
-      <script src="../Js/CrearEditarClase.js"></script>
-    <% } %>
+    <script src="../Js/Horas.js"></script>
+    <script src="../Servicios.js"></script>
+    <script src="../Clase.js"></script>
   </body>
 </html>

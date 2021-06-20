@@ -4,12 +4,14 @@ class Jornada {
   #dia;
   #horarioAtencion;
   #clases;
+  #cantidadClases;
 
-  constructor(id, dia, horarioAtencion, clases){
+  constructor(id, dia, horarioAtencion, clases, cantidadClases){
     this.#id = id;
-    this.#dia = new Date(dia);
+    this.#dia = dia;
     this.#horarioAtencion = horarioAtencion;
     this.#clases = clases;
+    this.#cantidadClases = cantidadClases;
   }
 
   getId(){
@@ -44,6 +46,23 @@ class Jornada {
     this.#clases = clases;
   }
 
+  getCantidadClases(){
+    return this.#cantidadClases;
+  }
+
+  setCantidadClases(cantidadClases){
+    this.#cantidadClases = cantidadClases;
+  }
+
+  convertirAVista(){
+    var obj = {
+      id:this.#id,
+      dia:this.#dia,
+      horarioAtencion:this.#horarioAtencion.convertirAVista(),
+      cantidadClases:this.#cantidadClases
+    }
+    return obj;
+  }
 }
 
 module.exports = Jornada;

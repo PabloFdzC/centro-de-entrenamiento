@@ -1,7 +1,7 @@
 const EstadoPago = {
-  MOROSO: "moroso",
-  ACTIVO: "activo",
-  PENDIENTE: "pendiente"
+  MOROSO: "MOROSO",
+  ACTIVO: "ACTIVO",
+  PENDIENTE: "PENDIENTE"
 }
 
 module.exports = EstadoPago;

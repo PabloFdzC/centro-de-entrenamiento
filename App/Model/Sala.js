@@ -67,6 +67,40 @@ class Sala {
   calcularCapacidad(){
     return parseInt(this.#capacidad * this.#aforo, 10);
   }
+
+  convertirAVista(){
+    var obj = {
+      id:this.#id,
+      capacidad:this.#capacidad,
+      aforo:this.#aforo,
+      costoMatricula:this.#costoMatricula
+    }
+    var a = [];
+    var a2 = [];
+    if(Array.isArray(this.#servicios)){
+      for(let s of this.#servicios){
+        a.push(s.getNombre());
+      }
+    }
+    if(Array.isArray(this.#calendario)){
+      for(let c of this.#calendario){
+        a.push(c.convertirAVista());
+      }
+    }
+    obj.servicios = a;
+    return obj;
+  }
+
+  calendarioPorDias(){
+    var r = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]};
+    if(Array.isArray(this.#calendario)){
+      for(let c of this.#calendario){
+        let i = c.getDia().getDay();
+        r[i].push(c);
+      }
+    }
+    return r;
+  }
   
 }
 

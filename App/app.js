@@ -1,8 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
+const session = require('express-session');
 const path = require('path');
-const operacionesSng = require('./Controller/OperacionesSng.js');
-const opSng = operacionesSng.getInstance();
+const OperacionesSng = require('./Controller/OperacionesSng.js');
+const opSng = OperacionesSng.getInstance();
 
 const viewsPath = path.join(__dirname, 'View');
 const ejsViewsPath = path.join(__dirname, 'View/Ejs');
@@ -17,14 +18,22 @@ app.set('view engine', 'ejs');
 app.use(express.static(viewsPath));
 app.set('views', ejsViewsPath);
 
-app.use('/', require('./View/navegacion.js'));
+app.use(session({
+  secret: 'm!S3ssi0nn0de',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: 'auto' }
+}));
+
 app.use('/', opSng.getOperacionesAdministrador());
+app.use('/', opSng.getOperacionesClase());
+app.use('/', opSng.getOperacionesCliente());
+app.use('/', opSng.getOperacionesInstructor());
+app.use('/', opSng.getOperacionesJornada());
+app.use('/', opSng.getOperacionesNavegacion());
 app.use('/', opSng.getOperacionesPago());
 app.use('/', opSng.getOperacionesSala());
-app.use('/', opSng.getOperacionesServicios());
-app.use('/', opSng.getOperacionesInstructor());
-app.use('/', opSng.getOperacionesClase());
+app.use('/', opSng.getOperacionesServicio());
 app.use('/', opSng.getOperacionesUsuario());
-app.use('/', opSng.getOperacionesCliente());
 
 app.listen(app.get('port'));

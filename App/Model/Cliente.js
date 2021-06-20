@@ -20,7 +20,7 @@ class Cliente extends Persona{
     this.#estadoPago = estadoPago;
   }
 
-  convertirAJSONString(){
+  convertirAVista(){
     var obj = {
       primerNombre:this.primerNombre,
       segundoNombre:this.segundoNombre,
@@ -31,7 +31,7 @@ class Cliente extends Persona{
       email:this.email,
       identificacion:this.identificacion
     }
-    return JSON.stringify(obj);
+    return obj;
   }
 
 }

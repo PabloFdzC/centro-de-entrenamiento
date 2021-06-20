@@ -10,9 +10,9 @@
       <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
       <li class="nav-item">
       <% if (ventana === "CALENDARIO") { %>
-        <a class="nav-link active" href="/Calendario/<%= tipo_usuario %>">Calendario</a>
+        <a class="nav-link active" href="/Calendario">Calendario</a>
       <% } else { %>
-        <a class="nav-link" href="/Calendario/<%= tipo_usuario %>">Calendario</a>
+        <a class="nav-link" href="/Calendario">Calendario</a>
       <% } %>
       </li>
       <% if(tipo_usuario === "Administrador"){ %>
@@ -73,8 +73,8 @@
             <% if(tipo_usuario === "Administrador"){ %>
             <li><a class="dropdown-item" href="/NuevoAdministrador">Nuevo administrador</a></li>
             <% } %>
-            <li><a class="dropdown-item" href="/Perfil/<%= tipo_usuario %>">Perfil</a></li>
-            <li><a class="dropdown-item cerrarSesion">Cerrar sesión</a></li>
+            <li><a class="dropdown-item" href="/Perfil">Perfil</a></li>
+            <li><a class="dropdown-item" href="/IniciarSesion">Cerrar sesión</a></li>
           </ul>
         </li>
       </ul>

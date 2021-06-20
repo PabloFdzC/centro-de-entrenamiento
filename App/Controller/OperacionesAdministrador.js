@@ -1,7 +1,8 @@
 const { Router} = require('express');
 const ControllersSng = require('./ControllersSng.js');
 const OperacionesAdministrador = Router({caseSensitive:true});
-const ctrlAdm = ControllersSng.getControllerAdministrador();
+const ctrlSng = ControllersSng.getInstance();
+const ctrlAdm = ctrlSng.getControllerAdministrador();
 
 OperacionesAdministrador.post('/nuevoAdministrador', async function(req, res){
   try{

@@ -47,6 +47,7 @@ $('body').ready(function(){
         servicios.crearServicio(info);
       }
       modal.hide();
+      cargar();
     }
   });
 

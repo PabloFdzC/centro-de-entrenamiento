@@ -1,7 +1,8 @@
 const { Router} = require('express');
 const ControllersSng = require('./ControllersSng.js');
 const OperacionesServicios = Router({caseSensitive:true});
-const ctrlServicio = ControllersSng.getControllerServicio();
+const ctrlSng = ControllersSng.getInstance();
+const ctrlServicio = ctrlSng.getControllerServicio();
 
 OperacionesServicios.post('/crearServicio', async function(req, res){
   try{
@@ -11,7 +12,7 @@ OperacionesServicios.post('/crearServicio', async function(req, res){
     console.log(err);
     res.status(400);
     if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+      res.send("Ya existe un servicio con ese nombre");
     else
       res.send("Algo salió mal");
   }
@@ -24,17 +25,14 @@ OperacionesServicios.post('/modificarServicio', async function(req, res){
   }catch(err){
     console.log(err);
     res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
+    res.send("Algo salió mal");
   }
 });
 
-OperacionesServicios.get('/mostrarServicios/:esLista', async function(req, res){
+OperacionesServicios.get('/mostrarServicios', async function(req, res){
   try{
-    var lista = await ctrlServicio.listadoServicios();
-    if(req.params.esLista === "true"){
+    var lista = await ctrlServicio.mostrarTodos();
+    if(req.query.esLista === "true"){
       res.render('ServiciosLista.ejs', {lista});
     } else {
       res.render('ServiciosCards.ejs', {lista});
@@ -42,10 +40,7 @@ OperacionesServicios.get('/mostrarServicios/:esLista', async function(req, res){
   }catch(err){
     console.log(err);
     res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
+    res.send("Algo salió mal");
   }
 });
 
@@ -56,10 +51,7 @@ OperacionesServicios.post('/eliminarServicio', async function(req, res){
   }catch(err){
     console.log(err);
     res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
+    res.send("Algo salió mal");
   }
 });
 

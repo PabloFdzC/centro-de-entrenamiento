@@ -1,6 +1,6 @@
 const FormaPago = {
-  SINPE: "sinpe",
-  EFECTIVO: "efectivo"
+  SINPE: "SINPE",
+  EFECTIVO: "EFECTIVO"
 }
 
 module.exports = FormaPago;

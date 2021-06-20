@@ -3,16 +3,18 @@ $('body').ready(function(){
   var servicios = new Servicios();
   var esModificar = false;
   var listaServicios = [];
+  var listaServiciosA = [];
+  var listaServiciosE = [];
   var modalCrearEditar = new bootstrap.Modal(document.getElementById('modalCrearEditar'));
 
-  cargarServicios = async function(){
+  const cargarServicios = async function(){
     var res = await servicios.mostrarListadoServicios(true);
     if(res){
       $('#annadirServicio').append(res);
     }
   };
 
-  cargarInstructores = async function(){
+  const cargarInstructores = async function(){
     var res = await instructores.mostrarListadoInstructores(false);
     if(res){
       $('#instructores').empty();
@@ -20,9 +22,13 @@ $('body').ready(function(){
     }
   };
 
-  insertaServicioHtml = function(val){
+  const insertaServicioHtml = function(val){
     if(val != ""){
-      listaServicios.push(val);
+      if(esModificar){
+        listaServiciosA.push(val);
+      }else{
+        listaServicios.push(val);
+      }
       $('#serviciosEscogidos').append(`
       <div class="servicio ps-3 pe-3 pt-2 pb-2 text-center m-1" title="`+val+`">
         `+val+`
@@ -30,7 +36,7 @@ $('body').ready(function(){
     }
   };
 
-  limpiarModal = function(){
+  const limpiarModal = function(){
     $('#primerNombre').val("");
     $('#segundoNombre').val("");
     $('#primerApellido').val("");
@@ -56,8 +62,6 @@ $('body').ready(function(){
       $('#crearEditar').empty();
       $('#crearEditar').append("Modificar instructor");
       let instr = await instructores.mostrarInstructor(val);
-      instr = JSON.parse(instr);
-      console.log(instr);
       if(instr){
         $('#primerNombre').val(instr.primerNombre);
         $('#segundoNombre').val(instr.segundoNombre);
@@ -91,14 +95,14 @@ $('body').ready(function(){
   $('#formInstructor').submit(function(event){
     event.preventDefault();
     let form = $('#formInstructor')[0];
-    let pasa = listaServicios.length > 0;
+    let pasa = listaServicios.length > 0 || listaServiciosA.length > 0;
     if(!pasa){
       muestraMensaje("Fallo", "Debe haber por lo menos 1 servicio");
     }
     if(form.checkValidity() && pasa){
       let info = new FormData(form);
       if(esModificar)
-        instructores.modificarInstructor(info, listaServicios);
+        instructores.modificarInstructor(info, listaServiciosA, listaServiciosE);
       else{
         instructores.crearInstructor(info, listaServicios);
         cargarInstructores();
@@ -107,12 +111,16 @@ $('body').ready(function(){
     }
   });
 
-  $('#formInstructor').on('click', '.servicio', function(event){
+  $('#formInstructor').on('click', '.servicio', function(){
     let val = $(this).attr('title');
-    let i = listaServicios.indexOf(val);
-    if (i > -1) {
-      listaServicios.splice(i, 1);
-      $(this).remove();
+    if(esModificar){
+      listaServiciosE.push(val);
+    } else {
+      let i = listaServicios.indexOf(val);
+      if (i > -1) {
+        listaServicios.splice(i, 1);
+        $(this).remove();
+      }
     }
   });
 

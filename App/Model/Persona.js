@@ -23,8 +23,11 @@ class Persona{
 
   }
 
-  nombreCompleto(){
-    return this.primerNombre + ' ' + this.segundoNombre + ' ' + this.primerApellido + ' ' + this.segundoApellido;
+  getNombreCompleto(){
+    return this.primerNombre + ' ' +
+     this.segundoNombre + ' ' +
+      this.primerApellido + ' ' +
+       this.segundoApellido;
   }
 
   getPrimerNombre(){
@@ -43,7 +46,13 @@ class Persona{
     return this.fechaNacimiento;
   }
   getEdad(){
-    return 24;
+    let hoy = new Date();
+    let edad = hoy.getFullYear() - this.fechaNacimiento.getFullYear();
+    let mesDif = hoy.getMonth() - this.fechaNacimiento.getMonth();
+    if (mesDif < 0 || (mesDif == 0 && hoy.getDate() < this.fechaNacimiento.getDate())) {
+      edad--;
+    }
+    return edad;
   }
   getTelefono(){
     return this.telefono;

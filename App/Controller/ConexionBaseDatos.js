@@ -13,7 +13,6 @@ class ConexionBaseDatos{
   
   constructor(){
     this.#conexion = mysql.createConnection(this.#parametrosConexion);
-  
     this.#conexion.connect(function(error){
       if(!!error){
         console.log('Error');
@@ -24,8 +23,9 @@ class ConexionBaseDatos{
   }
 
   async query(s, params){
+    var con = this.#conexion;
     return new Promise(function(resolve, reject){
-      this.#conexion.query(s, params, function(error, result){
+      con.query(s, params, function(error, result){
         if(error){
           reject(error);
         }else{

@@ -6,7 +6,7 @@ $('body').ready(function(){
     let form = $('#formPagar')[0];
     if(form.checkValidity()){
       let info = new FormData(form);
-      pagos.confirmarPago(info);
+      pagos.realizarPago(info);
     }
   });
 

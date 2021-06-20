@@ -1,33 +1,28 @@
 OperacionesAdministrador = require('./OperacionesAdministrador.js');
+OperacionesClase = require('./OperacionesClase.js');
+OperacionesCliente = require('./OperacionesCliente.js');
+OperacionesInstructor = require('./OperacionesInstructor.js');
+OperacionesJornada = require('./OperacionesJornada.js');
+OperacionesNavegacion = require('./OperacionesNavegacion.js');
 OperacionesPago = require('./OperacionesPago.js');
 OperacionesSala = require('./OperacionesSala.js');
-OperacionesServicios = require('./OperacionesServicios.js');
-OperacionesInstructor = require('./OperacionesInstructor.js');
-OperacionesClase = require('./OperacionesClase.js');
+OperacionesServicio = require('./OperacionesServicio.js');
 OperacionesUsuario = require('./OperacionesUsuario.js');
-OperacionesCliente = require('./OperacionesCliente.js');
 
 class OperacionesSng{
   static #instance = null;
-  #operacionesAdministrador;
-  #operacionesPago;
-  #operacionesSala;
-  #operacionesServicios;
-  #operacionesInstructor;
-  #operacionesClase;
-  #operacionesUsuario;
-  #operacionesCliente;
+  #operacionesAdministrador = null;
+  #operacionesClase = null;
+  #operacionesCliente = null;
+  #operacionesInstructor = null;
+  #operacionesJornada = null;
+  #operacionesNavegacion = null;
+  #operacionesPago = null;
+  #operacionesSala = null;
+  #operacionesServicio = null;
+  #operacionesUsuario = null;
 
-  constructor(){
-    this.#operacionesAdministrador = null;
-    this.#operacionesPago = null;
-    this.#operacionesSala = null;
-    this.#operacionesServicios = null;
-    this.#operacionesInstructor = null;
-    this.#operacionesClase = null;
-    this.#operacionesUsuario = null;
-    this.#operacionesCliente = null;
-  }
+  constructor(){}
   
   static getInstance(){
     if(this.#instance == null){
@@ -41,6 +36,41 @@ class OperacionesSng{
       this.#operacionesAdministrador = OperacionesAdministrador;
     }
     return this.#operacionesAdministrador;
+  }
+
+  getOperacionesClase(){
+    if(this.#operacionesClase == null){
+      this.#operacionesClase = OperacionesClase;
+    }
+    return this.#operacionesClase;
+  }
+
+  getOperacionesCliente(){
+    if(this.#operacionesCliente == null){
+      this.#operacionesCliente = OperacionesCliente;
+    }
+    return this.#operacionesCliente;
+  }
+
+  getOperacionesInstructor(){
+    if(this.#operacionesInstructor == null){
+      this.#operacionesInstructor = OperacionesInstructor;
+    }
+    return this.#operacionesInstructor;
+  }
+
+  getOperacionesJornada(){
+    if(this.#operacionesJornada == null){
+      this.#operacionesJornada = OperacionesJornada;
+    }
+    return this.#operacionesJornada;
+  }
+
+  getOperacionesNavegacion(){
+    if(this.#operacionesNavegacion == null){
+      this.#operacionesNavegacion = OperacionesNavegacion;
+    }
+    return this.#operacionesNavegacion;
   }
 
   getOperacionesPago(){
@@ -57,25 +87,11 @@ class OperacionesSng{
     return this.#operacionesSala;
   }
 
-  getOperacionesServicios(){
-    if(this.#operacionesServicios == null){
-      this.#operacionesServicios = OperacionesServicios;
+  getOperacionesServicio(){
+    if(this.#operacionesServicio == null){
+      this.#operacionesServicio = OperacionesServicio;
     }
-    return this.#operacionesServicios;
-  }
-
-  getOperacionesInstructor(){
-    if(this.#operacionesInstructor == null){
-      this.#operacionesInstructor = OperacionesInstructor;
-    }
-    return this.#operacionesInstructor;
-  }
-
-  getOperacionesClase(){
-    if(this.#operacionesClase == null){
-      this.#operacionesClase = OperacionesClase;
-    }
-    return this.#operacionesClase;
+    return this.#operacionesServicio;
   }
 
   getOperacionesUsuario(){
@@ -85,12 +101,6 @@ class OperacionesSng{
     return this.#operacionesUsuario;
   }
 
-  getOperacionesCliente(){
-    if(this.#operacionesCliente == null){
-      this.#operacionesCliente = OperacionesCliente;
-    }
-    return this.#operacionesCliente;
-  }
 }
 
 module.exports = OperacionesSng;

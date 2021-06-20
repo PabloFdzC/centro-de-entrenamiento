@@ -1,51 +1,36 @@
 class Calendario{
 
-  async mostrarJornadasDelMesI(datos) {
-    console.log(JSON.stringify(datos));
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarJornadasDelMesI', 'POST', JSON.stringify(datos), function(jornadasDelMes){
-        resolve(jornadasDelMes);
+  async mostrarCalendario(datos) {
+    let s = '/mostrarCalendario'+Utilidades.objetoAParametrosGet(datos);
+    return new Promise(function(resolve, reject) {
+      Utilidades.ajaxCall(s, 'GET', {}, function(r){
+        resolve(r);
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
-      });
-    });
-  }
-  
-  async mostrarJornadasDelMes(mes) {
-    mes++;
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarJornadasDelMes/'+mes, 'GET', {}, function(jornadasDelMes){
-        resolve(jornadasDelMes);
-      }, function(xhr, status, error){
-        console.log(xhr);
-        muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
+        reject(xhr);
       });
     });
   }
 
   async mostrarListadoReservas(idClase){
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarReservas/'+idClase, 'GET', {}, function(reservas){
+    return new Promise(function(resolve, reject) {
+      Utilidades.ajaxCall('/mostrarPersonasMatriculadas?idClase='+idClase, 'GET', {}, function(reservas){
         resolve(reservas);
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
+        reject(xhr);
       });
     });
   }
 
-  async mostrarClase(idClase){
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarClase/'+idClase, 'GET', {}, function(clase){
-        resolve(clase);
+  async mostrarClasesJornada(info){
+    let s = Utilidades.objetoAParametrosGet(info);
+    return new Promise(function(resolve, reject) {
+      Utilidades.ajaxCall('/mostrarClasesJornada'+s, 'GET', {}, function(clases){
+        resolve(clases);
       }, function(xhr, status, error){
-        console.log(xhr);
         muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
+        reject(xhr);
       });
     });
   }

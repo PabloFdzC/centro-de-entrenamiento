@@ -85,6 +85,34 @@ class Clase {
     this.#clientes = clientes;
   }
   
+  convertirAVista(){
+    var obj = {
+      id: this.#id,
+      capacidad: this.#capacidad,
+      estado:this.#estado,
+      instructorTemporal:null,
+      servicio:this.#servicio.getNombre(),
+      instructor:this.#instructor.convertirAVista(),
+    }
+    if(this.#instructorTemporal){
+      obj.instructorTemporal = this.#instructorTemporal.convertirAVista()
+    }
+    var a = [];
+    if(Array.isArray(this.#clientes)){
+      for(let c of this.#clientes){
+        a.push(c.convertirAVista());
+      }
+    }
+    obj.clientes = a;
+    var a2 = [];
+    if(Array.isArray(this.#horarioClase)){
+      for(let hc of this.#horarioClase){
+        a2.push(hc.convertirAVista());
+      }
+    }
+    obj.horarioClase = a2;
+    return obj;
+  }
 }
 
 module.exports = Clase;

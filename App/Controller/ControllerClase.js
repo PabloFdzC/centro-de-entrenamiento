@@ -1,148 +1,211 @@
-const ConexionSng = require("./ConexionBaseDatosSng.js");
-const ConexionClase = ConexionSng.getConexionClase();
+const TransaccionClase = require("./TransaccionClase.js");
+const TransaccionClaseJornada = require("./TransaccionClaseJornada.js");
 const Clase = require("./../Model/Clase");
 const EstadoClase = require("./../Model/EstadoClase");
 const Instructor = require("./../Model/Instructor");
-const IntervaloTiempo = require("./../Model/IntervaloTiempo");
 const Servicio = require("./../Model/Servicio");
-const Cliente = require("./../Model/Cliente");
 
 class ControllerClase{
   #ctrlInstructor = null;
+  #ctrlIntervaloTiempo = null;
+  #ctrlJornada = null;
+  #ctrlMatriculaClase = null;
+  #transaccionClase = null;
+  #transaccionClaseJornada = null;
   
-  constructor(ctrlInstr){
-    this.#ctrlInstructor = ctrlInstr;
+  constructor(ctrlInstructor, ctrlIntervaloTiempo, ctrlJornada, ctrlMatriculaClase){
+    this.#ctrlInstructor = ctrlInstructor;
+    this.#ctrlIntervaloTiempo = ctrlIntervaloTiempo;
+    this.#ctrlJornada = ctrlJornada;
+    this.#ctrlMatriculaClase = ctrlMatriculaClase;
+    this.#transaccionClase = new TransaccionClase();
+    this.#transaccionClaseJornada = new TransaccionClaseJornada();
+  }
+
+  async #cantidadIdIntervalos(elem, suma){
+    let disponible = await this.#transaccionClase.mostrarJornadasCrearClase(elem);
+    if(disponible.length > 0){
+      let idsJornada = [];
+      let cantidad = 0;
+      let d = elem.dia;
+      let mes = d.getMonth();
+      if(suma === 1){
+        d.setDate(1);
+      } else {
+        while(d.getDate() > suma && suma != 0){
+          d.setDate(d.getDate()-suma);
+        }
+      }
+      while(mes === d.getMonth()){
+        for(let disp of disponible){
+          let dia = new Date(disp.dia);
+          if(dia.getTime() === d.getTime()){
+            cantidad++;
+            idsJornada.push(disp.id_jornada);
+            break;
+          }
+        }
+        if(suma === 0) break;
+        d.setDate(d.getDate()+suma);
+      }
+      return {cantidad, idsJornada};
+    }
+    throw {code: "ER_NO_ID_JORNADA"};
+  }
+
+  async #cantidadIdIntervalosExistentes(elem){
+    let disponible = await this.#transaccionClase.mostrarJornadasCrearClase(elem);
+    let existentes = await this.#ctrlJornada.mostrarJornadasCrearClase(elem);
+    if(disponible.length > 0){
+      let idsJornada = [];
+      let cantidad = 0;
+      let d = elem.dia;
+      let mes = d.getMonth();
+      if(suma === 1){
+        d.setDate(1);
+      } else {
+        while(d.getDate() > suma && suma != 0){
+          d.setDate(d.getDate()-suma);
+        }
+      }
+      while(mes <= d.getMonth()){
+        for(let disp of disponible){
+          let dia = new Date(disp.dia);
+          if(dia.getTime() === d.getTime()){
+            cantidad++;
+            idsJornada.push(disp.id_jornada);
+            break;
+          }
+        }
+        if(suma === 0) break;
+        d.setDate(d.getDate()+suma);
+      }
+      return {cantidad, idsJornada};
+    }
+    throw {code: "ER_NO_ID_JORNADA"};
   }
 
   async agregar(elem){
-    console.log(elem);
-    try{
-      var r = await ConexionClase.agregar(elem);
-      return r;
-    }catch(err){
-      throw err;
+    elem.estado = EstadoClase.AGENDADA;
+    return await this.agregarAux(elem);
+  }
+
+  async agregarAux(elem){
+    let cantidadIds = {cantidad:0, idsJornada:[]};
+    if(elem.repeticion == "CADASEMANADELMES"){
+      cantidadIds = await this.#cantidadIdIntervalos(elem, 7);
+    } else if(elem.repeticion == "TODOSLOSDIASDELMES"){
+      cantidadIds = await this.#cantidadIdIntervalos(elem, 1);
+    } else if(elem.repeticion == "NOSEREPITE"){
+      cantidadIds = await this.#cantidadIdIntervalos(elem, 0);
+    } else if(elem.aplicarTodas){
+      cantidadIds = await this.#cantidadIdIntervalosExistentes(elem);
     }
+    let listaIntervalos = this.#ctrlIntervaloTiempo.listaIntervalosObj(elem, cantidadIds.cantidad);
+    let idClase;
+    if(listaIntervalos.length > 0){
+      if(elem.idClase){
+        idClase = elem.idClase;
+      } else{
+        idClase = await this.#transaccionClase.agregar(elem);
+      }
+      let primerId = await this.#ctrlIntervaloTiempo.agregar(listaIntervalos[0]);
+      listaIntervalos.shift();
+      if(listaIntervalos.length > 0){
+        await this.#ctrlIntervaloTiempo.agregarMultiples(listaIntervalos);
+      }
+      let listaClaseJornada = this.listaClaseJornadaObj(idClase, cantidadIds.idsJornada, primerId, primerId+listaIntervalos.length);
+      let r = await this.#transaccionClaseJornada.agregarMultiples(listaClaseJornada);
+      return r;
+    }
+    throw {code: "ER_NO_ID_JORNADA"};
   }
 
   async consultar(elem){
-    let ctrlInstructor = this.#ctrlInstructor;
-    var ctrlClase = this;
-    try{
-      var result = await ConexionClase.consultar(elem);
-      var claseresult = result[0][0];
-      var listaServiciosInstructor = ctrlInstructor.serviciosDeInstructor(claseresult.email);
-      var instructor = new Instructor(claseresult.primer_nombre, claseresult.segundo_nombre, claseresult.primer_apellido, claseresult.segundo_apellido, claseresult.fecha_nacimiento, claseresult.telefono, claseresult.email, claseresult.identificacion, listaServiciosInstructor);
-      var instructor_temporal = claseresult.email_instructor_temporal;
-      if(instructor_temporal){
-        instructor_temporal = ctrlInstructor.getInstructor(claseresult.email_instructor_temporal);
-      }
-      var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
-      var intervalo = new IntervaloTiempo(claseresult.hora_inicio, claseresult.minuto_inicio, claseresult.hora_final, claseresult.minuto_final);
-      var matriculas = ctrlClase.getMatriculasClase(claseresult.id_clase);
-      var clase = new Clase(claseresult.id_clase, claseresult.capacidad, claseresult.estado_clase, intervalo, instructor_temporal, servicio, instructor, matriculas);
-      return clase;
-    }catch(err){
-      throw err;
-    }
+    var claseresult = await this.#transaccionClase.consultar(elem);
+    return await this.#formatoClase(claseresult, {conHorario:true,conMatricula:true});
   }
 
   async modificar(elem){
-    console.log(elem);
-    try{
-      var r = await ConexionClase.modificar(elem);
-      return r;
-    }catch(err){
-      throw err;
-    }
+    return await this.agregarAux(elem);
   }
 
-  async clasesPorMes(mes){
-    let ctrlInstructor = this.#ctrlInstructor;
-    var ctrlClase = this;
-    try{
-      var result = await ConexionClase.clasesPorMes(mes);
-      var listaclasesresult = result[0];
-      var i;
-      var listaClases = [];
-      for(i = 0; i < listaclasesresult.length; i++){
-        var claseresult = listaclasesresult[i];
-        var listaServiciosInstructor = ctrlInstructor.serviciosDeInstructor(claseresult.email);
-        var instructor = new Instructor(claseresult.primer_nombre, claseresult.segundo_nombre, claseresult.primer_apellido, claseresult.segundo_apellido, claseresult.fecha_nacimiento, claseresult.telefono, claseresult.email, claseresult.identificacion, listaServiciosInstructor);
-        var instructor_temporal = claseresult.email_instructor_temporal;
-        if(instructor_temporal){
-          instructor_temporal = ctrlInstructor.getInstructor(claseresult.email_instructor_temporal);
-        }
-        var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
-        var intervalo = new IntervaloTiempo(claseresult.hora_inicio, claseresult.minuto_inicio, claseresult.hora_final, claseresult.minuto_final);
-        var matriculas = ctrlClase.getMatriculasClase(claseresult.id_clase);
-        var clase = new Clase(claseresult.id_clase, claseresult.capacidad, claseresult.estado_clase, intervalo, instructor_temporal, servicio, instructor, matriculas);
-        listaClases.push(clase);
-      }
-      return listaClases;
-    }catch(err){
-      throw err;
-    }
+  async eliminar(elem){
+    let r = await this.#transaccionClase.eliminar(elem);
+    return r;
   }
 
-  async listadoReservas(id){
-    try{
-      var result = await ConexionClase.modificar(id);
-      var listaclientesresult = result[0];
-      var i;
-      var listaClientes = [];
-      for(i = 0; i < listaclientesresult.length; i++){
-        let clienteresult = listaclientesresult[i];
-        var cliente = new Cliente(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido, clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
-        listaClientes.push(cliente);
-      }
-      return listaClientes;
-    }catch(err){
-      throw err;
+  async mostrarTodoXMes(elem){
+    var listaclasesresult = await this.#transaccionClase.mostrarTodoXMes(elem);
+    var i;
+    var listaClases = [];
+    for(i = 0; i < listaclasesresult.length; i++){
+      var claseresult = listaclasesresult[i];
+      var clase = await this.#formatoClase(claseresult);
+      listaClases.push(clase);
     }
-  }
-
-  async matricularClase(elem){
-    try{
-      var r = await ConexionClase.matricularClase(elem);
-      return r;
-    }catch(err){
-      throw err;
-    }
-  }
-
-  async cancelarMatricula(elem){
-    try{
-      var r = await ConexionClase.cancelarMatricula(elem);
-      return r;
-    }catch(err){
-      throw err;
-    }
+    return listaClases;
   }
 
   async agregarInstructorTemporal(elem){
-    try{
-      var r = await ConexionClase.agregarInstructorTemporal(elem);
-      return r;
-    }catch(err){
-      throw err;
-    }
+    let r =  await this.#transaccionClase.agregarInstructorTemporal(elem);
+    return r;
   }
 
-  async getMatriculasClase(id){
-    try{
-      var result = await ConexionClase.getMatriculasClase(id);
-      var listaclientesresult = result[0];
-      var i;
-      var listaClientes = [];
-      for(i = 0; i < listaclientesresult.length; i++){
-        let clienteresult = listaclientesresult[i];
-        var cliente = new Instructor(clienteresult.primer_nombre, clienteresult.segundo_nombre, clienteresult.primer_apellido, clienteresult.segundo_apellido, clienteresult.fecha_nacimiento, clienteresult.telefono, clienteresult.email, clienteresult.identificacion);
-        listaClientes.push(cliente);
-      }
-      return listaClientes;
-    }catch(err){
-      throw err;
+  async #formatoClase(claseresult, opciones={conHorario:false,conMatricula:false}){
+    var instructor = new Instructor(claseresult.primer_nombre,
+      claseresult.segundo_nombre,
+      claseresult.primer_apellido,
+      claseresult.segundo_apellido,
+      claseresult.fecha_nacimiento,
+      claseresult.telefono,
+      claseresult.email,
+      claseresult.identificacion,
+      null
+      );
+    var instructor_temporal = null;
+    if(claseresult.email_instructor_temporal){
+      let iT = await this.#ctrlInstructor.consultar(claseresult.email_instructor_temporal);
+      instructor_temporal = new Instructor(iT.primer_nombre,
+        iT.segundo_nombre,
+        iT.primer_apellido,
+        iT.segundo_apellido,
+        iT.fecha_nacimiento,
+        iT.telefono,
+        iT.email,
+        iT.identificacion,
+        null
+        );
     }
+    var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
+    var matriculas = [];
+    var horario = [];
+    if(opciones.conHorario){
+      horario = await this.#ctrlIntervaloTiempo.mostrarIntervaloXIdClase(claseresult.id_clase);
+    }
+    if(opciones.conMatricula){
+      matriculas = await this.#ctrlMatriculaClase.mostrarTodosXIdClase(claseresult.id_clase);
+    }
+    var clase = new Clase(claseresult.id_clase,
+      claseresult.capacidad,
+      claseresult.estado_clase,
+      horario,
+      instructor_temporal,
+      servicio,
+      instructor,
+      matriculas
+      );
+      return clase
+  }
+
+  listaClaseJornadaObj(idClase, jornadaIds, primerIdIntervalo, ultimoIdIntervalo){
+    var lista = [];
+    var i = 0;
+    for(; primerIdIntervalo <= ultimoIdIntervalo; primerIdIntervalo++){
+      lista.push([idClase, primerIdIntervalo, jornadaIds[i]]);
+      i++;
+    }
+    return lista;
   }
 
 }

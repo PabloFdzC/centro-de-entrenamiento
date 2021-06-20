@@ -9,6 +9,7 @@ flush privileges;
 
 use sistemaentrenamiento;
 
+DROP TABLE IF EXISTS Matricula;
 DROP TABLE IF EXISTS Clases_en_Jornada;
 DROP TABLE IF EXISTS Jornada;
 DROP TABLE IF EXISTS Intervalo_Tiempo;
@@ -16,7 +17,6 @@ DROP TABLE IF EXISTS Servicios_de_Sala;
 DROP TABLE IF EXISTS Servicios_de_Instructor;
 DROP TABLE IF EXISTS Pago;
 DROP TABLE IF EXISTS Sala;
-DROP TABLE IF EXISTS Matricula;
 DROP TABLE IF EXISTS Clase;
 DROP TABLE IF EXISTS Servicio;
 DROP TABLE IF EXISTS Cliente;
@@ -108,8 +108,8 @@ CREATE TABLE Pago(
     fecha DATE,
     email_usuario VARCHAR(50) NOT NULL,
     id_clase INT NOT NULL,
-    estado_pago VARCHAR(50) NOT NULL,
-    forma_pago VARCHAR(50) NOT NULL,
+    estado_pago VARCHAR(50),
+    forma_pago VARCHAR(50),
     FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
     FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
 );
@@ -131,10 +131,10 @@ CREATE TABLE Servicios_de_Sala(
 );
 
 CREATE TABLE Clases_en_Jornada(
+    id_clase_jornada INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	id_clase INT NOT NULL,
     id_intervalo INT NOT NULL,
     id_jornada INT NOT NULL,
-    PRIMARY KEY(id_clase, id_intervalo, id_jornada),
     FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
     FOREIGN KEY (id_intervalo) REFERENCES Intervalo_Tiempo(id_intervalo),
     FOREIGN KEY (id_jornada) REFERENCES Jornada(id_jornada)
@@ -142,8 +142,7 @@ CREATE TABLE Clases_en_Jornada(
 
 CREATE TABLE Matricula(
 	email_cliente VARCHAR(50) NOT NULL,
-    id_clase INT NOT NULL,
-    PRIMARY KEY(email_cliente, id_clase),
-    FOREIGN KEY (email_cliente) REFERENCES Cliente(email),
-    FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
+    id_clase_jornada INT NOT NULL,
+    PRIMARY KEY(email_cliente, id_clase_jornada),
+    FOREIGN KEY (id_clase_jornada) REFERENCES Clases_en_Jornada(id_clase_jornada)
 );

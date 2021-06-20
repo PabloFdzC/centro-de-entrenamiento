@@ -92,6 +92,7 @@ BEGIN
 	INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala)
 	VALUES(pdDia, piIdIntervaloTiempo, piIdSala);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_jornada;
 END //
 
 DELIMITER ;
@@ -104,36 +105,46 @@ BEGIN
 	INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala)
 	VALUES(pdDia, LAST_INSERT_ID(), piIdSala);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_jornada;
 END //
 
 DELIMITER ;
-
 DROP PROCEDURE IF EXISTS GetJornadasDeSala;
-DELIMITER //
-
-CREATE PROCEDURE GetJornadasDeSala(IN piIdSala INT)
-BEGIN
-	SELECT j.id_jornada, j.dia, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
-    FROM (SELECT id_jornada, dia, id_intervalo_tiempo
-		FROM Jornada
-		WHERE id_sala = piIdSala) as j
-    INNER JOIN Intervalo_Tiempo it
-    ON it.id_intervalo = j.id_intervalo_tiempo;
-END //
-
-DELIMITER ;
-
+DROP PROCEDURE IF EXISTS GetJornadasSalaMes;
 DROP PROCEDURE IF EXISTS GetJornadasMes;
 DELIMITER //
 
-CREATE PROCEDURE GetJornadasMes(IN piMes INT)
+CREATE PROCEDURE GetJornadasSalaMes(IN piIdSala INT, IN piMes INT)
 BEGIN
-	SELECT j.id_jornada, j.dia, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+	SELECT j.id_jornada, j.dia, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
     FROM (SELECT id_jornada, dia, id_intervalo_tiempo
 		FROM Jornada
-		WHERE MONTH(dia) = piMes) as j
+		WHERE id_sala = piIdSala AND MONTH(dia) = piMes) AS j
     INNER JOIN Intervalo_Tiempo it
     ON it.id_intervalo = j.id_intervalo_tiempo;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetCantidadClasesJornada;
+DELIMITER //
+
+CREATE PROCEDURE GetCantidadClasesJornada(IN piIdJornada INT)
+BEGIN
+	SELECT COUNT(id_jornada) AS cantidad_clases FROM Clases_en_Jornada WHERE id_jornada = piIdJornada;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetJornada;
+DELIMITER //
+
+CREATE PROCEDURE GetJornada(IN piIdJornada INT)
+BEGIN
+	SELECT j.id_jornada, j.dia, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+    FROM Jornada AS j
+    INNER JOIN Intervalo_Tiempo AS  it
+    ON j.id_intervalo_tiempo = it.id_intervalo  WHERE j.id_jornada = piIdJornada;
 END //
 
 DELIMITER ;
@@ -171,6 +182,7 @@ BEGIN
 	INSERT INTO Servicio(nombre_servicio, costo_matricula)
 	VALUES(pvNombreServicio, pfCostoMatricula);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_servicio;
 END //
 
 DELIMITER ;
@@ -567,13 +579,22 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CrearClase;
 DELIMITER //
 
-CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN piIdJornada INT, IN piIdIntervalo INT, IN pvEmailInstructor VARCHAR(50))
+CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
 BEGIN
 	INSERT INTO Clase(capacidad, estado_clase, nombre_servicio, email_instructor)
-    VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, piIdJornada, piIdIntervalo, pvEmailInstructor);
-    INSERT INTO ClasesEnJornada(id_clase, id_intervalo, id_jornada)
-    VALUES(last_insert_id(), piIdIntervalo, piIdJornada);
+    VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, pvEmailInstructor);
     COMMIT;
+    SELECT LAST_INSERT_ID() AS id_clase;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetJornadasCrearClase;
+DELIMITER //
+
+CREATE PROCEDURE GetJornadasCrearClase(IN piIdSala INT, IN pdDia DATE, IN piHoraInicio INT, IN piHoraFinal INT, IN piMinutoInicio INT, IN piMinutoFinal INT)
+BEGIN
+	SELECT j.id_jornada, j.dia FROM Jornada AS j INNER JOIN Intervalo_Tiempo AS it ON j.id_intervalo_tiempo = it.id_intervalo WHERE j.id_sala = piIdSala AND MONTH(j.dia) = MONTH(pdDia) AND j.dia >= pdDia AND ((it.hora_inicio < piHoraInicio AND it.hora_final > piHoraFinal) OR  (it.hora_inicio = piHoraInicio AND it.minuto_inicio <= piMinutoInicio) OR (it.hora_final = piHoraFinal AND it.minuto_final >= piMinutoFinal));
 END //
 
 DELIMITER ;
@@ -638,7 +659,7 @@ BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
 		FROM Clase
-		WHERE estado_clase = pvEstadoClase) as c
+		WHERE estado_clase = pvEstadoClase) AS c
     INNER JOIN Clases_en_Jornada cej
     ON cej.id_clase = c.id_clase
     INNER JOIN Intervalo_Tiempo it
@@ -652,18 +673,14 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetClasesMes;
 DELIMITER //
 
-CREATE PROCEDURE GetClasesMes(IN piMes INT)
+CREATE PROCEDURE GetClasesMes(IN piMes INT, IN piIdSala INT)
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_jornada
 		FROM Jornada
-		WHERE MONTH(dia) = piMes) as j
-    INNER JOIN Clases_en_Jornada cej
-    ON cej.id_jornada = j.id_jornada
+		WHERE id_sala = piIdSala AND MONTH(dia) = piMes) AS j
     INNER JOIN Clase c
     ON c.id_clase = cej.id_clase
-    INNER JOIN Intervalo_Tiempo it
-    ON it.id_intervalo = cej.id_intervalo
     INNER JOIN Instructor i
     ON i.email = c.email_instructor;
 END //
@@ -675,16 +692,25 @@ DELIMITER //
 
 CREATE PROCEDURE GetClase(IN pvIdClase INT)
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
 		FROM Clase
-		WHERE id_clase = pvIdClase) as c
-    INNER JOIN Clases_en_Jornada cej
-    ON cej.id_clase = c.id_clase
-    INNER JOIN Intervalo_Tiempo it
-    ON it.id_intervalo = cej.id_intervalo
+		WHERE id_clase = pvIdClase) AS c
     INNER JOIN Instructor i
     ON i.email = c.email_instructor;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetHorarioClase;
+DELIMITER //
+
+CREATE PROCEDURE GetHorarioClase(IN piIdClase INT)
+BEGIN
+	SELECT it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+    FROM Intervalo_Tiempo AS it
+    INNER JOIN Clases_en_Jornada AS cej
+    ON it.id_intervalo = cej.id_intervalo WHERE cej.id_clase = piIdClase;
 END //
 
 DELIMITER ;
@@ -694,10 +720,10 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesEnJornada(IN piIdJornada INT)
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
-    FROM (SELECT id_clase, id_intervalo, id_jornada
+	SELECT cej.id_clase_jornada, c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+    FROM (SELECT id_clase_jornada, id_clase, id_intervalo, id_jornada
 		FROM Clases_en_Jornada
-		WHERE id_jornada = piIdJornada) as cej
+		WHERE id_jornada = piIdJornada) AS cej
     INNER JOIN Clase c
     ON cej.id_clase = c.id_clase
     INNER JOIN Intervalo_Tiempo it
@@ -730,7 +756,7 @@ BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT email_cliente, id_clase
 		FROM Matricula
-		WHERE email_cliente = pvEmailCliente) as m
+		WHERE email_cliente = pvEmailCliente) AS m
 	INNER JOIN Clase c
     ON c.id_clase = m.id_clase
     INNER JOIN Clases_en_Jornada cej
@@ -760,10 +786,10 @@ DELIMITER //
 
 CREATE PROCEDURE GetMatriculasClase(IN piIdClase INT)
 BEGIN
-	SELECT c.email, c.identificacion, c.primer_nombre, c.segundo_nombre, c.primer_apellido, c.segundo_apellido, c.fecha_nacimiento, c.telefono
+	SELECT c.email, c.primer_nombre, c.segundo_nombre, c.primer_apellido, c.segundo_apellido
     FROM (SELECT email_cliente, id_clase
 		FROM Matricula
-		WHERE id_clase = piIdClase) as m
+		WHERE id_clase = piIdClase) AS m
 	INNER JOIN Cliente c
     ON c.email = m.email_cliente;
 END //
@@ -777,6 +803,32 @@ CREATE PROCEDURE CrearPago(IN piCantidad INT, IN pvEmailCliente VARCHAR(50), IN 
 BEGIN
 	INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase)
 	VALUES(piCantidad, pvEstadoPago, pvEmailCliente, pvId_clase);
+    COMMIT;
+    SELECT LAST_INSERT_ID() AS id_pago;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS ModificarPago;
+DELIMITER //
+
+CREATE PROCEDURE ModificarPago(IN piIdPago INT, IN pvFormaPago VARCHAR(50), IN pvEstadoPago VARCHAR(50))
+BEGIN
+	UPDATE Pago
+    SET estado_pago = pvEstadoPago, fecha = CURDATE(), forma_pago = pvFormaPago
+	WHERE id_pago = piIdPago;
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS EliminarPago;
+DELIMITER //
+
+CREATE PROCEDURE EliminarPago(IN piIdPago INT)
+BEGIN
+    DELETE FROM Pago
+    WHERE id_pago = piIdPago;
     COMMIT;
 END //
 
@@ -831,3 +883,13 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS ContarAdministradores;
+DELIMITER //
+
+CREATE PROCEDURE ContarAdministradores()
+BEGIN
+	SELECT COUNT(email) AS total
+    FROM Administrador;
+END //
+
+DELIMITER ;
