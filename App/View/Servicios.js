@@ -1,31 +1,21 @@
 class Servicios{
   
-  crearServicio(info){
+  async crearServicio(info){
     let i = Utilidades.convertirAJSON(info);
-    Utilidades.ajaxCall('/crearServicio', 'POST', i, function(r){
-      muestraMensaje("Exito", "Servicio creado con éxito");
-    }, function(xhr, status, error){
-      muestraMensaje("Fallo", xhr.responseText);
-    });
+    return await Utilidades.ajaxCall('/crearServicio', 'POST', i, "Servicio creado con éxito");
   }
 
-  modificarServicio(info){
+  async modificarServicio(info){
     let i = Utilidades.convertirAJSON(info);
-    Utilidades.ajaxCall('/modificarServicio', 'POST', i, function(r){
-      muestraMensaje("Exito", "Servicio modificado con éxito");
-    }, function(xhr, status, error){
-      muestraMensaje("Fallo", xhr.responseText);
-    });
+    return await Utilidades.ajaxCall('/modificarServicio', 'POST', i, "Servicio modificado con éxito");
+  }
+
+  async eliminarServicio(nombreServicio){
+    var d = JSON.stringify({nombreServicio});
+    return await Utilidades.ajaxCall('/eliminarServicio', 'POST', d, "Servicio eliminado con éxito");
   }
 
   async mostrarListadoServicios(esLista){
-    return new Promise(function(resolve, reject) {
-      Utilidades.ajaxCall('/mostrarServicios?esLista='+esLista, 'GET', {}, function(r){
-        resolve(r);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        reject(xhr);
-      });
-    });
+    return await Utilidades.ajaxCall('/mostrarServicios?esLista='+esLista, 'GET', {});
   }
 }

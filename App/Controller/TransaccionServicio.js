@@ -9,10 +9,11 @@ class TransaccionServicios{
   }
 
   async agregar(elem){
-    return await this.#conexionBaseDatos.query(
+    var r = await this.#conexionBaseDatos.query(
       'CALL CrearServicio(?,?)',
       [elem.nombre, elem.costo]
       );
+    return r[0][0].id_servicio;
   }
   
   async modificar(elem){
@@ -25,7 +26,7 @@ class TransaccionServicios{
   async eliminar(elem){
     return await this.#conexionBaseDatos.query(
       'CALL EliminarServicio(?)',
-      [elem.id]
+      [elem.nombreServicio]
       );
   }
 

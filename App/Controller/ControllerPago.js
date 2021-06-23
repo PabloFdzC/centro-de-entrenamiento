@@ -1,20 +1,26 @@
+const ArreglaFechas = require("./ArreglaFechas.js");
 const TransaccionPago = require("./TransaccionPago.js");
-const Clase = require("./../Model/Clase.js");
 const EstadoPago = require("./../Model/EstadoPago.js");
 const Pago = require("./../Model/Pago.js");
-const Servicio = require("./../Model/Servicio.js");
 
 class ControllerPago{
   #transaccionPago = null;
+  #ctrlServicio = null;
+  #ctrlClase = null;
+
+  #pagos = null;
   
-  constructor(){
+  constructor(ctrlServicio, ctrlClase){
+    this.#ctrlServicio = ctrlServicio;
+    this.#ctrlClase = ctrlClase;
     this.#transaccionPago = new TransaccionPago();
+    this.#pagos = {};
   }
 
   async agregar(elem){
     elem.estado = EstadoPago.PENDIENTE;
-    var result = await this.#transaccionPago.agregar(elem);
-    return result;
+    var r = await this.#transaccionPago.agregar(elem);
+    return r;
   }
 
   async modificar(elem){
@@ -34,10 +40,22 @@ class ControllerPago{
     var i;
     var listaPagos = [];
     for(i = 0; i < pagoslistaresult.length; i++){
-      var pagoresult = pagoslistaresult[i];
-      var servicio = new Servicio(pagoresult.nombre_servicio, pagoresult.costo_matricula);
-      var clase = new Clase(id = pagoresult.id_clase, servicio = servicio);
-      var pago = new Pago(pagoresult.id_pago, pagoresult.fecha, pagoresult.forma_pago, clase);
+      var p = pagoslistaresult[i];
+      var servicio = this.#ctrlServicio.agregaMemoria({
+        nombre:p.nombre_servicio,
+        costoMatricula:p.costo_matricula
+      });
+      var clase = this.#ctrlClase.agregaMemoria({
+        id: p.id_clase,
+        servicio
+      });
+      var pago = this.agregaMemoria({
+        id:p.id_pago,
+        fecha:p.fecha,
+        formaPago:p.forma_pago,
+        cantidad:p.cantidad,
+        clase
+      });
       listaPagos.push(pago);
     }
     return listaPagos;
@@ -49,6 +67,31 @@ class ControllerPago{
     return result;
   }
 
+  agregaMemoria(elem = {id:null,fecha:null,formaPago:null,cantidad:null,clase:null}){
+    if(!(elem.id in this.#pagos)){
+      this.#pagos[elem.id] = new Pago(
+        elem.id,
+        ArreglaFechas.stringAFecha(elem.fecha),
+        elem.formaPago,
+        elem.cantidad,
+        elem.clase);
+    } else {
+      let p = this.#pagos[elem.id];
+      if(elem.fecha != null && ArreglaFechas.fechaAString(p.getDia()) != elem.fecha){
+        p.setFecha(ArreglaFechas.stringAFecha(elem.fecha));
+      }
+      if(elem.formaPago != null && p.getFormaPago() != elem.formaPago){
+        p.setFormaPago(elem.formaPago);
+      }
+      if(elem.cantidad != null && p.getCantidad() != elem.cantidad){
+        p.setCantidad(elem.cantidad);
+      }
+      if(elem.clase != null && p.getClase() != elem.clase){
+        p.setClase(elem.clase);
+      }
+    }
+    return this.#pagos[elem.id];
+  }
 }
 
 module.exports = ControllerPago;

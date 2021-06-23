@@ -49,8 +49,8 @@ class ControllersSng{
       this.#controllerClase = new ControllerClase(
         this.getControllerInstructor(),
         this.getControllerIntervaloTiempo(),
-        this.getControllerJornada(),
-        this.getControllerMatriculaClase()
+        this.getControllerMatriculaClase(),
+        this.getControllerServicio()
       );
     }
     return this.#controllerClase;
@@ -65,7 +65,9 @@ class ControllersSng{
 
   getControllerInstructor(){
     if(this.#controllerInstructor == null){
-      this.#controllerInstructor = new ControllerInstructor(this.getControllerServicioInstructor());
+      this.#controllerInstructor = new ControllerInstructor(
+        this.getControllerServicioInstructor()
+        );
     }
     return this.#controllerInstructor;
   }
@@ -75,7 +77,9 @@ class ControllersSng{
       this.#controllerJornada = new ControllerJornada(
         this.getControllerInstructor(),
         this.getControllerMatriculaClase(),
-        this.getControllerIntervaloTiempo()
+        this.getControllerIntervaloTiempo(),
+        this.getControllerServicio(),
+        this.getControllerClase()
         );
     }
     return this.#controllerJornada;
@@ -90,14 +94,19 @@ class ControllersSng{
 
   getControllerMatriculaClase(){
     if(this.#controllerMatriculaClase == null){
-      this.#controllerMatriculaClase = new ControllerMatriculaClase();
+      this.#controllerMatriculaClase = new ControllerMatriculaClase(
+        this.getControllerCliente()
+      );
     }
     return this.#controllerMatriculaClase;
   }
 
   getControllerPago(){
     if(this.#controllerPago == null){
-      this.#controllerPago = new ControllerPago();
+      this.#controllerPago = new ControllerPago(
+        this.getControllerServicio(),
+        this.getControllerClase()
+      );
     }
     return this.#controllerPago;
   }
@@ -121,21 +130,29 @@ class ControllersSng{
 
   getControllerServicioInstructor(){
     if(this.#controllerServicioInstructor == null){
-      this.#controllerServicioInstructor = new ControllerServicioInstructor();
+      this.#controllerServicioInstructor = new ControllerServicioInstructor(
+        this.getControllerServicio()
+      );
     }
     return this.#controllerServicioInstructor;
   }
 
   getControllerServicioSala(){
     if(this.#controllerServicioSala == null){
-      this.#controllerServicioSala = new ControllerServicioSala();
+      this.#controllerServicioSala = new ControllerServicioSala(
+        this.getControllerServicio()
+      );
     }
     return this.#controllerServicioSala;
   }
 
   getControllerUsuario(){
     if(this.#controllerUsuario == null){
-      this.#controllerUsuario = new ControllerUsuario();
+      this.#controllerUsuario = new ControllerUsuario(
+        this.getControllerAdministrador(),
+        this.getControllerCliente(),
+        this.getControllerInstructor()
+      );
     }
     return this.#controllerUsuario;
   }

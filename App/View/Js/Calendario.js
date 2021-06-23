@@ -1,9 +1,14 @@
 $('body').ready(async function(){
   var cla = new Clase();
   var servicios = new Servicios();
+  var instructores = new Instructores();
   var esModificar = false;
   var cargado = false;
-  var modalClase = new bootstrap.Modal(document.getElementById('modalClase'));
+  var modalClase;
+  let idModalClase = document.getElementById('modalClase');
+  if(idModalClase){
+    modalClase = new bootstrap.Modal(idModalClase);
+  }
 
   var cal = new Calendario();
   var modalVerDia = new bootstrap.Modal(document.getElementById('modalVerDia'));
@@ -41,9 +46,13 @@ $('body').ready(async function(){
     $('#mesAnno').empty();
     $('#mesAnno').append(meses[mesUsuario]+" "+annoUsuario);
     if(salas.length > 0){
-      let jornadasDelMes = await cal.mostrarCalendario({idSala:salas[0].id,annoUsuario, mesUsuario, annoActual, mesActual, diaActual});
-      jornadas = jornadasDelMes.jornadas;
-      $('#calendarioCont').append(jornadasDelMes.html);
+      try{
+        let jornadasDelMes = await cal.mostrarCalendario({idSala:salas[0].id,annoUsuario, mesUsuario, annoActual, mesActual, diaActual});
+        jornadas = jornadasDelMes.jornadas;
+        $('#calendarioCont').append(jornadasDelMes.html);
+      }catch(err){
+        muestraMensaje("Fallo", err.responseText);
+      }
     } else {
       $('#calendarioCont').append('<h2>Nada para mostrar</h2>');
     }
@@ -51,11 +60,15 @@ $('body').ready(async function(){
 
   $('#calendarioCont').on('click', '.diaHabil', async function(){
     let idJornada = $(this).attr('id');
-    let j = await cal.mostrarClasesJornada({idJornada});
-    console.log(j);
-    jornadaActual = j.jornada;
-    $('#infoDia').empty();
-    $('#infoDia').append(j.html);
+    try{
+      let j = await cal.mostrarClasesJornada({idJornada});
+      console.log(j);
+      jornadaActual = j.jornada;
+      $('#infoDia').empty();
+      $('#infoDia').append(j.html);
+    }catch(err){
+      muestraMensaje("Fallo", err.responseText);
+    }
   });
 
   $('#mesAnterior').on('click',function(event){
@@ -134,11 +147,9 @@ $('body').ready(async function(){
         claseActual = await cla.mostrarClase(val);
         let ja = fechaEnInput(jornadaActual.dia);
         console.log(jornadaActual);
-        console.log(ja);
         $('#dia').val(ja);
         $('#dia').attr('min',hoy);
-        console.log(claseActual);
-        let hc = claseActual.horarioClase[0];
+        let hc = claseActual.horario[jornadaActual.id];
         $("#horaInicio").val(hc.horaInicio+":"+hc.minutoInicio).change();
         $("#horaFinal").val(hc.horaFinal+":"+hc.minutoFinal).change();
         $("#servicio").val(claseActual.servicio).change();
@@ -149,8 +160,9 @@ $('body').ready(async function(){
           $("#instructorTemporal").val(claseActual.instructorTemporal.email).change();
         }
         modalClase.show();
-      }catch(e){
-        console.log(e);
+      }catch(err){
+        console.log(err);
+        muestraMensaje("Fallo", err.responseText);
       }
     }
   });
@@ -169,16 +181,25 @@ $('body').ready(async function(){
         else
           await cla.crearClase(info);
         modalClase.hide();
-      }catch(e){
-        console.log(e);
+      }catch(err){
+        muestraMensaje("Fallo", err.responseText);
       }
     }
   });
 
   cargar = async function(){
-    var res = await servicios.mostrarListadoServicios(true);
-    if(res){
-      $('#servicio').append(res);
+    try{
+      var res = await servicios.mostrarListadoServicios(true);
+      if(res){
+        $('#servicio').append(res);
+      }
+      var res2 = await instructores.mostrarListadoInstructores(true);
+      if(res2){
+        $('#instructor').append(res2);
+        $('#instructorTemporal').append(res2);
+      }
+    }catch(err){
+      muestraMensaje("Fallo", err.responseText);
     }
   };
 

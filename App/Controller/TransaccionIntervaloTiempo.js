@@ -9,25 +9,27 @@ class TransaccionIntervaloTiempo{
   }
 
   async agregar(elem){
-    return await this.#conexionBaseDatos.query('CALL CrearIntervaloTiempo(?,?,?,?)', [
+    var r = await this.#conexionBaseDatos.query('CALL CrearIntervaloTiempo(?,?,?,?)', [
       elem.horaInicio,
       elem.horaFinal,
       elem.minutoInicio,
       elem.minutoFinal
     ]);
+    return r[0][0].id_intervalo;
   }
 
   async agregarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       'INSERT INTO Intervalo_Tiempo(hora_inicio, hora_final, minuto_inicio, minuto_final) VALUES ?',
-      [valores]
+      [valores], true
       );
   }
 
   async eliminarMultiples(valores){
+    console.log(valores);
     return await this.#conexionBaseDatos.query(
-      'DELETE FROM Jornada WHERE (id_jornada) IN (?)',
-      [valores]
+      'DELETE FROM Intervalo_Tiempo WHERE (id_intervalo) IN (?)',
+      [valores], true
       );
   }
   

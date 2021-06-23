@@ -9,7 +9,7 @@
           <h1 class="card-title tituloLista">Sala</h1>
         </div>
         <div class="d-grid col-2">
-          <button type="button" class="btn btn-primary activaModal" data-bs-toggle="modal" data-bs-target="#modalCrearSala" value="CREAR">Crear</button>
+          <button type="button" class="btn btn-primary activaModal" data-bs-toggle="modal" data-bs-target="#modalSala" value="CREAR">Crear</button>
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
   <div id="salas">
 
   </div>
-  <div class="modal fade" id="modalCrearSala" tabindex="-1" aria-labelledby="crearEditar" aria-hidden="true">
+  <div class="modal fade" id="modalSala" tabindex="-1" aria-labelledby="crearEditar" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"  style="max-width: 620px;">
       <div class="modal-content background">
         <form class="modal-body d-grid gap-4 needs-validation" novalidate id="formSala">
@@ -26,14 +26,14 @@
             <div class="row">
               <div class="d-grid col-6">
                 <label for="capacidad" class="form-label">Capacidad</label>
-                <input type="text" class="form-control" id="capacidad" name="capacidad" aria-describedby="CapacidadSala" required>
+                <input type="number" min="0" class="form-control" id="capacidad" name="capacidad" aria-describedby="CapacidadSala" required>
                 <div class="invalid-feedback">
                   El campo no puede estar vacío.
                 </div>
               </div>
               <div class="d-grid col-6">
                 <label for="aforo" class="form-label">Aforo</label>
-                <input type="text" class="form-control" id="aforo" name="aforo" aria-describedby="AforoSala" required>
+                <input type="number" min="0" max="100" class="form-control" id="aforo" name="aforo" aria-describedby="AforoSala" required>
                 <div class="invalid-feedback">
                   El campo no puede estar vacío.
                 </div>
@@ -69,17 +69,17 @@
               </div>
             </div>
             <div class="row">
-              <div class="d-grid col-6" style="height: fit-content;">
+              <div class="col-6">
                 <label for="AñadirDíaCalendario" class="form-label">Añadir día de calendario</label>
                 <div class="row">
-                  <div class="d-grid col-2">
+                  <div>
                     <button type="button" class="btn btn-secondary" id="annadirCalendario" aria-describedby="AñadirDíaCalendario" data-bs-toggle="modal" data-bs-target="#modalCrearCalendario">Añadir</button>
                   </div>
                 </div>
               </div>
               <div class="col-6">
                 <h3 class="tituloDatos">Días de calendario:</h3>
-                <div id="listaDiasCalendario">
+                <div id="listaDiasCalendario" class="listaDiasCalendarioSala">
                 </div>
               </div>
             </div>
@@ -89,7 +89,7 @@
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
                 </div>
                 <div class="d-grid col-2">
-                  <button type="submit" form="formSala" class="btn btn-primary">Crear</button>
+                  <button type="submit" form="formSala" class="btn btn-primary" id="btnCrear">Enviar</button>
                 </div>
               </div>
             </div>

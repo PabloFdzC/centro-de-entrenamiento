@@ -16,14 +16,14 @@ class TransaccionJornada{
   async agregarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       'INSERT INTO Jornada(dia, id_intervalo_tiempo, id_sala) VALUES ?',
-      [valores]
+      [valores], true
       );
   }
 
   async eliminarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       'DELETE FROM Jornada WHERE (id_jornada) IN (?)',
-      [valores]
+      [valores], true
       );
   }
 

@@ -1,7 +1,7 @@
 class Servicio {
   
-  #nombre;
-  #costoMatricula;
+  #nombre = null;
+  #costoMatricula = null;
 
   constructor(nombre, costoMatricula){
     this.#nombre = nombre;
@@ -22,6 +22,14 @@ class Servicio {
 
   setCostoMatricula(costoMatricula){
     this.#costoMatricula = costoMatricula;
+  }
+
+  convertirAVista(){
+    var obj = {
+      nombre: this.#nombre,
+      costoMatricula:this.#costoMatricula
+    }
+    return obj;
   }
 
 }

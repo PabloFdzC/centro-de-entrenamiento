@@ -1,10 +1,11 @@
 const TransaccionServicioSala = require("./TransaccionServicioSala.js");
-const Servicio = require("./../Model/Servicio.js");
 
 class ControllerServicioSala{
   #transaccionServicioSala = null;
+  #ctrlServicio = null;
 
-  constructor(){
+  constructor(ctrlServicio){
+    this.#ctrlServicio = ctrlServicio;
     this.#transaccionServicioSala = new TransaccionServicioSala();
   }
 
@@ -14,8 +15,11 @@ class ControllerServicioSala{
       var valor = [elem.idSala, elem.servicios[i]];
       agregar.push(valor);
     }
-    var r = await this.#transaccionServicioSala.agregarMultiples(agregar);
-    return r;
+    if(agregar.length > 0){
+      var r = await this.#transaccionServicioSala.agregarMultiples(agregar);
+      return r;
+    }
+    return null;
   }
 
   async eliminarMultiples(elem){
@@ -24,8 +28,11 @@ class ControllerServicioSala{
       var valor = [elem.idSala, elem.serviciosE[i]];
       eliminar.push(valor);
     }
-    var r = await this.#transaccionServicioSala.eliminarMultiples(eliminar);
-    return r;
+    if(eliminar.length > 0){
+      var r = await this.#transaccionServicioSala.eliminarMultiples(eliminar);
+      return r;
+    }
+    return null;
   }
   
   async mostrarTodosXIdSala(id){
@@ -35,7 +42,10 @@ class ControllerServicioSala{
     var listaServicios = [];
     for(i = 0; i < listaserviciosresult.length; i++){
       var servicioresult = listaserviciosresult[i];
-      var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+      var servicio = this.#ctrlServicio.agregaMemoria({
+        nombre:servicioresult.nombre_servicio,
+        costoMatricula:servicioresult.costo_matricula
+      });
       listaServicios.push(servicio);
     }
     return listaServicios;

@@ -22,13 +22,16 @@ class ConexionBaseDatos{
     });
   }
 
-  async query(s, params){
+  async query(s, params, commit = false){
     var con = this.#conexion;
     return new Promise(function(resolve, reject){
-      con.query(s, params, function(error, result){
+      con.query(s, params, async function(error, result){
         if(error){
           reject(error);
         }else{
+          if(commit){
+            await con.commit();
+          }
           resolve(result);
         }
       });

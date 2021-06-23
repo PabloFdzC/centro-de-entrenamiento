@@ -1,11 +1,11 @@
 class Sala {
   
-  #id
-  #capacidad;
-  #aforo;
-  #costoMatricula;
-  #calendario;
-  #servicios;
+  #id = null;
+  #capacidad = null;
+  #aforo = null;
+  #costoMatricula = null;
+  #calendario = null;
+  #servicios = null;
 
   constructor(id, capacidad, aforo, costoMatricula, calendario, servicios){
     this.#id = id;
@@ -84,10 +84,11 @@ class Sala {
     }
     if(Array.isArray(this.#calendario)){
       for(let c of this.#calendario){
-        a.push(c.convertirAVista());
+        a2.push(c.convertirAVista());
       }
     }
     obj.servicios = a;
+    obj.calendario = a2;
     return obj;
   }
 

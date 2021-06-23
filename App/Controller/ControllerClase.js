@@ -2,22 +2,23 @@ const TransaccionClase = require("./TransaccionClase.js");
 const TransaccionClaseJornada = require("./TransaccionClaseJornada.js");
 const Clase = require("./../Model/Clase");
 const EstadoClase = require("./../Model/EstadoClase");
-const Instructor = require("./../Model/Instructor");
-const Servicio = require("./../Model/Servicio");
+const ArreglaFechas = require("./ArreglaFechas.js");
 
 class ControllerClase{
   #ctrlInstructor = null;
   #ctrlIntervaloTiempo = null;
-  #ctrlJornada = null;
   #ctrlMatriculaClase = null;
+  #ctrlServicio = null;
   #transaccionClase = null;
   #transaccionClaseJornada = null;
+  #clases = null;
   
-  constructor(ctrlInstructor, ctrlIntervaloTiempo, ctrlJornada, ctrlMatriculaClase){
+  constructor(ctrlInstructor, ctrlIntervaloTiempo, ctrlMatriculaClase, ctrlServicio){
     this.#ctrlInstructor = ctrlInstructor;
     this.#ctrlIntervaloTiempo = ctrlIntervaloTiempo;
-    this.#ctrlJornada = ctrlJornada;
     this.#ctrlMatriculaClase = ctrlMatriculaClase;
+    this.#ctrlServicio = ctrlServicio;
+    this.#clases = {};
     this.#transaccionClase = new TransaccionClase();
     this.#transaccionClaseJornada = new TransaccionClaseJornada();
   }
@@ -27,7 +28,7 @@ class ControllerClase{
     if(disponible.length > 0){
       let idsJornada = [];
       let cantidad = 0;
-      let d = elem.dia;
+      let d = ArreglaFechas.stringAFecha(elem.dia);
       let mes = d.getMonth();
       if(suma === 1){
         d.setDate(1);
@@ -38,7 +39,7 @@ class ControllerClase{
       }
       while(mes === d.getMonth()){
         for(let disp of disponible){
-          let dia = new Date(disp.dia);
+          let dia = ArreglaFechas.stringAFecha(disp.dia);
           if(dia.getTime() === d.getTime()){
             cantidad++;
             idsJornada.push(disp.id_jornada);
@@ -52,10 +53,10 @@ class ControllerClase{
     }
     throw {code: "ER_NO_ID_JORNADA"};
   }
-
+  //TODO
   async #cantidadIdIntervalosExistentes(elem){
     let disponible = await this.#transaccionClase.mostrarJornadasCrearClase(elem);
-    let existentes = await this.#ctrlJornada.mostrarJornadasCrearClase(elem);
+    //let existentes = await this.#ctrlJornada.mostrarJornadasCrearClase(elem);
     if(disponible.length > 0){
       let idsJornada = [];
       let cantidad = 0;
@@ -70,7 +71,7 @@ class ControllerClase{
       }
       while(mes <= d.getMonth()){
         for(let disp of disponible){
-          let dia = new Date(disp.dia);
+          let dia = ArreglaFechas.stringAFecha(disp.dia);
           if(dia.getTime() === d.getTime()){
             cantidad++;
             idsJornada.push(disp.id_jornada);
@@ -87,7 +88,10 @@ class ControllerClase{
 
   async agregar(elem){
     elem.estado = EstadoClase.AGENDADA;
-    return await this.agregarAux(elem);
+    var r = await this.agregarAux(elem);
+    elem.id = r;
+    this.agregaMemoria(elem);
+    return r;
   }
 
   async agregarAux(elem){
@@ -153,48 +157,52 @@ class ControllerClase{
   }
 
   async #formatoClase(claseresult, opciones={conHorario:false,conMatricula:false}){
-    var instructor = new Instructor(claseresult.primer_nombre,
-      claseresult.segundo_nombre,
-      claseresult.primer_apellido,
-      claseresult.segundo_apellido,
-      claseresult.fecha_nacimiento,
-      claseresult.telefono,
-      claseresult.email,
-      claseresult.identificacion,
-      null
-      );
-    var instructor_temporal = null;
+    var instructor = this.#ctrlInstructor.agregaMemoria({
+      primerNombre:claseresult.primer_nombre,
+      segundoNombre:claseresult.segundo_nombre,
+      primerApellido:claseresult.primer_apellido,
+      segundoApellido:claseresult.segundo_apellido,
+      fechaNacimiento:claseresult.fecha_nacimiento,
+      telefono:claseresult.telefono,
+      email:claseresult.email,
+      identificacion:claseresult.identificacion,
+      });
+    var instructorTemporal = null;
     if(claseresult.email_instructor_temporal){
       let iT = await this.#ctrlInstructor.consultar(claseresult.email_instructor_temporal);
-      instructor_temporal = new Instructor(iT.primer_nombre,
-        iT.segundo_nombre,
-        iT.primer_apellido,
-        iT.segundo_apellido,
-        iT.fecha_nacimiento,
-        iT.telefono,
-        iT.email,
-        iT.identificacion,
-        null
-        );
+      instructorTemporal = this.#ctrlInstructor.agregaMemoria({
+        primerNombre:iT.primer_nombre,
+        segundoNombre:iT.segundo_nombre,
+        primerApellido:iT.primer_apellido,
+        segundoApellido:iT.segundo_apellido,
+        fechaNacimiento:iT.fecha_nacimiento,
+        telefono:iT.telefono,
+        email:iT.email,
+        identificacion:iT.identificacion
+        });
     }
-    var servicio = new Servicio(claseresult.nombre_servicio, claseresult.costo_matricula);
+    var servicio = this.#ctrlServicio.agregaMemoria({
+      nombre:claseresult.nombre_servicio,
+      costoMatricula:claseresult.costo_matricula
+    });
     var matriculas = [];
-    var horario = [];
+    var horario = {};
     if(opciones.conHorario){
       horario = await this.#ctrlIntervaloTiempo.mostrarIntervaloXIdClase(claseresult.id_clase);
     }
     if(opciones.conMatricula){
-      matriculas = await this.#ctrlMatriculaClase.mostrarTodosXIdClase(claseresult.id_clase);
+      matriculas = await this.#ctrlMatriculaClase.mostrarPersonasMatriculadas(claseresult.id_clase);
     }
-    var clase = new Clase(claseresult.id_clase,
-      claseresult.capacidad,
-      claseresult.estado_clase,
-      horario,
-      instructor_temporal,
+    var clase = this.agregaMemoria({
+      id: claseresult.id_clase,
+      capacidad:claseresult.capacidad,
+      estado:claseresult.estado_clase,
+      horario:horario,
+      instructorTemporal,
       servicio,
       instructor,
       matriculas
-      );
+    });
       return clase
   }
 
@@ -206,6 +214,51 @@ class ControllerClase{
       i++;
     }
     return lista;
+  }
+
+  agregaMemoria(elem = {id:null,capacidad:null,estado:null,horario:null,instructorTemporal:null,servicio:null,instructor:null,matriculas:null}){
+    if(!(elem.id in this.#clases)){
+      this.#clases[elem.id] = new Clase(elem.id,
+        elem.capacidad,
+        elem.estado,
+        elem.horario,
+        elem.instructorTemporal,
+        elem.servicio,
+        elem.instructor,
+        elem.matriculas);
+    } else {
+      let c = this.#clases[elem.id];
+      if(elem.capacidad != null && c.getCapacidad() != elem.capacidad){
+        c.setCapacidad(elem.capacidad);
+      }
+      if(elem.estadoClase != null && c.getEstado() != elem.estado){
+        c.setEstado(elem.estado);
+      }
+      if(elem.horario != null){
+        var horario = c.getHorario();
+        if(typeof(elem.horario) === 'object'){
+          for(let eh in elem.horario){
+            if(!(eh in horario)){
+              horario[eh] = elem.horario[eh];
+            }
+          }
+          c.setHorario(horario);
+        }
+      }
+      if(elem.instructorTemporal != null && c.getInstructorTemporal() != elem.instructorTemporal){
+        c.setInstructorTemporal(elem.instructorTemporal);
+      }
+      if(elem.servicio != null && c.getServicio() != elem.servicio){
+        c.setServicio(elem.servicio);
+      }
+      if(elem.instructor != null && c.getInstructor() != elem.instructor){
+        c.setInstructor(elem.instructor);
+      }
+      if(elem.matriculas != null){
+        c.setMatriculas(elem.matriculas);
+      }
+    }
+    return this.#clases[elem.id];
   }
 
 }

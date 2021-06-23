@@ -27,7 +27,7 @@ class TransaccionInstructor{
   }
 
   async modificar(elem){
-    return await this.#conexionBaseDatos.query('CALL modificarInstructor(?,?,?,?,?,?,?,?,?)', [
+    return await this.#conexionBaseDatos.query('CALL modificarInstructor(?,?,?,?,?,?,?,?)', [
       elem.email,
       elem.identificacion,
       elem.primerNombre,
@@ -35,7 +35,6 @@ class TransaccionInstructor{
       elem.primerApellido,
       elem.segundoApellido,
       elem.fechaNacimiento,
-      elem.contrasenna,
       elem.telefono
     ]);
   }

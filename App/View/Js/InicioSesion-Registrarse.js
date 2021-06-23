@@ -14,21 +14,29 @@ $('body').ready(function(){
     $('#IniciarSesion').addClass('esconde');
   }
 
-  $('#formIniciarSesion').submit(function(event){
+  $('#formIniciarSesion').submit(async function(event){
     event.preventDefault();
     let form = $('#formIniciarSesion')[0];
     if(form.checkValidity()){
       let info = new FormData(form);
-      ini.iniciarSesion(info);
+      try{
+        await ini.iniciarSesion(info);
+      }catch(err){
+        muestraMensaje("Fallo", err.responseText);
+      }
     }
   });
 
-  $('#formRegistrarse').submit(function(event){
+  $('#formRegistrarse').submit(async function(event){
     event.preventDefault();
     let form = $('#formRegistrarse')[0];
     if(form.checkValidity()){
       let info = new FormData(form);
-      reg.registrarse(info);
+      try{
+        await reg.registrarCliente(info);
+      }catch(err){
+        muestraMensaje("Fallo", err.responseText);
+      }
     }
   });
 

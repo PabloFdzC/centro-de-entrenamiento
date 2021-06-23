@@ -7,7 +7,7 @@ const ctrlServicio = ctrlSng.getControllerServicio();
 OperacionesServicios.post('/crearServicio', async function(req, res){
   try{
     var r = await ctrlServicio.agregar(req.body);
-    res.send(r);
+    res.send({id:r});
   }catch(err){
     console.log(err);
     res.status(400);
@@ -35,7 +35,19 @@ OperacionesServicios.get('/mostrarServicios', async function(req, res){
     if(req.query.esLista === "true"){
       res.render('ServiciosLista.ejs', {lista});
     } else {
-      res.render('ServiciosCards.ejs', {lista});
+      res.render('ServiciosCards.ejs', {lista}, function(err, html){
+        if(err){
+          console.log(err);
+          res.status(400);
+          res.send("Algo salió mal");      
+        } else {
+          var l = [];
+          for(let s of lista){
+            l.push(s.convertirAVista());
+          }
+          res.send({html, servicios:l});
+        }
+      });
     }
   }catch(err){
     console.log(err);
@@ -51,7 +63,10 @@ OperacionesServicios.post('/eliminarServicio', async function(req, res){
   }catch(err){
     console.log(err);
     res.status(400);
-    res.send("Algo salió mal");
+    if(err.code == 'ER_ROW_IS_REFERENCED_2')
+      res.send("No se pudo eliminar el servicio está siendo usado por alguna sala, clase o instructor");
+    else
+      res.send("Algo salió mal");
   }
 });
 

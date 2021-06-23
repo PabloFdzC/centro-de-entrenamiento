@@ -2,11 +2,11 @@ const FormaPago = require('./FormaPago.js');
 
 class Pago{
   
-  #id
-  #fecha;
-  #formaPago;
-  #cantidad
-  #clase;
+  #id = null;
+  #fecha = null;
+  #formaPago = null;
+  #cantidad = null;
+  #clase = null;
 
   constructor(id, fecha, formaPago, cantidad, clase){
     this.#id = id;

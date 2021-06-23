@@ -1,20 +1,16 @@
 class Perfil{
-  modificarPerfil(info){
+  async modificarPerfil(info){
     let tipo = localStorage.getItem('tipo_usuario');
     let i = Utilidades.convertirAJSON(info);
     if(tipo == "Instructor"){
       let instructores = Instructores();
-      instructores.modificarInstructor(i);
+      return await instructores.modificarInstructor(i);
     } else if(tipo == "Cliente"){
-      Utilidades.ajaxCall('/modificarCliente', 'POST', i, function(r){
-        muestraMensaje("Exito", "Datos modificados con éxito");
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-      });
+      return await Utilidades.ajaxCall('/modificarCliente', 'POST', i, "Datos modificados con éxito");
     }
   }
 
-  modificarContrasenna(info){
+  async modificarContrasenna(info){
     let tipo = localStorage.getItem('tipo_usuario');
     let ruta = "";
     let i = Utilidades.convertirAJSON(info);
@@ -26,11 +22,7 @@ class Perfil{
       ruta = "/modificarContrasennaAdministrador"
     }
     if(ruta != ""){
-      Utilidades.ajaxCall(ruta, 'POST', i, function(r){
-        muestraMensaje("Exito", "Contraseña modificada con éxito");
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-      });
+      return await Utilidades.ajaxCall(ruta, 'POST', i, "Contraseña modificada con éxito");
     }
   }
 }

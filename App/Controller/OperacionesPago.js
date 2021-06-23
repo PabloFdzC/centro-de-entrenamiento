@@ -7,7 +7,7 @@ const ctrlPago = ctrlSng.getControllerPago();
 OperacionesPago.post('/crearPago', async function(req, res){
   try{
     var r = await ctrlPago.agregar(req.body);
-    res.send(r);
+    res.send({id:r});
   }catch(err){
     console.log(err);
     res.status(400);

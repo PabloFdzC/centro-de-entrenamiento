@@ -4,7 +4,7 @@ const OperacionesUsuario = Router({caseSensitive:true});
 const ctrlSng = ControllersSng.getInstance();
 const ctrlUsuario = ctrlSng.getControllerUsuario();
 
-OperacionesUsuario.post('/iniciarSesion', async function(req, res){
+OperacionesUsuario.post('/ingresar', async function(req, res){
   try{
     var usuario = await ctrlUsuario.iniciarSesion(req.body);
     req.session.email = usuario.email;

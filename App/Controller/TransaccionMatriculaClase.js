@@ -24,10 +24,10 @@ class TransaccionMatriculaClase{
     return r[0];
   }
 
-  async mostrarPersonasMatriculadas(idClase){
+  async mostrarPersonasMatriculadas(id){
     var r = await this.#conexionBaseDatos.query(
       'CALL GetMatriculasClase(?)',
-      [idClase]
+      [id]
       );
     return r[0];
   }

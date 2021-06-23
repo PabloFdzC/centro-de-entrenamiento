@@ -1,13 +1,13 @@
 class Persona{
 
-  primerNombre;
-  segundoNombre;
-  primerApellido;
-  segundoApellido;
-  fechaNacimiento;
-  telefono;
-  email;
-  identificacion;
+  primerNombre = null;
+  segundoNombre = null;
+  primerApellido = null;
+  segundoApellido = null;
+  fechaNacimiento = null;
+  telefono = null;
+  email = null;
+  identificacion = null;
 
   constructor(primerNombre, segundoNombre, primerApellido, segundoApellido,
     fechaNacimiento, telefono, email, identificacion){
@@ -24,10 +24,13 @@ class Persona{
   }
 
   getNombreCompleto(){
-    return this.primerNombre + ' ' +
-     this.segundoNombre + ' ' +
-      this.primerApellido + ' ' +
-       this.segundoApellido;
+    let nombreCompleto = this.primerNombre + ' ';
+    if(this.segundoNombre){
+      nombreCompleto += this.segundoNombre + ' ';
+    }
+    nombreCompleto += this.primerApellido + ' ' +
+      this.segundoApellido;
+    return nombreCompleto;
   }
 
   getPrimerNombre(){
@@ -42,7 +45,7 @@ class Persona{
   getSegundoApellido(){
     return this.segundoApellido;
   }
-  getfechaNacimiento(){
+  getFechaNacimiento(){
     return this.fechaNacimiento;
   }
   getEdad(){

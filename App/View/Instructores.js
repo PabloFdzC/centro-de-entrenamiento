@@ -1,58 +1,29 @@
 class Instructores{
 
-  crearInstructor(info, listaServicios){
+  async crearInstructor(info, listaServicios){
     info.append("servicios", JSON.stringify(listaServicios));
     let i = Utilidades.convertirAJSON(info);
-    Utilidades.ajaxCall('/crearInstructor', 'POST', i, function(r){
-      muestraMensaje("Exito", "La contraseña del instructor es " + r.contrasenna);   
-    }, function(xhr, status, error){
-      muestraMensaje("Fallo", xhr.responseText);
-    });
+    return await Utilidades.ajaxCall('/crearInstructor', 'POST', i);
   }
 
-  modificarInstructor(info, listaServiciosA, listaServiciosE){
+  async modificarInstructor(info, listaServiciosA, listaServiciosE){
     info.append("servicios", JSON.stringify(listaServiciosA));
     info.append("serviciosE", JSON.stringify(listaServiciosE));
     let i = Utilidades.convertirAJSON(info);
-    Utilidades.ajaxCall('/modificarInstructor', 'POST', i, function(r){
-      muestraMensaje("Exito", "Instructor modificados con éxito");
-    }, function(xhr, status, error){
-      muestraMensaje("Fallo", xhr.responseText);
-    });
+    return await Utilidades.ajaxCall('/modificarInstructor', 'POST', i, "Instructor modificado con éxito");
   }
 
   async mostrarInstructor(email){
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarInstructor?email='+email, 'GET', {}, function(instructor){
-        resolve(instructor);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        resolve(null);
-      });
-    });
+    return await Utilidades.ajaxCall('/mostrarInstructor?email='+email, 'GET', {});
   }
 
   async mostrarListadoInstructores(esLista){
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/mostrarInstructores?esLista='+esLista, 'GET', {}, function(html){
-        resolve(html);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-      });
-    });
+    return await Utilidades.ajaxCall('/mostrarInstructores?esLista='+esLista, 'GET', {});
   }
 
   async eliminarInstructor(email){
-    var d = Utilidades.convertirAJSON({email});
-    return new Promise(function(resolve) {
-      Utilidades.ajaxCall('/eliminarInstructor', 'POST', d, function(r){
-        muestraMensaje("Exito", "Se eliminó el instructor");
-        resolve(true);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        resolve(false);
-      });
-    });
+    var d = JSON.stringify({email});
+    return await Utilidades.ajaxCall('/eliminarInstructor', 'POST', d, "Se eliminó el instructor");
   }
 
 }

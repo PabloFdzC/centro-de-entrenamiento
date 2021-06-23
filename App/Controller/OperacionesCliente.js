@@ -6,9 +6,8 @@ const ctrlCliente = ctrlSng.getControllerCliente();
 
 OperacionesCliente.post('/crearCliente', async function(req, res){
   try{
-    console.log(req.body);
     var r = await ctrlCliente.agregar(req.body);
-    res.send(r);
+    res.send({id:r});
   }catch(err){
     console.log(err);
     res.status(400);

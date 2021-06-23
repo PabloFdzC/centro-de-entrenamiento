@@ -1,10 +1,12 @@
+const ArreglaFechas = require("../Controller/ArreglaFechas");
+
 class Jornada {
   
-  #id
-  #dia;
-  #horarioAtencion;
-  #clases;
-  #cantidadClases;
+  #id = null;
+  #dia = null;
+  #horarioAtencion = null;
+  #clases = null;
+  #cantidadClases = null;
 
   constructor(id, dia, horarioAtencion, clases, cantidadClases){
     this.#id = id;
@@ -57,7 +59,7 @@ class Jornada {
   convertirAVista(){
     var obj = {
       id:this.#id,
-      dia:this.#dia,
+      dia:ArreglaFechas.fechaAString(this.#dia),
       horarioAtencion:this.#horarioAtencion.convertirAVista(),
       cantidadClases:this.#cantidadClases
     }

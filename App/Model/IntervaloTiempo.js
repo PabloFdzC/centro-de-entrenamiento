@@ -1,9 +1,9 @@
 class IntervaloTiempo {
-  #id;
-  #horaInicio;
-  #minutoInicio;
-  #horaFinal;
-  #minutoFinal;
+  #id = null;
+  #horaInicio = null;
+  #minutoInicio = null;
+  #horaFinal = null;
+  #minutoFinal = null;
 
   constructor(id,horaInicio, minutoInicio, horaFinal, minutoFinal){
     this.#id = id;

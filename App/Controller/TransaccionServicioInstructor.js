@@ -19,14 +19,14 @@ class TransaccionServicioInstructor{
   async agregarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       'INSERT INTO Servicios_de_Instructor(email_instructor, nombre_servicio) VALUES ?',
-      [valores]
+      [valores], true
       );
   }
 
   async eliminarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       "DELETE FROM Servicios_de_Instructor WHERE (email_instructor, nombre_servicio) IN (?)",
-      [valores]
+      [valores], true
       );
   }
 

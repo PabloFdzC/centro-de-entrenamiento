@@ -10,7 +10,16 @@
   "Setiembre",
   "Octubre",
   "Noviembre",
-  "Diciembre",
+  "Diciembre"
+  );
+  const dias = Array(
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sabado"
   );
 let d = new Date(annoUsuario, mesUsuario, 1);
 let empiezaEn = d.getDay();
@@ -25,6 +34,13 @@ let actTerminaEn = dDesp.getDate();
 let contar = antTerminaEn - empiezaEn+1;
 let habil = false;
 %>
+<div class="row mt-2 justify-content-center">
+  <% for(let i = 0; i < 7; i++){ %>
+    <div class="col">
+      <%= dias[i]%>
+    </div>
+  <% } %>
+</div>
 <% for(let i = 0; i < 5; i++){ %>
 <div class="row mt-2 justify-content-center">
   <% for(let j = 0; j < 7; j++){
@@ -40,7 +56,6 @@ let habil = false;
     <% if(habil){let total = 0;let idJor;let hInicio = ""; let hFinal = ""; let fechaJor = "";
       for(var jor of jornadas){
         if(jor.getDia().getDate() == contar){
-          console.log(jor.getDia().getDate());
           total=jor.getCantidadClases();
           idJor = jor.getId();
           fechaJor = jor.getDia().toString();

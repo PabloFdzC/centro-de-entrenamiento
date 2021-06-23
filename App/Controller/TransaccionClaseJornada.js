@@ -11,7 +11,7 @@ class TransaccionClaseJornada{
   async agregarMultiples(valores){
     return await this.#conexionBaseDatos.query(
       'INSERT INTO Clases_en_Jornada(id_clase, id_intervalo, id_jornada) VALUES ?',
-      [valores]
+      [valores], true
       );
   }
   

@@ -31,3 +31,12 @@
 .diasCalendarioSala{
   width: auto;
 }
+
+.listaDiasCalendarioSala{
+  overflow-y: scroll;
+  max-height: 200px;
+}
+
+.fechaCalendario{
+  display: block;
+}

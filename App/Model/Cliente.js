@@ -1,15 +1,16 @@
+const ArreglaFechas = require('../Controller/ArreglaFechas.js');
 const EstadoPago = require('./EstadoPago.js');
 Persona = require('./Persona.js');
 
 class Cliente extends Persona{
   
-  #estadoPago;
+  #estadoPago = null;
 
   constructor(primerNombre, segundoNombre, primerApellido, segundoApellido,
-    fechaNacimiento, telefono, email, identificacion){
+    fechaNacimiento, telefono, email, identificacion, estadoPago){
     super(primerNombre, segundoNombre, primerApellido, segundoApellido,
       fechaNacimiento, telefono, email, identificacion);
-    this.#estadoPago = EstadoPago.MOROSO;
+    this.#estadoPago = estadoPago;
   }
 
   getEstadoPago(){
@@ -26,7 +27,7 @@ class Cliente extends Persona{
       segundoNombre:this.segundoNombre,
       primerApellido:this.primerApellido,
       segundoApellido:this.segundoApellido,
-      fechaNacimiento:this.fechaNacimiento,
+      fechaNacimiento:ArreglaFechas.fechaAString(this.fechaNacimiento),
       telefono:this.telefono,
       email:this.email,
       identificacion:this.identificacion

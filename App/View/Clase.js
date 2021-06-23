@@ -1,40 +1,17 @@
 class Clase{
   
-  crearClase(info){
+  async crearClase(info){
     let i = Utilidades.convertirAJSON(info);
-    return new Promise(function(resolve, reject) {
-      Utilidades.ajaxCall('/crearClase', 'POST', i, function(r){
-        muestraMensaje("Exito", "Clase creada con éxito");
-        resolve(r);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        reject(xhr);
-      });
-    });
+    return await Utilidades.ajaxCall('/crearClase', 'POST', i, "Clase creada con éxito");
   }
 
-  modificarClase(info){
+  async modificarClase(info){
     let i = Utilidades.convertirAJSON(info);
-    return new Promise(function(resolve, reject) {
-      Utilidades.ajaxCall('/modificarClase', 'POST', i, function(r){
-        muestraMensaje("Exito", "Clase modificada con éxito");
-        resolve(r);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        reject(xhr);
-      });
-    });
+    return await Utilidades.ajaxCall('/modificarClase', 'POST', i, "Clase modificada con éxito");
   }
 
   async mostrarClase(idClase){
-    return new Promise(function(resolve, reject) {
-      Utilidades.ajaxCall('/mostrarClase?idClase='+idClase, 'GET', {}, function(clase){
-        resolve(clase);
-      }, function(xhr, status, error){
-        muestraMensaje("Fallo", xhr.responseText);
-        reject(xhr);
-      });
-    });
+    return await Utilidades.ajaxCall('/mostrarClase?idClase='+idClase, 'GET', {});
   }
 
 }

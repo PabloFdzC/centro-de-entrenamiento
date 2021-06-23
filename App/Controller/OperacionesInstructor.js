@@ -35,16 +35,14 @@ OperacionesInstructor.get('/mostrarInstructor', async function(req, res){
 
 OperacionesInstructor.post('/modificarInstructor', async function(req, res){
   try{
-    req.body.servicios = JSON.parse(req.body.servicios);
-    var r = await ctrlInstr.modifcar(req.body);
+    req.body.servicios = await JSON.parse(req.body.servicios);
+    req.body.serviciosE = await JSON.parse(req.body.serviciosE);
+    var r = await ctrlInstr.modificar(req.body);
     res.send(r);
   }catch(err){
     console.log(err);
     res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
-    else
-      res.send("Algo salió mal");
+    res.send("Algo salió mal");
   }
 });
 
@@ -55,8 +53,8 @@ OperacionesInstructor.post('/eliminarInstructor', async function(req, res){
   }catch(err){
     console.log(err);
     res.status(400);
-    if(err.code == 'ER_DUP_ENTRY')
-      res.send("No se pudo crear el administrador");
+    if(err.code == 'ER_ROW_IS_REFERENCED_2')
+      res.send("No se pudo eliminar el instructor tiene clases a su nombre");
     else
       res.send("Algo salió mal");
   }

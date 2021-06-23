@@ -5,11 +5,13 @@ class ControllerSala{
   #transaccionSala = null;
   #ctrlServicioSala = null;
   #ctrlJornada = null;
+  #salas = null;
   
   constructor(ctrlServicioSala, ctrlJornada){
     this.#ctrlServicioSala = ctrlServicioSala;
     this.#ctrlJornada = ctrlJornada;
     this.#transaccionSala = new TransaccionSala();
+    this.#salas = {};
   }
 
   async agregar(elem){
@@ -23,7 +25,14 @@ class ControllerSala{
     var salaresult = await this.#transaccionSala.consultar(id);
     var listaJornadas = await this.#ctrlJornada.mostrarCalendario(salaresult.id_sala);
     var listaServicios = await this.#ctrlServicioSala.mostrarTodosXIdSala(salaresult.id_sala);
-    var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula, listaJornadas, listaServicios);
+    var sala = this.agregaMemoria({
+      id:salaresult.id_sala,
+      capacidad:salaresult.capacidad,
+      aforo:salaresult.aforo,
+      costoMatricula:salaresult.costo_matricula,
+      calendario:listaJornadas,
+      servicios:listaServicios
+    });
     return sala;
   }
 
@@ -41,7 +50,12 @@ class ControllerSala{
     var listaSalas = [];
     for(i = 0; i < salalistaresult.length; i++){
       var salaresult = salalistaresult[i];
-      var sala = new Sala(salaresult.id_sala, salaresult.capacidad, salaresult.aforo, salaresult.costo_matricula, null, null);
+      var sala = this.agregaMemoria({
+        id:salaresult.id_sala,
+        capacidad:salaresult.capacidad,
+        aforo:salaresult.aforo,
+        costoMatricula:salaresult.costo_matricula
+      });
       listaSalas.push(sala);
     }
     return listaSalas;
@@ -51,9 +65,7 @@ class ControllerSala{
     var salalistaresult = await this.mostrarTodosSimple();
     var mes = new Date().getMonth()+1;
     for(let salaresult of salalistaresult){
-      console.log({id:salaresult.getId(), mes});
       var listaJornadas = await this.#ctrlJornada.mostrarCalendario({idSala:salaresult.getId(), mes});
-      console.log(listaJornadas);
       var listaServicios = await this.#ctrlServicioSala.mostrarTodosXIdSala(salaresult.getId());
       salaresult.setServicios(listaServicios);
       salaresult.setCalendario(listaJornadas);
@@ -61,7 +73,35 @@ class ControllerSala{
     return salalistaresult;
   }
 
-  
+  agregaMemoria(elem = {id:null,capacidad:null,aforo:null,costoMatricula:null,calendario:null,servicios:null}){
+    if(!(elem.id in this.#salas)){
+      this.#salas[elem.id] = new Sala(
+        elem.id,
+        elem.capacidad,
+        elem.aforo,
+        elem.costoMatricula,
+        elem.calendario,
+        elem.servicios);
+    } else {
+      let s = this.#salas[elem.id];
+      if(elem.capacidad != null && s.getCapacidad() != elem.capacidad){
+        s.setCapacidad(elem.capacidad);
+      }
+      if(elem.aforo != null && s.getAforo() != elem.aforo){
+        s.setAforo(elem.aforo);
+      }
+      if(elem.costoMatricula != null && s.getCostoMatricula() != elem.costoMatricula){
+        s.setCostoMatricula(elem.costoMatricula);
+      }
+      if(elem.calendario != null){
+        s.setCalendario(elem.calendario);
+      }
+      if(elem.servicios != null){
+        s.setServicios(elem.servicios);
+      }
+    }
+    return this.#salas[elem.id];
+  }
 
 }
 

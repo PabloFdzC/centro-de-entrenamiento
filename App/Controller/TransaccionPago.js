@@ -9,12 +9,13 @@ class TransaccionPago{
   }
 
   async agregar(elem){
-    return await this.#conexionBaseDatos.query('CALL CrearPago(?,?,?,?)',[
+    var r = await this.#conexionBaseDatos.query('CALL CrearPago(?,?,?,?)',[
       elem.cantidad,
       elem.emailCliente,
       elem.idClase,
       elem.estado
     ]);
+    return r[0][0].id_pago;
   }
 
   async modificar(elem){

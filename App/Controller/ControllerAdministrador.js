@@ -1,11 +1,14 @@
 const TransaccionAdministrador = require('./TransaccionAdministrador.js');
+const Administrador = require('./../Model/Administrador.js');
 
 class ControllerAdministrador{
 
   #transaccionAdministrador = null;
+  #administradores = null;
   
   constructor(){
     this.#transaccionAdministrador = new TransaccionAdministrador();
+    this.#administradores = {};
   }
 
   async agregar(elem){
@@ -19,6 +22,7 @@ class ControllerAdministrador{
 
     elem.password = password;
     await this.#transaccionAdministrador.agregar(elem);
+    this.agregaMemoria(elem);
     return password;
   }
 
@@ -30,6 +34,20 @@ class ControllerAdministrador{
   async contar(){
     var r = await this.#transaccionAdministrador.contar();
     return r;
+  }
+
+  agregaMemoria(elem = {email:null,clasesEnEspera:null}){
+    if(!(elem.email in this.#administradores)){
+      this.#administradores[elem.email] = new Administrador(
+        elem.email
+        );
+    } else {
+      let a = this.#administradores[elem.email];
+      if(elem.clasesEnEspera != null){
+        a.setClasesEnEspera(elem.clasesEnEspera);
+      }
+    }
+    return this.#administradores[elem.email];
   }
 
 }

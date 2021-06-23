@@ -1,10 +1,11 @@
 const TransaccionServicioInstructor = require("./TransaccionServicioInstructor.js");
-const Servicio = require("./../Model/Servicio.js");
 
 class ControllerServicioInstructor{
   #transaccionServicioInstructor = null;
+  #ctrlServicio = null;
   
-  constructor(){
+  constructor(ctrlServicio){
+    this.#ctrlServicio = ctrlServicio;
     this.#transaccionServicioInstructor = new TransaccionServicioInstructor();
   }
 
@@ -14,7 +15,10 @@ class ControllerServicioInstructor{
     var listaServicios = [];
     for(i = 0; i < listaserviciosresult.length; i++){
       var servicioresult = listaserviciosresult[i];
-      var servicio = new Servicio(servicioresult.nombre_servicio, servicioresult.costo_matricula);
+      var servicio = this.#ctrlServicio.agregaMemoria({
+        nombre:servicioresult.nombre_servicio,
+        costoMatricula:servicioresult.costo_matricula
+      });
       listaServicios.push(servicio);
     }
     return listaServicios;
@@ -26,18 +30,24 @@ class ControllerServicioInstructor{
       var value = [elem.email, elem.servicios[i]];
       agregarL.push(value);
     }
-    var result = await this.#transaccionServicioInstructor.agregarMultiples(agregarL);
-    return result;
+    if(agregarL.length > 0){
+      var result = await this.#transaccionServicioInstructor.agregarMultiples(agregarL);
+      return result;
+    }
+    return null;
   }
 
   async eliminarMultiples(elem){
     var eliminarL = [];
     for(let i = 0; i < elem.serviciosE.length; i++){
-      var value = [elem.email, elem.serviciosA[i]];
+      var value = [elem.email, elem.serviciosE[i]];
       eliminarL.push(value);
     }
-    var result = await this.#transaccionServicioInstructor.eliminarMultiples(eliminarL);
-    return result;
+    if(eliminarL.length > 0){
+      var result = await this.#transaccionServicioInstructor.eliminarMultiples(eliminarL);
+      return result;
+    }
+    return null;
   }
 }
 

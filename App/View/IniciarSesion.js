@@ -1,12 +1,8 @@
 class IniciarSesion{
   
-  iniciarSesion(info){
+  async iniciarSesion(info){
     let i = Utilidades.convertirAJSON(info);
-    Utilidades.ajaxCall('/iniciarSesion', 'POST', i, function(u){
-      window.location.href = "/Calendario";
-    }, function(xhr, status, error){
-      muestraMensaje("Fallo", xhr.responseText);
-    });
+    return await Utilidades.ajaxCall('/ingresar', 'POST', i, "", "/Calendario");
   }
 
 }

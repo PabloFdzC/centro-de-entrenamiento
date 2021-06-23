@@ -14,8 +14,8 @@
           </div>
           <div class="col-6">
             <div class="row justify-content-end">
-              <% let hc = clase.getHorarioClase(); %>
-              <%= hc[0].getHoraMinutosInicio() %> - <%= hc[0].getHoraMinutosFinal() %>
+              <% let hc = clase.getHorario();%>
+              <%= hc[jornada.getId()].getHoraMinutosInicio() %> - <%= hc[jornada.getId()].getHoraMinutosFinal() %>
             </div>
           </div>
         </div>
@@ -24,7 +24,7 @@
         <div class="card card-body" style="background-color: #383D3E; border: transparent;">
           <div class="row">
             <div class="col-9">
-              <%for(let cliente of clase.getClientes()) { %>
+              <%for(let cliente of clase.getMatriculas()) { %>
                 - <%= cliente.getNombreCompleto() %> <br>
               <% } %>
             </div>

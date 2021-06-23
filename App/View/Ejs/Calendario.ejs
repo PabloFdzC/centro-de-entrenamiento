@@ -1,16 +1,18 @@
 <%- include('Header.ejs'); %>
   <body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/mathieu-chassara-0b3Nkg9oisc-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
     <%- include('Navegacion.ejs', {ventana:"CALENDARIO", tipo_usuario:tipo}); %>
-    <div class="d-flex justify-content-between">
-      <button class="btn botonesCalendario" id="mesAnterior"><i class="fas fa-arrow-left"></i></button>
-      <div class="card text-center mx-auto my-auto background calendario">
+    <div class="row align-items-center">
+      <div class="col-1 text-center">
+        <button class="btn botonesCalendario" id="mesAnterior"><i class="fas fa-arrow-left"></i></button>
+      </div>
+      <div class="card text-center mx-auto my-auto background col-10">
         <div class="card-body" style="padding: 0.5rem 0.5rem;">
           <div class="row justify-content-end">
             <div class="col-8">
               <h5 class="card-title" id="mesAnno">Abril 2021</h5>
             </div>
             <div class="col-2">
-              <% if(tipo === "Instructor"){ %>
+              <% if(tipo === "Instructor" || tipo === "Administrador"){ %>
               <button class="btn btn-primary activaModal" value="CREAR">Crear clase</button>
               <% } %>
             </div>
@@ -20,7 +22,9 @@
           </div>
         </div>
       </div>
-      <button class="btn botonesCalendario" id="mesSiguiente"><i class="fas fa-arrow-right"></i></button>
+      <div class="col-1 text-center">
+        <button class="btn botonesCalendario" id="mesSiguiente"><i class="fas fa-arrow-right"></i></button>
+      </div>
     </div>
     <div class="modal fade" id="modalVerDia" tabindex="-1" aria-labelledby="verDiaModal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -129,19 +133,17 @@
                   Aplicar horario a todas
                 </label>
               </div>
-              <% if(tipo === "Instructor") { %>
-                <div id="contRepeticion">
-                  <label for="repeticion" class="form-label">Repetición</label>
-                  <select name="repeticion" id="repeticion" class="form-control" aria-describedby="Repetición">
-                    <option value="CADASEMANADELMES">Cada semana del mes</option>
-                    <option value="TODOSLOSDIASDELMES">Todos los días del mes</option>
-                    <option value="NOSEREPITE">No se repite</option>
-                  </select>
-                  <div class="invalid-feedback">
-                    El campo no puede estar vacío.
-                  </div>
+              <div id="contRepeticion">
+                <label for="repeticion" class="form-label">Repetición</label>
+                <select name="repeticion" id="repeticion" class="form-control" aria-describedby="Repetición">
+                  <option value="CADASEMANADELMES">Cada semana del mes</option>
+                  <option value="TODOSLOSDIASDELMES">Todos los días del mes</option>
+                  <option value="NOSEREPITE">No se repite</option>
+                </select>
+                <div class="invalid-feedback">
+                  El campo no puede estar vacío.
                 </div>
-              <% } %>
+              </div>
               <div>
                 <label for="capacidad" class="form-label">Capacidad</label>
                 <input type="number" min="0" class="form-control" id="capacidad" name="capacidad" aria-describedby="Capacidad Clase" required>
@@ -210,6 +212,7 @@
     <script src="../Js/Navegacion.js"></script>
     <script src="../Js/Horas.js"></script>
     <script src="../Servicios.js"></script>
+    <script src="../Instructores.js"></script>
     <script src="../Clase.js"></script>
   </body>
 </html>

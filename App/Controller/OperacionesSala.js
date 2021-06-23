@@ -23,11 +23,11 @@ OperacionesSala.post('/crearSala', async function(req, res){
 
 OperacionesSala.post('/modificarSala', async function(req, res){
   try{
-    req.body.serviciosE = JSON.parse(req.body.serviciosE);
-    req.body.servicios = JSON.parse(req.body.servicios);
-    req.body.calendarioE = JSON.parse(req.body.calendarioE);
-    req.body.calendarioE = listaAJson(req.body.calendarioE);
-    req.body.calendario = listaAJson(req.body.calendario);
+    req.body.serviciosE = await JSON.parse(req.body.serviciosE);
+    req.body.servicios = await JSON.parse(req.body.servicios);
+    req.body.calendarioE = await JSON.parse(req.body.calendarioE);
+    req.body.calendario = await JSON.parse(req.body.calendario);
+    req.body.calendario = await listaAJson(req.body.calendario);
     var r = await ctrlSala.modificar(req.body);
     res.send({id:r});
   }catch(err){
@@ -70,7 +70,19 @@ OperacionesSala.get('/mostrarSalasSimple', async function(req, res){
 OperacionesSala.get('/mostrarSalas', async function(req, res){
   try{
     var lista = await ctrlSala.mostrarTodos();
-    res.render('SalaCards.ejs', {lista});
+    res.render('SalaCards.ejs', {lista}, function(err, html){
+      if(err){
+        console.log(err);
+        res.status(400);
+        res.send("Algo salió mal");    
+      } else {
+        var salas = [];
+        for(let s of lista){
+          salas.push(s.convertirAVista());
+        }
+        res.send({html, salas});
+      }
+    });
   }catch(err){
     console.log(err);
     res.status(400);
@@ -79,10 +91,11 @@ OperacionesSala.get('/mostrarSalas', async function(req, res){
 });
 
 
-function listaAJson(lista){
+async function listaAJson(lista){
   var l = [];
-  for(var e of lista){
-    l.push(JSON.parse(e));
+  for(let i = 0; i < lista.length; i++){
+    let p = await JSON.parse(lista[i]);
+    l.push(p);
   }
   return l;
 }

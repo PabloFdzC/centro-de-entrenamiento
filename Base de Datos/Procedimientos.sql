@@ -68,9 +68,6 @@ BEGIN
 	DELETE FROM Intervalo_Tiempo
     WHERE id_intervalo = piIdIntervaloTiempo;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el intervalo';
-	END IF;
 END //
 
 DELIMITER ;
@@ -173,9 +170,6 @@ BEGIN
 	DELETE FROM Jornada
     WHERE id_jornada = piIdJornada;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar la jornada';
-	END IF;
 END //
 
 DELIMITER ;
@@ -214,9 +208,6 @@ BEGIN
 	DELETE FROM Servicio
     WHERE nombre_servicio = pvNombreServicio;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio';
-	END IF;
 END //
 
 DELIMITER ;
@@ -252,9 +243,6 @@ BEGIN
 	DELETE FROM Servicios_de_Sala
     WHERE id_sala = piIdSala AND nombre_servicio = pvNombreServicio;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio de la sala';
-	END IF;
 END //
 
 DELIMITER ;
@@ -291,9 +279,6 @@ BEGIN
 	DELETE FROM Servicios_de_Instructor
     WHERE email_instructor = pvEmailInstructor AND nombre_servicio = pvNombreServicio;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio al instructor';
-	END IF;
 END //
 
 DELIMITER ;
@@ -405,9 +390,6 @@ BEGIN
     DELETE FROM Llaves
     WHERE email_usuario = pvEmail;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el instructor';
-	END IF;
 END //
 
 DELIMITER ;
@@ -732,7 +714,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetHorarioClase(IN piIdClase INT)
 BEGIN
-	SELECT it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+	SELECT cej.id_jornada, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
     FROM Intervalo_Tiempo AS it
     INNER JOIN Clases_en_Jornada AS cej
     ON it.id_intervalo = cej.id_intervalo WHERE cej.id_clase = piIdClase;
@@ -745,7 +727,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesEnJornada(IN piIdJornada INT)
 BEGIN
-	SELECT cej.id_clase_jornada, c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+	SELECT cej.id_jornada, c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
     FROM (SELECT id_clase_jornada, id_clase, id_intervalo, id_jornada
 		FROM Clases_en_Jornada
 		WHERE id_jornada = piIdJornada) AS cej
@@ -841,10 +823,15 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CrearPago;
 DELIMITER //
 
-CREATE PROCEDURE CrearPago(IN piCantidad INT, IN pvEmailCliente VARCHAR(50), IN pvId_clase INT, IN pvEstadoPago VARCHAR(50))
+CREATE PROCEDURE CrearPago(IN pvNombreServicios VARCHAR(50), IN piIdSala INT,IN pvEmailCliente VARCHAR(50), IN pvId_clase INT, IN pvEstadoPago VARCHAR(50))
 BEGIN
+    DECLARE costo FLOAT DEFAULT NULL;
+    SELECT costo_matricula INTO costo FROM Servicio WHERE nombre_servicio = pvNombreServicios;
+    IF(costo IS NULL) THEN
+        SELECT costo_matricula INTO costo FROM Sala WHERE id_sala = piIdSala;
+    END IF;
 	INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase)
-	VALUES(piCantidad, pvEstadoPago, pvEmailCliente, pvId_clase);
+	VALUES(costo, pvEstadoPago, pvEmailCliente, pvId_clase);
     COMMIT;
     SELECT LAST_INSERT_ID() AS id_pago;
 END //
@@ -872,9 +859,6 @@ BEGIN
     DELETE FROM Pago
     WHERE id_pago = piIdPago;
     COMMIT;
-    IF ROW_COUNT() = 0 THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el pago';
-	END IF;
 END //
 
 DELIMITER ;

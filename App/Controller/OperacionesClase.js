@@ -7,10 +7,11 @@ const ctrlMatriculaClase = ctrlSng.getControllerMatriculaClase();
 
 OperacionesClase.post('/crearClase', async function(req, res){
   try{
-    req.body.dia = new Date(req.body.dia);
-    req.body.emailInstructor = req.session.email;
+    if(req.session.tipo === "Instructor"){
+      req.body.emailInstructor = req.session.email;
+    }
     var r = await ctrlClase.agregar(req.body);
-    res.send(r);
+    res.send({id:r});
   }catch(err){
     console.log(err);
     res.status(400);
@@ -49,6 +50,7 @@ OperacionesClase.post('/modificarClase', async function(req, res){
 OperacionesClase.get('/mostrarClase', async function(req, res){
   try{
     var clase = await ctrlClase.consultar({id:req.query.idClase});
+    console.log(clase.convertirAVista());
     res.send(clase.convertirAVista());
   }catch(err){
     console.log(err);
