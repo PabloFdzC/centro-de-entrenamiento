@@ -68,6 +68,9 @@ BEGIN
 	DELETE FROM Intervalo_Tiempo
     WHERE id_intervalo = piIdIntervaloTiempo;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el intervalo';
+	END IF;
 END //
 
 DELIMITER ;
@@ -170,6 +173,9 @@ BEGIN
 	DELETE FROM Jornada
     WHERE id_jornada = piIdJornada;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar la jornada';
+	END IF;
 END //
 
 DELIMITER ;
@@ -208,6 +214,9 @@ BEGIN
 	DELETE FROM Servicio
     WHERE nombre_servicio = pvNombreServicio;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio';
+	END IF;
 END //
 
 DELIMITER ;
@@ -243,6 +252,9 @@ BEGIN
 	DELETE FROM Servicios_de_Sala
     WHERE id_sala = piIdSala AND nombre_servicio = pvNombreServicio;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio de la sala';
+	END IF;
 END //
 
 DELIMITER ;
@@ -279,6 +291,9 @@ BEGIN
 	DELETE FROM Servicios_de_Instructor
     WHERE email_instructor = pvEmailInstructor AND nombre_servicio = pvNombreServicio;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el servicio al instructor';
+	END IF;
 END //
 
 DELIMITER ;
@@ -390,6 +405,9 @@ BEGIN
     DELETE FROM Llaves
     WHERE email_usuario = pvEmail;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el instructor';
+	END IF;
 END //
 
 DELIMITER ;
@@ -581,10 +599,17 @@ DELIMITER //
 
 CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
 BEGIN
-	INSERT INTO Clase(capacidad, estado_clase, nombre_servicio, email_instructor)
-    VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, pvEmailInstructor);
-    COMMIT;
-    SELECT LAST_INSERT_ID() AS id_clase;
+    DECLARE servicioInstructor INT;
+    SELECT Count(*) INTO servicioInstructor FROM Servicios_de_Instructor
+	WHERE email_instructor = pvEmailInstructor AND nombre_servicio = pvNombreServicio;
+    IF servicioInstructor > 0 THEN
+        INSERT INTO Clase(capacidad, estado_clase, nombre_servicio, email_instructor)
+        VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, pvEmailInstructor);
+        COMMIT;
+        SELECT LAST_INSERT_ID() AS id_clase;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El instructor no tiene ese servicio';
+    END IF;
 END //
 
 DELIMITER ;
@@ -651,10 +676,10 @@ END //
 
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS GetClasesDisponibles;
+DROP PROCEDURE IF EXISTS GetClasesEstado;
 DELIMITER //
 
-CREATE PROCEDURE GetClasesDisponibles(IN pvEstadoClase VARCHAR(50))
+CREATE PROCEDURE GetClasesEstado(IN pvEstadoClase VARCHAR(50))
 BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
@@ -739,11 +764,28 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS MatricularClase;
 DELIMITER //
 
-CREATE PROCEDURE MatricularClase(IN piIdClase INT, IN pvEmailCliente VARCHAR(50))
+CREATE PROCEDURE MatricularClase(IN piIdClaseJornada INT, IN pvEmailCliente VARCHAR(50))
 BEGIN
-	INSERT INTO Matricula(email_cliente, id_clase)
-    VALUES(pvEmailCliente, piIdClase);
-    COMMIT;
+    DECLARE cantidadMatriculas INT;
+    DECLARE capacidadSala INT;
+    SELECT Count(*) INTO cantidadMatriculas
+    FROM Matricula
+    WHERE id_clase_jornada = piIdClaseJornada;
+    SELECT FLOOR(s.capacidad*s.aforo/100) INTO capacidadSala
+    FROM (SELECT id_clase_jornada, id_jornada
+    FROM Clases_en_Jornada 
+    WHERE id_clase_jornada = piIdClaseJornada) AS cej
+    INNER JOIN Jornada j
+    ON j.id_jornada = cej.id_jornada
+    INNER JOIN Sala s
+    ON s.id_sala = j.id_sala;
+    IF capacidadSala > cantidadMatriculas THEN
+        INSERT INTO Matricula(email_cliente, id_clase_jornada)
+        VALUES(pvEmailCliente, piIdClaseJornada);
+        COMMIT;
+    ELSE 
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La clase está llena';
+    END IF;
 END //
 
 DELIMITER ;
@@ -754,13 +796,13 @@ DELIMITER //
 CREATE PROCEDURE GetClasesMatriculadas(IN pvEmailCliente VARCHAR(50))
 BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
-    FROM (SELECT email_cliente, id_clase
+    FROM (SELECT email_cliente, id_clase_jornada
 		FROM Matricula
 		WHERE email_cliente = pvEmailCliente) AS m
-	INNER JOIN Clase c
-    ON c.id_clase = m.id_clase
     INNER JOIN Clases_en_Jornada cej
-    ON cej.id_clase = ep.id_clase
+    ON cej.id_clase_jornada = m.id_clase_jornada
+	INNER JOIN Clase c
+    ON c.id_clase = cej.id_clase
     INNER JOIN Intervalo_Tiempo it
     ON it.id_intervalo = cej.id_intervalo
     INNER JOIN Instructor i
@@ -772,10 +814,10 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CancelarMatricula;
 DELIMITER //
 
-CREATE PROCEDURE CancelarMatricula(IN piIdClase INT, IN pvEmailCliente VARCHAR(50))
+CREATE PROCEDURE CancelarMatricula(IN piIdClaseJornada INT, IN pvEmailCliente VARCHAR(50))
 BEGIN
 	DELETE FROM Matricula
-    WHERE email_cliente = pvEmailCliente AND piIdClase = piIdClase;
+    WHERE email_cliente = pvEmailCliente AND id_clase_jornada = piIdClaseJornada;
     COMMIT;
 END //
 
@@ -784,12 +826,12 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetMatriculasClase;
 DELIMITER //
 
-CREATE PROCEDURE GetMatriculasClase(IN piIdClase INT)
+CREATE PROCEDURE GetMatriculasClase(IN piIdClaseJornada INT)
 BEGIN
 	SELECT c.email, c.primer_nombre, c.segundo_nombre, c.primer_apellido, c.segundo_apellido
-    FROM (SELECT email_cliente, id_clase
+    FROM (SELECT email_cliente, id_clase_jornada
 		FROM Matricula
-		WHERE id_clase = piIdClase) AS m
+		WHERE id_clase_jornada = piIdClaseJornada) AS m
 	INNER JOIN Cliente c
     ON c.email = m.email_cliente;
 END //
@@ -830,6 +872,9 @@ BEGIN
     DELETE FROM Pago
     WHERE id_pago = piIdPago;
     COMMIT;
+    IF ROW_COUNT() = 0 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo eliminar el pago';
+	END IF;
 END //
 
 DELIMITER ;
