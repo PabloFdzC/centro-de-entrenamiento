@@ -15,6 +15,7 @@ $('body').ready(function(){
   });
 
   const limpiarModal = function(){
+    $('#formClase').removeClass('was-validated');
     $('#nombre').val("");
     $('#costo').val("");
     $('#costoServicio').prop('checked', true);
@@ -87,6 +88,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
   });
 
   $('#modalServicio').on('hidden.bs.modal', function (e) {

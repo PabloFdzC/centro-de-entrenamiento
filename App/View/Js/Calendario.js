@@ -60,6 +60,10 @@ $('body').ready(async function(){
 
   $('#calendarioCont').on('click', '.diaHabil', async function(){
     let idJornada = $(this).attr('id');
+    await muestraClases(idJornada);
+  });
+
+  const muestraClases = async function(idJornada){
     try{
       let j = await cal.mostrarClasesJornada({idJornada});
       console.log(j);
@@ -69,7 +73,7 @@ $('body').ready(async function(){
     }catch(err){
       muestraMensaje("Fallo", err.responseText);
     }
-  });
+  }
 
   $('#mesAnterior').on('click',function(event){
     mesUsuario-=1;
@@ -97,16 +101,16 @@ $('body').ready(async function(){
   }
 
   limpiarModal = function(){
+    $('#formClase').removeClass('was-validated');
     $('#capacidad').val("");
     $('#dia').val("");
     $('#horaInicio').val("");
     $('#horaFinal').val("");
     $('#servicio').val("");
-    $('#repeticion').val("");
     $('#estado').val("");
     $('#instructor').val("");
     $('#instructorTemporal').val("");
-    $('#aplicarTodas').val("");
+    $('#aplicarTodas').prop('checked', false);
   }
 
   $('#modalClase').on('hidden.bs.modal', async function (e) {
@@ -129,26 +133,31 @@ $('body').ready(async function(){
     let val = $(this).attr('value');
     var hoy = fechaEnInput(null);
     if(val == "CREAR"){
+      limpiarModal();
+      $('#dia').removeAttr('disabled');
       $('#dia').val(hoy);
       $('#dia').attr('min',hoy);
       esModificar = false;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Crear clase");
       $('#checkAplicarTodas').addClass('esconde');
+      $('#contEstado').addClass('esconde');
       $('#contRepeticion').removeClass('esconde');
       modalClase.show();
     } else {
+      limpiarModal();
       esModificar = true;
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Modificar clase");
       $('#contRepeticion').addClass('esconde');
       $('#checkAplicarTodas').removeClass('esconde');
+      $('#contEstado').removeClass('esconde');
       try{
         claseActual = await cla.mostrarClase(val);
-        let ja = fechaEnInput(jornadaActual.dia);
-        console.log(jornadaActual);
-        $('#dia').val(ja);
+        $('#dia').val(jornadaActual.dia);
         $('#dia').attr('min',hoy);
+        $('#dia').prop('disabled', true);
+        console.log(claseActual);
         let hc = claseActual.horario[jornadaActual.id];
         $("#horaInicio").val(hc.horaInicio+":"+hc.minutoInicio).change();
         $("#horaFinal").val(hc.horaFinal+":"+hc.minutoFinal).change();
@@ -175,16 +184,31 @@ $('body').ready(async function(){
       info.set("idSala", salas[0].id);
       info = separarHoraForm(info, "horaInicio", "minutoInicio");
       info = separarHoraForm(info, "horaFinal", "minutoFinal");
+      if(info.has("instructorTemporal")){
+        if(info.get("instructorTemporal") == ""){
+          info.delete("instructorTemporal");
+        }
+      }
       try{
-        if(esModificar)
+        if(esModificar){
+          let hc = claseActual.horario[jornadaActual.id];
+          info.set("idIntervalo", hc.id);
+          info.set("idClase", claseActual.id);
+          info.set("dia", jornadaActual.dia);
           await cla.modificarClase(info);
-        else
+          await muestraClases(jornadaActual.id);
+        }
+        else{
           await cla.crearClase(info);
+          await construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
+        }
         modalClase.hide();
       }catch(err){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
+    
   });
 
   cargar = async function(){

@@ -15,6 +15,11 @@ class ControllerIntervaloTiempo{
     return r;
   }
 
+  async modificar(elem){
+    let r = await this.#transaccionIntervaloTiempo.modificar(elem);
+    return r;
+  }
+
   async agregarMultiples(elem){
     let valores = [];
     for(let i = 0; i < elem.length; i++){

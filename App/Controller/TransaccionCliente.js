@@ -35,7 +35,6 @@ class TransaccionCliente{
       elem.primerApellido,
       elem.segundoApellido,
       elem.fechaNacimiento,
-      elem.contrasenna,
       elem.telefono
     ]);
   }

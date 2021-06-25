@@ -144,26 +144,27 @@
                   El campo no puede estar vacío.
                 </div>
               </div>
-              <div>
-                <label for="capacidad" class="form-label">Capacidad</label>
-                <input type="number" min="0" class="form-control" id="capacidad" name="capacidad" aria-describedby="Capacidad Clase" required>
-                <div class="invalid-feedback">
-                  El campo no puede estar vacío.
+              <div class="row">
+                <div class="col-6">
+                  <label for="capacidad" class="form-label">Capacidad</label>
+                  <input type="number" min="0" class="form-control" id="capacidad" name="capacidad" aria-describedby="Capacidad Clase" required>
+                  <div class="invalid-feedback">
+                    El campo no puede estar vacío.
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label for="servicio" class="form-label">Servicio</label>
-                <select name="servicio" id="servicio" class="form-control" aria-describedby="Servicio" required>
-                </select>
-                <div class="invalid-feedback">
-                  El campo no puede estar vacío.
+                <div class="col-6">
+                  <label for="servicio" class="form-label">Servicio</label>
+                  <select name="servicio" id="servicio" class="form-control" aria-describedby="Servicio" required>
+                  </select>
+                  <div class="invalid-feedback">
+                    El campo no puede estar vacío.
+                  </div>
                 </div>
               </div>
               <% if(tipo === "Administrador"){ %>
-                <div>
+                <div id="contEstado">
                   <label for="estado" class="form-label">Estado</label>
-                  <select name="estado" id="estado" class="form-control" aria-describedby="Estado" required>
-                    <option value="" disabled selected hidden>Estado</option>
+                  <select name="estado" id="estado" class="form-control" aria-describedby="Estado">
                     <option value="AGENDADA">Agendada</option>
                     <option value="PUBLICADA">Publicada</option>
                     <option value="DESHABILITADA">Deshabilitada</option>

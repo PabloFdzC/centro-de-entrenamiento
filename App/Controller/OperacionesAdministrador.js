@@ -20,6 +20,7 @@ OperacionesAdministrador.post('/nuevoAdministrador', async function(req, res){
 
 OperacionesAdministrador.post('/modificarContrasennaAdministrador', async function(req, res){
   try{
+    req.body.email = req.session.email;
     var r = await ctrlAdm.modificarContrasenna(req.body);
     res.send(r);
   }catch(err){

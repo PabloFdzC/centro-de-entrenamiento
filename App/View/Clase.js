@@ -14,4 +14,14 @@ class Clase{
     return await Utilidades.ajaxCall('/mostrarClase?idClase='+idClase, 'GET', {});
   }
 
+  async matricularClase(info){
+    let i = Utilidades.convertirAJSON(info);
+    return await Utilidades.ajaxCall('/matricularClase', 'POST', i, "Matriculado correctamente");
+  }
+
+  async desmatricularClase(info){
+    let i = Utilidades.convertirAJSON(info);
+    return await Utilidades.ajaxCall('/cancelarClase', 'POST', i, "Desmatriculado correctamente");
+  }
+
 }

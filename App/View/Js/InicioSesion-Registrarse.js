@@ -25,6 +25,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
   });
 
   $('#formRegistrarse').submit(async function(event){
@@ -38,6 +39,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
   });
 
   muestraIniciarSesion();

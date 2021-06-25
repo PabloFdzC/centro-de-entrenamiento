@@ -45,6 +45,7 @@ $('body').ready(function(){
   };
 
   const limpiarModal = function(){
+    $('#formClase').removeClass('was-validated');
     $('#primerNombre').val("");
     $('#segundoNombre').val("");
     $('#primerApellido').val("");
@@ -126,6 +127,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
   });
 
   $('#formInstructor').on('click', '.servicio', function(){

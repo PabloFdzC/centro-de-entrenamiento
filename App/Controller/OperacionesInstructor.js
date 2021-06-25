@@ -37,6 +37,9 @@ OperacionesInstructor.post('/modificarInstructor', async function(req, res){
   try{
     req.body.servicios = await JSON.parse(req.body.servicios);
     req.body.serviciosE = await JSON.parse(req.body.serviciosE);
+    if(req.session.tipo === "Instructor"){
+      req.body.email = req.session.email;
+    }
     var r = await ctrlInstr.modificar(req.body);
     res.send(r);
   }catch(err){
@@ -80,6 +83,7 @@ OperacionesInstructor.get('/mostrarInstructores', async function(req, res){
 
 OperacionesInstructor.post('/modificarContrasennaInstructor', async function(req, res){
   try{
+    req.body.email = req.session.email;
     var r = await ctrlInstr.modificarContrasenna(req.body);
     res.send(r);
   }catch(err){

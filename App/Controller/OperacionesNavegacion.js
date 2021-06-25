@@ -3,6 +3,8 @@ const navigation = Router({caseSensitive:true});
 const ControllersSng = require('./ControllersSng.js');
 const ctrlSng = ControllersSng.getInstance();
 const ctrlAdm = ctrlSng.getControllerAdministrador();
+const ctrlInstr = ctrlSng.getControllerInstructor();
+const ctrlCliente = ctrlSng.getControllerCliente();
 
 const path = {root: 'View/'};
 
@@ -79,9 +81,17 @@ navigation.get('/NuevoAdministrador', async function (req, res) {
   }
 });
 
-navigation.get('/Perfil', function (req, res) {
+navigation.get('/Perfil', async function (req, res) {
   if(req.session.email){
-    res.render('Perfil.ejs', {tipo: req.session.tipo});
+    var u;
+    if(req.session.tipo === 'Instructor'){
+      u = await ctrlInstr.consultar(req.session.email);
+    } else if(req.session.tipo === 'Cliente'){
+      u = await ctrlCliente.consultar(req.session.email);
+    } else if(req.session.tipo === 'Administrador'){
+      u = {email:req.session.email};
+    }
+    res.render('Perfil.ejs', {tipo: req.session.tipo, usuario:u});
   } else {
     res.redirect('/IniciarSesion');
   }

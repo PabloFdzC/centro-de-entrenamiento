@@ -31,6 +31,7 @@ OperacionesCliente.get('/mostrarCliente', async function(req, res){
 
 OperacionesCliente.post('/modificarCliente', async function(req, res){
   try{
+    req.body.email = req.session.email;
     var r = await ctrlCliente.modificar(req.body);
     res.send(r);
   }catch(err){
@@ -56,6 +57,7 @@ OperacionesCliente.get('/mostrarClientes', async function(req, res){
 
 OperacionesCliente.post('/modificarContrasennaCliente', async function(req, res){
   try{
+    req.body.email = req.session.email;
     var r = await ctrlCliente.modificarContrasenna(req.body);
     res.send(r);
   }catch(err){

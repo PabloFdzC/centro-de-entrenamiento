@@ -4,11 +4,18 @@ const OperacionesClase = Router({caseSensitive:true});
 const ctrlSng = ControllersSng.getInstance();
 const ctrlClase = ctrlSng.getControllerClase();
 const ctrlMatriculaClase = ctrlSng.getControllerMatriculaClase();
+const RegistroClaseInst = require('./RegistroClaseInst.js');
+const RegistroClaseAdm = require('./RegistroClaseAdm.js');
 
 OperacionesClase.post('/crearClase', async function(req, res){
   try{
+    var strategy;
     if(req.session.tipo === "Instructor"){
-      req.body.emailInstructor = req.session.email;
+      strategy = new RegistroClaseInst();
+      strategy.setEmailInstructor(req.session.email);
+      ctrlClase.setStrategyRegistro(strategy);
+    } else if(req.session.tipo === "Administrador"){
+      ctrlClase.setStrategyRegistro(new RegistroClaseAdm());
     }
     var r = await ctrlClase.agregar(req.body);
     res.send({id:r});
@@ -21,6 +28,12 @@ OperacionesClase.post('/crearClase', async function(req, res){
         break;
       case "ER_NO_ID_JORNADA":
         res.send("La sala está cerrada en el horario escogido");
+        break;
+      case "ER_NO_DISPONIBLE":
+        res.send("No se pudo cambiar al horario escogido");
+        break;
+      case "ER_SIGNAL_EXCEPTION":
+        res.send(err.sqlMessage);
         break;
       default:
         res.send("Algo salió mal");
@@ -50,7 +63,6 @@ OperacionesClase.post('/modificarClase', async function(req, res){
 OperacionesClase.get('/mostrarClase', async function(req, res){
   try{
     var clase = await ctrlClase.consultar({id:req.query.idClase});
-    console.log(clase.convertirAVista());
     res.send(clase.convertirAVista());
   }catch(err){
     console.log(err);

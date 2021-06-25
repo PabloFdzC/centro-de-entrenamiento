@@ -34,6 +34,7 @@ $('body').ready(function(){
   };
 
   const limpiarModal = function(){
+    $('#formClase').removeClass('was-validated');
     $('#capacidad').val("");
     $('#aforo').val("");
     $('#costo').val("");
@@ -132,6 +133,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     } else {
+      form.classList.add('was-validated');
       muestraMensaje("Fallo", errorM);
     }
   });

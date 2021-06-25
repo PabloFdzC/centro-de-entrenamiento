@@ -597,11 +597,30 @@ END //
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS GetJornadasCrearClase;
+DROP PROCEDURE IF EXISTS GetJornadasDisponibles;
 DELIMITER //
 
-CREATE PROCEDURE GetJornadasCrearClase(IN piIdSala INT, IN pdDia DATE, IN piHoraInicio INT, IN piHoraFinal INT, IN piMinutoInicio INT, IN piMinutoFinal INT)
+CREATE PROCEDURE GetJornadasDisponibles(IN piIdSala INT, IN piIdClase INT, IN pdDia DATE, IN piHoraInicio INT, IN piHoraFinal INT, IN piMinutoInicio INT, IN piMinutoFinal INT)
 BEGIN
-	SELECT j.id_jornada, j.dia FROM Jornada AS j INNER JOIN Intervalo_Tiempo AS it ON j.id_intervalo_tiempo = it.id_intervalo WHERE j.id_sala = piIdSala AND MONTH(j.dia) = MONTH(pdDia) AND j.dia >= pdDia AND ((it.hora_inicio < piHoraInicio AND it.hora_final > piHoraFinal) OR  (it.hora_inicio = piHoraInicio AND it.minuto_inicio <= piMinutoInicio) OR (it.hora_final = piHoraFinal AND it.minuto_final >= piMinutoFinal));
+	SELECT j.id_jornada, j.dia FROM Jornada AS j 
+    LEFT JOIN
+    (
+    SELECT j2.* FROM Jornada AS j2
+    INNER JOIN Clases_en_Jornada AS cej2 ON j2.id_jornada = cej2.id_jornada
+    INNER JOIN Intervalo_Tiempo AS it2 ON cej2.id_intervalo = it2.id_intervalo
+    WHERE MONTH(j2.dia) = MONTH(pdDia) 
+    AND j2.dia >= pdDia AND
+    IF(ISNULL(piIdClase),TRUE,cej2.id_clase != piIdClase) AND 
+    ((it2.hora_inicio*100+it2.minuto_inicio <= piHoraInicio*100+piMinutoInicio AND it2.hora_final*100+it2.minuto_final >= piHoraFinal*100+piMinutoFinal)
+    OR (it2.hora_final*100+it2.minuto_final >= piHoraInicio*100+piMinutoInicio AND it2.hora_final*100+it2.minuto_final <= piHoraFinal*100+piMinutoFinal))
+    ) AS j3 ON j.id_jornada = j3.id_jornada
+    INNER JOIN Intervalo_Tiempo AS it ON j.id_intervalo_tiempo = it.id_intervalo
+    WHERE j3.id_jornada IS NULL AND j.id_sala = piIdSala
+    AND MONTH(j.dia) = MONTH(pdDia) AND j.dia >= pdDia 
+    AND ((it.hora_inicio < piHoraInicio AND it.hora_final > piHoraFinal) 
+    OR  (it.hora_inicio = piHoraInicio AND it.minuto_inicio <= piMinutoInicio) 
+    OR (it.hora_final = piHoraFinal AND it.minuto_final >= piMinutoFinal))
+    GROUP BY j.id_jornada;
 END //
 
 DELIMITER ;
@@ -609,10 +628,14 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS ModificarClase;
 DELIMITER //
 
-CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
+CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50))
 BEGIN
     UPDATE Clase
-    SET capacidad = piCapacidad, estado_clase = pvEstadoClase, nombre_servicio = pvNombreServicio, email_instructor = pvEmailInstructor
+    SET capacidad = COALESCE(piCapacidad,capacidad),
+    estado_clase = COALESCE(pvEstadoClase,estado_clase),
+    nombre_servicio = COALESCE(pvNombreServicio,nombre_servicio),
+    email_instructor = COALESCE(pvEmailInstructor,email_instructor),
+    email_instructor_temporal = COALESCE(pvEmailInstructorT, email_instructor_temporal)
     WHERE id_clase = piIdClase;
     COMMIT;
 END //
@@ -777,7 +800,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesMatriculadas(IN pvEmailCliente VARCHAR(50))
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT email_cliente, id_clase_jornada
 		FROM Matricula
 		WHERE email_cliente = pvEmailCliente) AS m
@@ -894,7 +917,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50), IN pvEstadoPago VARCHAR(50))
 BEGIN
-	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
     FROM (SELECT id_pago, cantidad, estado_pago, id_clase
     FROM Pago
     WHERE estado_pago = pvEstadoPago AND email_usuario = pvEmailCliente) AS p
@@ -919,6 +942,33 @@ CREATE PROCEDURE ContarAdministradores()
 BEGIN
 	SELECT COUNT(email) AS total
     FROM Administrador;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS ModificarIntervaloTiempo;
+DELIMITER //
+
+CREATE PROCEDURE ModificarIntervaloTiempo(IN piIdIntervalo INT, IN piHoraInicio INT, IN piMinutoInicio INT, IN piHoraFinal INT, IN piMinutoFinal INT)
+BEGIN
+    UPDATE Intervalo_Tiempo
+    SET hora_inicio = piHoraInicio, minuto_inicio = piMinutoInicio, hora_final = piHoraFinal, minuto_final = piMinutoFinal
+    WHERE id_intervalo = piIdIntervalo;
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetIntervalosClase;
+DELIMITER //
+
+CREATE PROCEDURE GetIntervalosClase(IN piIdClase INT)
+BEGIN
+    SELECT cj.id_intervalo, cj.id_jornada, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+    FROM Clases_en_Jornada AS cj
+    INNER JOIN Intervalo_Tiempo AS it
+    ON cj.id_intervalo = it.id_intervalo
+    WHERE cj.id_clase = piIdClase;
 END //
 
 DELIMITER ;

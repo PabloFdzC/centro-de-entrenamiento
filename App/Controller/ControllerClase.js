@@ -12,6 +12,7 @@ class ControllerClase{
   #transaccionClase = null;
   #transaccionClaseJornada = null;
   #clases = null;
+  #strategyRegistro = null;
   
   constructor(ctrlInstructor, ctrlIntervaloTiempo, ctrlMatriculaClase, ctrlServicio){
     this.#ctrlInstructor = ctrlInstructor;
@@ -24,7 +25,7 @@ class ControllerClase{
   }
 
   async #cantidadIdIntervalos(elem, suma){
-    let disponible = await this.#transaccionClase.mostrarJornadasCrearClase(elem);
+    let disponible = await this.#transaccionClase.mostrarJornadasDisponibles(elem);
     if(disponible.length > 0){
       let idsJornada = [];
       let cantidad = 0;
@@ -53,48 +54,10 @@ class ControllerClase{
     }
     throw {code: "ER_NO_ID_JORNADA"};
   }
-  //TODO
-  async #cantidadIdIntervalosExistentes(elem){
-    let disponible = await this.#transaccionClase.mostrarJornadasCrearClase(elem);
-    //let existentes = await this.#ctrlJornada.mostrarJornadasCrearClase(elem);
-    if(disponible.length > 0){
-      let idsJornada = [];
-      let cantidad = 0;
-      let d = elem.dia;
-      let mes = d.getMonth();
-      if(suma === 1){
-        d.setDate(1);
-      } else {
-        while(d.getDate() > suma && suma != 0){
-          d.setDate(d.getDate()-suma);
-        }
-      }
-      while(mes <= d.getMonth()){
-        for(let disp of disponible){
-          let dia = ArreglaFechas.stringAFecha(disp.dia);
-          if(dia.getTime() === d.getTime()){
-            cantidad++;
-            idsJornada.push(disp.id_jornada);
-            break;
-          }
-        }
-        if(suma === 0) break;
-        d.setDate(d.getDate()+suma);
-      }
-      return {cantidad, idsJornada};
-    }
-    throw {code: "ER_NO_ID_JORNADA"};
-  }
 
   async agregar(elem){
-    elem.estado = EstadoClase.AGENDADA;
-    var r = await this.agregarAux(elem);
-    elem.id = r;
-    this.agregaMemoria(elem);
-    return r;
-  }
-
-  async agregarAux(elem){
+    console.log(elem);
+    elem = this.#strategyRegistro.agregar(elem);
     let cantidadIds = {cantidad:0, idsJornada:[]};
     if(elem.repeticion == "CADASEMANADELMES"){
       cantidadIds = await this.#cantidadIdIntervalos(elem, 7);
@@ -102,17 +65,10 @@ class ControllerClase{
       cantidadIds = await this.#cantidadIdIntervalos(elem, 1);
     } else if(elem.repeticion == "NOSEREPITE"){
       cantidadIds = await this.#cantidadIdIntervalos(elem, 0);
-    } else if(elem.aplicarTodas){
-      cantidadIds = await this.#cantidadIdIntervalosExistentes(elem);
-    }
+    } 
     let listaIntervalos = this.#ctrlIntervaloTiempo.listaIntervalosObj(elem, cantidadIds.cantidad);
-    let idClase;
     if(listaIntervalos.length > 0){
-      if(elem.idClase){
-        idClase = elem.idClase;
-      } else{
-        idClase = await this.#transaccionClase.agregar(elem);
-      }
+      let idClase = await this.#transaccionClase.agregar(elem);
       let primerId = await this.#ctrlIntervaloTiempo.agregar(listaIntervalos[0]);
       listaIntervalos.shift();
       if(listaIntervalos.length > 0){
@@ -120,7 +76,7 @@ class ControllerClase{
       }
       let listaClaseJornada = this.listaClaseJornadaObj(idClase, cantidadIds.idsJornada, primerId, primerId+listaIntervalos.length);
       let r = await this.#transaccionClaseJornada.agregarMultiples(listaClaseJornada);
-      return r;
+      return idClase;
     }
     throw {code: "ER_NO_ID_JORNADA"};
   }
@@ -131,7 +87,48 @@ class ControllerClase{
   }
 
   async modificar(elem){
-    return await this.agregarAux(elem);
+    var r = await this.#transaccionClase.modificar(elem);
+    var disponible = await this.#transaccionClase.mostrarJornadasDisponibles(elem);
+    var intervalosClase = await this.#transaccionClase.mostrarIntervalosClase(elem);
+    if("aplicarTodas" in elem){
+      var listaIntervalos = [];
+      for(let jd of disponible){
+        for(let ic of intervalosClase){
+          if(jd.id_jornada == ic.id_jornada && 
+            (ic.hora_inicio != elem.horaInicio || ic.hora_final != elem.horaFinal ||
+              ic.minuto_inicio != elem.minutoInicio || ic.minuto_final != elem.minutoFinal)){
+            listaIntervalos.push([
+              ic.id_intervalo,
+              elem.horaInicio,
+              elem.horaFinal,
+              elem.minutoInicio,
+              elem.minutoFinal,
+            ]);
+          }
+        }
+      }
+      if(listaIntervalos.length > 0){
+        await this.#transaccionClase.modificarIntervalosClase(listaIntervalos);
+      } else {
+        throw {code:"ER_NO_DISPONIBLE"}
+      }
+    } else {
+      var r2 = null;
+      for(let jd of disponible){
+        for(let ic of intervalosClase){
+          if(jd.id_jornada == ic.id_jornada && elem.idIntervalo == ic.id_intervalo && 
+            (ic.hora_inicio != elem.horaInicio || ic.hora_final != elem.horaFinal ||
+              ic.minuto_inicio != elem.minutoInicio || ic.minuto_final != elem.minutoFinal)){
+              r2 = await this.#ctrlIntervaloTiempo.modificar(elem);
+            break;
+          }
+        }
+      }
+      if(r2 == null){
+        throw {code:'ER_NO_DISPONIBLE'}
+      }
+    }
+    return r;
   }
 
   async eliminar(elem){
@@ -259,6 +256,10 @@ class ControllerClase{
       }
     }
     return this.#clases[elem.id];
+  }
+
+  setStrategyRegistro(strategy){
+    this.#strategyRegistro = strategy;
   }
 
 }

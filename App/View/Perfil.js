@@ -1,17 +1,15 @@
 class Perfil{
-  async modificarPerfil(info){
-    let tipo = localStorage.getItem('tipo_usuario');
-    let i = Utilidades.convertirAJSON(info);
+  async modificarPerfil(info, tipo){
     if(tipo == "Instructor"){
-      let instructores = Instructores();
-      return await instructores.modificarInstructor(i);
+      let instructores = new Instructores();
+      return await instructores.modificarInstructor(info);
     } else if(tipo == "Cliente"){
+      let i = Utilidades.convertirAJSON(info);
       return await Utilidades.ajaxCall('/modificarCliente', 'POST', i, "Datos modificados con éxito");
     }
   }
 
-  async modificarContrasenna(info){
-    let tipo = localStorage.getItem('tipo_usuario');
+  async modificarContrasenna(info, tipo){
     let ruta = "";
     let i = Utilidades.convertirAJSON(info);
     if(tipo == "Instructor"){
@@ -24,5 +22,6 @@ class Perfil{
     if(ruta != ""){
       return await Utilidades.ajaxCall(ruta, 'POST', i, "Contraseña modificada con éxito");
     }
+    throw {responseText:"El tipo de usuario no está registrado"}
   }
 }

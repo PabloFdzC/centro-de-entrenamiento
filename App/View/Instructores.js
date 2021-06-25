@@ -6,7 +6,9 @@ class Instructores{
     return await Utilidades.ajaxCall('/crearInstructor', 'POST', i);
   }
 
-  async modificarInstructor(info, listaServiciosA, listaServiciosE){
+  async modificarInstructor(info, listaServiciosA=[], listaServiciosE=[]){
+    console.log(listaServiciosA);
+    console.log(listaServiciosE);
     info.append("servicios", JSON.stringify(listaServiciosA));
     info.append("serviciosE", JSON.stringify(listaServiciosE));
     let i = Utilidades.convertirAJSON(info);

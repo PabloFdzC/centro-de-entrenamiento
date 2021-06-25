@@ -16,7 +16,11 @@ OperacionesJornada.get('/mostrarClasesJornada', async function(req, res){
         res.status(400);
         res.send("Algo salió mal");
       } else {
-        res.send({jornada:jornada.convertirAVista(), html});
+        var j = null;
+        if(jornada != null){
+          j = jornada.convertirAVista();
+        }
+        res.send({jornada:j, html});
       }
     });
   }catch(err){

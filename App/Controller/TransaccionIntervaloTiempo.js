@@ -39,6 +39,20 @@ class TransaccionIntervaloTiempo{
       [idClase]);
     return r[0];
   }
+
+  async modificar(elem){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL ModificarIntervaloTiempo(?,?,?,?,?)',
+      [
+        elem.idIntervalo,
+        elem.horaInicio,
+        elem.minutoInicio,
+        elem.horaFinal,
+        elem.minutoFinal
+      ]
+    );
+    return r;
+  }
   
 }
 

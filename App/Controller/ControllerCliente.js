@@ -34,7 +34,9 @@ class ControllerCliente{
   }
 
   async modificar(elem){
+    console.log(elem);
     var result = await this.#transaccionCliente.modificar(elem);
+    console.log(result);
     return result;
   }
 

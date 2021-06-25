@@ -13,7 +13,7 @@ class TransaccionClase{
       elem.capacidad,
       elem.servicio,
       elem.estado,
-      elem.emailInstructor
+      elem.instructor
     ]);
     return r[0][0].id_clase;
   }
@@ -27,20 +27,14 @@ class TransaccionClase{
   }
 
   async modificar(elem){
-    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?)', [
-      elem.id,
+    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?,?)', [
+      elem.idClase,
       elem.capacidad,
       elem.servicio,
-      elem.estado_clase,
-      elem.emailInstructor
+      elem.estado,
+      elem.instructor,
+      elem.instructorTemporal
     ]);
-  }
-
-  async eliminar(elem){
-    return await this.#conexionBaseDatos.query(
-      'CALL EliminarServicio(?)',
-      [elem.id]
-      );
   }
 
   async mostrarTodoXMes(elem){
@@ -58,11 +52,12 @@ class TransaccionClase{
       );
   }
 
-  async mostrarJornadasCrearClase(elem){
+  async mostrarJornadasDisponibles(elem){
     var r = await this.#conexionBaseDatos.query(
-      'CALL GetJornadasCrearClase(?,?,?,?,?,?)',
+      'CALL GetJornadasDisponibles(?,?,?,?,?,?,?)',
       [
         elem.idSala,
+        elem.idClase,
         elem.dia,
         elem.horaInicio,
         elem.horaFinal,
@@ -70,6 +65,26 @@ class TransaccionClase{
         elem.minutoFinal
       ]);
       return r[0];
+  }
+
+  async mostrarIntervalosClase(elem){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL GetIntervalosClase(?)',
+      [elem.idClase]
+      );
+      return r[0];
+  }
+
+  async modificarIntervalosClase(valores){
+    return await this.#conexionBaseDatos.query(
+      `INSERT INTO Intervalo_Tiempo(id_intervalo,hora_inicio,hora_final,minuto_inicio,minuto_final) VALUES ?
+      ON DUPLICATE KEY UPDATE 
+      hora_inicio = VALUES(hora_inicio),
+      hora_final = VALUES(hora_final),
+      minuto_inicio = VALUES(minuto_inicio),
+      minuto_final = VALUES(minuto_final);`,
+      [valores], true
+      );
   }
 
 }

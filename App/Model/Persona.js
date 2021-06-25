@@ -1,3 +1,5 @@
+const ArreglaFechas = require("../Controller/ArreglaFechas");
+
 class Persona{
 
   primerNombre = null;
@@ -48,6 +50,9 @@ class Persona{
   getFechaNacimiento(){
     return this.fechaNacimiento;
   }
+  getFechaNacimientoString(){
+    return ArreglaFechas.fechaAString(this.fechaNacimiento);
+  }
   getEdad(){
     let hoy = new Date();
     let edad = hoy.getFullYear() - this.fechaNacimiento.getFullYear();
@@ -79,7 +84,7 @@ class Persona{
   setSegundoApellido(segundoApellido){
     this.segundoApellido=segundoApellido;
   }
-  setfechaNacimiento(fechaNacimiento){
+  setFechaNacimiento(fechaNacimiento){
     this.fechaNacimiento=fechaNacimiento;
   }
   setTelefono(telefono){

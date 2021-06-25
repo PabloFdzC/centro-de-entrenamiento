@@ -12,6 +12,7 @@ $('body').ready(function(){
         muestraMensaje("Fallo", err.responseText);
       }
     }
+    form.classList.add('was-validated');
   });
 
   cargar = async function(){

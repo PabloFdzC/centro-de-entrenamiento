@@ -34,7 +34,7 @@
                   if(d.getTime() <= jornada.getDia().getTime()) { %>
                   <button class="btn btn-tertiary" value="<%=clase.getId()%>" id="btnMatricular">Matricular</button>
                 <% } %>
-              <% } else if(tipo === "Administrador") { %>
+              <% } else if(tipo === "Administrador" || tipo === "Instructor") { %>
                 <button class="btn btn-tertiary activaModal" value="<%=clase.getId() %>">Editar</button>
               <% } else { %>
                 <% if(clase.getInstructor().getEmail() === ""){ %>

@@ -101,3 +101,11 @@ body{
 .esconde{
   display: none!important;
 }
+
+.invalid-feedback{
+  color:#FFCCCE
+}
+
+.form-control.is-invalid, .was-validated .form-control:invalid{
+  border-color: #FFCCCE;
+}
