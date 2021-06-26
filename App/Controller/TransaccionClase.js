@@ -18,6 +18,22 @@ class TransaccionClase{
     return r[0][0].id_clase;
   }
 
+  async consultarEstado(elem){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL GetClasesEstado(?)',
+      [elem.estado]
+      );
+    return r[0];
+  }
+
+  async consultarPublicadasInstructor(elem){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL GetClasesPublicadasInstructor(?)',
+      [elem.email]
+      );
+    return r[0];
+  }
+
   async consultar(elem){
     var r = await this.#conexionBaseDatos.query(
       'CALL GetClase(?)',

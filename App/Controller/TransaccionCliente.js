@@ -26,6 +26,14 @@ class TransaccionCliente{
     return await this.#conexionBaseDatos.query('CALL GetCliente(?)', [email]);
   }
 
+  async getEstadoCliente(email){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL GetEstadoCliente(?)',
+      [email]
+      );
+    return r[0][0].Estado;
+  }
+
   async modificar(elem){
     return await this.#conexionBaseDatos.query('CALL modificarCliente(?,?,?,?,?,?,?,?)', [
       elem.email,

@@ -700,6 +700,25 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS GetClasesPublicadasInstructor;
+DELIMITER //
+
+CREATE PROCEDURE GetClasesPublicadasInstructor(IN pvEmailInstructor VARCHAR(50))
+BEGIN
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
+		FROM Clase
+		WHERE estado_clase = "PUBLICADA" AND email_instructor = pvEmailInstructor) AS c
+    INNER JOIN Clases_en_Jornada cej
+    ON cej.id_clase = c.id_clase
+    INNER JOIN Intervalo_Tiempo it
+    ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN Instructor i
+    ON i.email = c.email_instructor;
+END //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS GetClasesMes;
 DELIMITER //
 
@@ -773,6 +792,9 @@ CREATE PROCEDURE MatricularClase(IN piIdClaseJornada INT, IN pvEmailCliente VARC
 BEGIN
     DECLARE cantidadMatriculas INT;
     DECLARE capacidadSala INT;
+    DECLARE montoAFavor FLOAT;
+    DECLARE costoMatricula FLOAT;
+    DECLARE estadoClase VARCHAR(50);
     SELECT Count(*) INTO cantidadMatriculas
     FROM Matricula
     WHERE id_clase_jornada = piIdClaseJornada;
@@ -784,12 +806,44 @@ BEGIN
     ON j.id_jornada = cej.id_jornada
     INNER JOIN Sala s
     ON s.id_sala = j.id_sala;
-    IF capacidadSala > cantidadMatriculas THEN
+    SELECT c.estado_clase INTO estadoClase
+    FROM (SELECT id_clase_jornada, id_clase
+    FROM Clases_en_Jornada 
+    WHERE id_clase_jornada = piIdClaseJornada) AS cej
+    INNER JOIN Clase c
+    ON c.id_clase = cej.id_clase;
+    IF capacidadSala > cantidadMatriculas AND estadoClase = "PUBLICADA" THEN
+		SELECT monto_a_favor INTO montoAFavor
+        FROM Cliente
+        WHERE email = pvEmailCliente;
+        SELECT s.costo_matricula INTO costoMatricula
+		FROM (SELECT id_clase_jornada, id_clase
+		FROM Clases_en_Jornada 
+		WHERE id_clase_jornada = piIdClaseJornada) AS cej
+		INNER JOIN Clase c
+		ON c.id_clase = cej.id_clase
+        INNER JOIN Servicio s
+		ON s.nombre_servicio = c.nombre_servicio;
+		IF montoAFavor >= costoMatricula THEN
+			UPDATE Cliente
+			SET monto_a_favor = montoAFavor - costoMatricula
+			WHERE email = pvEmailCliente;
+            INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase_jornada)
+			VALUES(costoMatricula, "ACTIVO", pvEmailCliente, piIdClaseJornada);
+		ELSE 
+			INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase_jornada)
+			VALUES(costoMatricula - montoAFavor, "PENDIENTE", pvEmailCliente, piIdClaseJornada);
+			IF montoAFavor > 0 THEN
+				UPDATE Cliente
+				SET monto_a_favor = 0
+				WHERE email = pvEmailCliente;
+            END IF;
+		END IF;
         INSERT INTO Matricula(email_cliente, id_clase_jornada)
         VALUES(pvEmailCliente, piIdClaseJornada);
         COMMIT;
     ELSE 
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La clase está llena';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pudo matricular a la clase';
     END IF;
 END //
 
@@ -821,6 +875,52 @@ DELIMITER //
 
 CREATE PROCEDURE CancelarMatricula(IN piIdClaseJornada INT, IN pvEmailCliente VARCHAR(50))
 BEGIN
+	DECLARE estadoPago VARCHAR(50);
+    DECLARE fechayhoraclase DATE;
+    DECLARE fechayhoraactual DATE;
+    DECLARE diferenciaHoras INT;
+    DECLARE costoMatricula FLOAT;
+    SELECT estado_pago INTO estadoPago
+    FROM Pago
+    WHERE email_usuario = pvEmailCliente AND id_clase_jornada = piIdClaseJornada;
+    SET fechayhoraactual = NOW();
+    SELECT CONCAT(date(j.dia), CONCAT(" ", CONCAT(CAST(it.hora_inicio as CHAR(50)), CONCAT(":", CONCAT(CAST(it.minuto_inicio as CHAR(50)), ":00"))))) INTO fechayhoraclase
+	FROM (SELECT id_clase_jornada, id_jornada, id_intervalo
+	FROM Clases_en_Jornada 
+	WHERE id_clase_jornada = piIdClaseJornada) AS cej
+	INNER JOIN intervalo_tiempo it
+	ON it.id_intervalo = cej.id_intervalo
+    INNER JOIN jornada j
+	ON j.id_jornada = cej.id_jornada;
+	SELECT s.costo_matricula INTO costoMatricula
+	FROM (SELECT id_clase_jornada, id_clase
+	FROM Clases_en_Jornada 
+	WHERE id_clase_jornada = piIdClaseJornada) AS cej
+	INNER JOIN Clase c
+	ON c.id_clase = cej.id_clase
+	INNER JOIN Servicio s
+	ON s.nombre_servicio = c.nombre_servicio;
+    IF fechayhoraactual < fechayhoraclase THEN
+		SET diferenciaHoras = FLOOR(time_to_sec(timediff(fechayhoraclase, fechayhoraactual)) / 3600);
+        IF diferenciaHoras >= 8 THEN
+			IF estadoPago = "ACTIVO" THEN
+				UPDATE Cliente
+				SET monto_a_favor = monto_a_favor + costoMatricula
+				WHERE email = pvEmailCliente;
+			ELSE
+				DELETE FROM Pago
+				WHERE email_usuario = pvEmailCliente AND id_clase_jornada = piIdClaseJornada;
+            END IF;
+		ELSE
+			IF estadoPago = "PENDIENTE" THEN
+				UPDATE Pago
+				SET estado_pago = "MOROSO"
+				WHERE email_usuario = pvEmailCliente AND id_clase_jornada = piIdClaseJornada;
+            END IF;
+        END IF;
+	ELSE
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La clase ya sucedió';
+    END IF;
 	DELETE FROM Matricula
     WHERE email_cliente = pvEmailCliente AND id_clase_jornada = piIdClaseJornada;
     COMMIT;
@@ -846,15 +946,15 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CrearPago;
 DELIMITER //
 
-CREATE PROCEDURE CrearPago(IN pvNombreServicios VARCHAR(50), IN piIdSala INT,IN pvEmailCliente VARCHAR(50), IN pvId_clase INT, IN pvEstadoPago VARCHAR(50))
+CREATE PROCEDURE CrearPago(IN pvNombreServicios VARCHAR(50), IN piIdSala INT,IN pvEmailCliente VARCHAR(50), IN pvId_clase_jornada INT, IN pvEstadoPago VARCHAR(50))
 BEGIN
     DECLARE costo FLOAT DEFAULT NULL;
     SELECT costo_matricula INTO costo FROM Servicio WHERE nombre_servicio = pvNombreServicios;
     IF(costo IS NULL) THEN
         SELECT costo_matricula INTO costo FROM Sala WHERE id_sala = piIdSala;
     END IF;
-	INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase)
-	VALUES(costo, pvEstadoPago, pvEmailCliente, pvId_clase);
+	INSERT INTO Pago(cantidad, estado_pago, email_usuario, id_clase_jornada)
+	VALUES(costo, pvEstadoPago, pvEmailCliente, pvId_clase_jornada);
     COMMIT;
     SELECT LAST_INSERT_ID() AS id_pago;
 END //
@@ -917,7 +1017,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50), IN pvEstadoPago VARCHAR(50))
 BEGIN
-	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase_jornada, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
     FROM (SELECT id_pago, cantidad, estado_pago, id_clase
     FROM Pago
     WHERE estado_pago = pvEstadoPago AND email_usuario = pvEmailCliente) AS p
@@ -969,6 +1069,32 @@ BEGIN
     INNER JOIN Intervalo_Tiempo AS it
     ON cj.id_intervalo = it.id_intervalo
     WHERE cj.id_clase = piIdClase;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS GetEstadoCliente;
+DELIMITER //
+
+CREATE PROCEDURE GetEstadoCliente(IN pvEmailCliente VARCHAR(50))
+BEGIN
+	DECLARE pagosMorosos INT;
+    DECLARE pagosPendientes INT;
+	SELECT Count(*) INTO pagosMorosos
+    FROM Pago
+    WHERE estado_pago = "MOROSO" AND email_usuario = pvEmailCliente;
+    IF pagosMorosos > 0 THEN
+		SELECT "MOROSO" AS Estado;
+    ELSE 
+		SELECT Count(*) INTO pagosPendientes
+		FROM Pago
+		WHERE estado_pago = "PENDIENTE" AND email_usuario = pvEmailCliente;
+        IF pagosPendientes > 0 THEN
+			SELECT "PENDIENTE" AS Estado;
+		ELSE 
+			SELECT "ACTIVO" AS Estado;
+		END IF;
+	END IF;
 END //
 
 DELIMITER ;

@@ -6,9 +6,9 @@ const ctrlSala = ctrlSng.getControllerSala();
 
 OperacionesSala.post('/crearSala', async function(req, res){
   try{
-    req.body.servicios = JSON.parse(req.body.servicios);
-    req.body.calendario = JSON.parse(req.body.calendario);
-    req.body.calendario = listaAJson(req.body.calendario);
+    req.body.servicios = await JSON.parse(req.body.servicios);
+    req.body.calendario = await JSON.parse(req.body.calendario);
+    req.body.calendario = await listaAJson(req.body.calendario);
     var r = await ctrlSala.agregar(req.body);
     res.send({id:r});
   }catch(err){

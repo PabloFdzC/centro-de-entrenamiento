@@ -47,7 +47,8 @@ CREATE TABLE Cliente(
     fecha_nacimiento DATE NOT NULL,
     contrasenna VARBINARY(256) NOT NULL,
     sal VARCHAR(16) NOT NULL,
-    telefono INT NOT NULL
+    telefono INT NOT NULL,
+    monto_a_favor FLOAT DEFAULT 0
 );
 
 CREATE TABLE Administrador(
@@ -102,18 +103,6 @@ CREATE TABLE Clase(
     FOREIGN KEY (email_instructor_temporal) REFERENCES Instructor(email)
 );
 
-CREATE TABLE Pago(
-	id_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    cantidad INT NOT NULL,
-    fecha DATE,
-    email_usuario VARCHAR(50) NOT NULL,
-    id_clase INT NOT NULL,
-    estado_pago VARCHAR(50),
-    forma_pago VARCHAR(50),
-    FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
-    FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
-);
-
 CREATE TABLE Servicios_de_Instructor(
 	email_instructor VARCHAR(50) NOT NULL,
     nombre_servicio VARCHAR(50) NOT NULL,
@@ -138,6 +127,18 @@ CREATE TABLE Clases_en_Jornada(
     FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
     FOREIGN KEY (id_intervalo) REFERENCES Intervalo_Tiempo(id_intervalo),
     FOREIGN KEY (id_jornada) REFERENCES Jornada(id_jornada)
+);
+
+CREATE TABLE Pago(
+	id_pago INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    cantidad INT NOT NULL,
+    fecha DATE,
+    email_usuario VARCHAR(50) NOT NULL,
+    id_clase_jornada INT NOT NULL,
+    estado_pago VARCHAR(50),
+    forma_pago VARCHAR(50),
+    FOREIGN KEY (id_clase_jornada) REFERENCES Clases_en_Jornada(id_clase_jornada),
+    FOREIGN KEY (email_usuario) REFERENCES Cliente(email)
 );
 
 CREATE TABLE Matricula(
