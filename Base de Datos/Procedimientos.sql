@@ -785,6 +785,33 @@ END //
 
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS EstadoCliente;
+DELIMITER //
+
+CREATE FUNCTION EstadoCliente(pvEmailCliente VARCHAR(50))
+RETURNS VARCHAR(50)
+BEGIN
+	DECLARE pagosMorosos INT;
+    DECLARE pagosPendientes INT;
+	SELECT Count(*) INTO pagosMorosos
+    FROM Pago
+    WHERE estado_pago = "MOROSO" AND email_usuario = pvEmailCliente;
+    IF pagosMorosos > 0 THEN
+		RETURN "MOROSO";
+    ELSE 
+		SELECT Count(*) INTO pagosPendientes
+		FROM Pago
+		WHERE estado_pago = "PENDIENTE" AND email_usuario = pvEmailCliente;
+        IF pagosPendientes > 0 THEN
+			RETURN "PENDIENTE";
+		ELSE 
+			RETURN "ACTIVO";
+		END IF;
+	END IF;
+END; //
+
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS MatricularClase;
 DELIMITER //
 
@@ -795,6 +822,7 @@ BEGIN
     DECLARE montoAFavor FLOAT;
     DECLARE costoMatricula FLOAT;
     DECLARE estadoClase VARCHAR(50);
+    DECLARE estadoPagoCliente VARCHAR(50);
     SELECT Count(*) INTO cantidadMatriculas
     FROM Matricula
     WHERE id_clase_jornada = piIdClaseJornada;
@@ -812,7 +840,8 @@ BEGIN
     WHERE id_clase_jornada = piIdClaseJornada) AS cej
     INNER JOIN Clase c
     ON c.id_clase = cej.id_clase;
-    IF capacidadSala > cantidadMatriculas AND estadoClase = "PUBLICADA" THEN
+    SELECT EstadoCliente(pvEmailCliente) INTO estadoPagoCliente;
+    IF capacidadSala > cantidadMatriculas AND estadoClase = "PUBLICADA" AND estadoPagoCliente != "MOROSO" THEN
 		SELECT monto_a_favor INTO montoAFavor
         FROM Cliente
         WHERE email = pvEmailCliente;
@@ -824,6 +853,16 @@ BEGIN
 		ON c.id_clase = cej.id_clase
         INNER JOIN Servicio s
 		ON s.nombre_servicio = c.nombre_servicio;
+        IF(costoMatricula IS NULL) THEN
+			SELECT s.costo_matricula INTO costoMatricula
+			FROM (SELECT id_clase_jornada, id_jornada
+			FROM Clases_en_Jornada 
+			WHERE id_clase_jornada = piIdClaseJornada) AS cej
+			INNER JOIN Jornada j
+			ON j.id_jornada = cej.id_jornada
+			INNER JOIN Sala s
+			ON s.id_sala = j.id_sala;
+		END IF;
 		IF montoAFavor >= costoMatricula THEN
 			UPDATE Cliente
 			SET monto_a_favor = montoAFavor - costoMatricula
@@ -900,7 +939,7 @@ BEGIN
 	ON c.id_clase = cej.id_clase
 	INNER JOIN Servicio s
 	ON s.nombre_servicio = c.nombre_servicio;
-    IF fechayhoraactual < fechayhoraclase THEN
+    IF fechayhoraactual <= fechayhoraclase THEN
 		SET diferenciaHoras = FLOOR(time_to_sec(timediff(fechayhoraclase, fechayhoraactual)) / 3600);
         IF diferenciaHoras >= 8 THEN
 			IF estadoPago = "ACTIVO" THEN
@@ -1018,13 +1057,13 @@ DELIMITER //
 CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50), IN pvEstadoPago VARCHAR(50))
 BEGIN
 	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase_jornada, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_fina, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
-    FROM (SELECT id_pago, cantidad, estado_pago, id_clase
+    FROM (SELECT id_pago, cantidad, estado_pago, id_clase_jornada
     FROM Pago
     WHERE estado_pago = pvEstadoPago AND email_usuario = pvEmailCliente) AS p
-	INNER JOIN Clase c
-    ON c.id_clase = p.id_clase
     INNER JOIN Clases_en_Jornada cej
-    ON cej.id_clase = p.id_clase
+    ON cej.id_clase_jornada = p.id_clase_jornada
+    INNER JOIN Clase c
+    ON c.id_clase = cej.id_clase
     INNER JOIN Intervalo_Tiempo it
     ON it.id_intervalo = cej.id_intervalo
     INNER JOIN Instructor i
@@ -1098,3 +1137,4 @@ BEGIN
 END //
 
 DELIMITER ;
+
