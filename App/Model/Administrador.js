@@ -1,8 +1,8 @@
 class Administrador{
   #email = null;
-  #clasesEnEspera = null;
+  #clasesEnEspera = [];
   
-  constructor(email,clasesEnEspera){
+  constructor(email,clasesEnEspera=[]){
     this.#email = email;
     this.#clasesEnEspera = clasesEnEspera;
   }
@@ -23,8 +23,17 @@ class Administrador{
     this.#clasesEnEspera = clasesEnEspera;
   }
 
-  actualizar(){
-
+  actualizar(clase, elimina){
+    if(elimina){
+      let i = this.#clasesEnEspera.indexOf(clase);
+      if (i > -1) {
+        this.#clasesEnEspera.splice(i, 1);
+      }
+    } else {
+      if(!this.#clasesEnEspera.includes(clase)){
+        this.#clasesEnEspera.push(clase);
+      }
+    }
   }
 }
 

@@ -33,15 +33,6 @@
   text-align: left;
 }
 
-.punto{
-  padding: 4px;
-  border-radius: 50%;
-  background-color: #383D3E;
-  max-width: 4px;
-  max-height: 4px;
-  margin: auto;
-}
-
 .clasesCalendarioDia{
   width: fit-content;
 

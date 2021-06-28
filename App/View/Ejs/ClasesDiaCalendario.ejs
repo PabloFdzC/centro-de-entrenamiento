@@ -1,15 +1,19 @@
 <%if(jornada == null) { %>
   <h4 class="card-title tituloElementoLista text-center">Nada para mostrar</h4>
 <% } else { 
-  if(jornada.getClases().length > 0) {
-  let i = 0;
-  for(let clase of jornada.getClases()) { %>
+  if(Object.keys(jornada.getClases()).length > 0) {
+  let i = 0;var clasesCalendario = jornada.getClases();
+  for(let c in clasesCalendario) { let clase = clasesCalendario[c].getClaseCalendario(); %>
     <div class="d-grid col-9 mx-auto gap-2">
       <a class="linkDatosClase" data-bs-toggle="collapse" href="#datosClase<%= i %>" role="button" aria-expanded="false" aria-controls="datosClase<%= i %>">
         <div class="d-flex justify-content-between">
           <div class="col-6">
             <div class="row justify-content-begining">
-              <%= clase.getServicio().getNombre() %> - <%= clase.getEstado() %>
+              <% if(tipo === "Cliente"){ %>
+                <%= clase.getServicio().getNombre() %>
+              <% } else { %>
+                <%= clase.getServicio().getNombre() %> - <%= clase.getEstado() %>
+              <% } %>
             </div>
           </div>
           <div class="col-6">
@@ -24,29 +28,52 @@
         <div class="card card-body" style="background-color: #383D3E; border: transparent;">
           <div class="row">
             <div class="col-9">
-              <%for(let cliente of clase.getMatriculas()) { %>
-                - <%= cliente.getNombreCompleto() %> <br>
+              <div class="row">
+                <div class="col-6">
+                  <h3 class="tituloDatos">Instructor:</h3>
+                </div>
+                <div class="col-6">
+                  <% if(clase.getInstructorTemporal() != null){ %>
+                    <h3 class="tituloDatos">Instructor temporal:</h3>
+                  <% } %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  - <%= clase.getInstructor().getNombreCompleto() %>
+                </div>
+                <div class="col-6">
+                  <% if(clase.getInstructorTemporal() != null){ %>
+                    - <%= clase.getInstructorTemporal().getNombreCompleto() %>
+                  <% } %>
+                </div>
+              </div>
+              <div>
+                <h3 class="tituloDatos">Personas matriculadas:</h3>
+              </div>
+              <% var matriculado = false; let clientes = clase.getMatriculas();
+              for(let cliente of clientes) {
+                matriculado = cliente.getEmail() === email;
+                %>
+                <div>- <%= cliente.getNombreCompleto() %></div>
               <% } %>
             </div>
             <div class="col-3">
-              <% if(tipo === "Cliente"){ 
-                  let d = new Date();
-                  if(d.getTime() <= jornada.getDia().getTime()) { %>
-                  <button class="btn btn-tertiary" value="<%=clase.getId()%>" id="btnMatricular">Matricular</button>
-                <% } %>
-              <% } else if(tipo === "Administrador" || tipo === "Instructor") { %>
+              <% if(clasesCalendario[c].accionDeClase() === "MODIFICAR") { %>
                 <button class="btn btn-tertiary activaModal" value="<%=clase.getId() %>">Editar</button>
-              <% } else { %>
-                <% if(clase.getInstructor().getEmail() === ""){ %>
-                  <button class="btn btn-tertiary activaModal" value="<%=clase.getId() %>">Editar</button>
-                <% } %>
-              <% } %>
+              <% } else if(clasesCalendario[c].accionDeClase() === "MATRICULAR") {
+                  if(matriculado){ %>
+                    <button class="btn btn-secondary desmatricular" value="<%=c%>">Desmatricular</button>
+                  <% } else { %>
+                    <button class="btn btn-tertiary matricular" value="<%=c%>">Matricular</button>
+                  <% } %> 
+              <% } %> 
             </div>
           </div>
         </div>
       </div>
     </div>
-  <% } 
+  <% i++;} 
   } else {%>
     <h4 class="card-title tituloElementoLista text-center">Nada para mostrar</h4>
 <%  }

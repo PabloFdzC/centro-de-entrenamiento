@@ -13,5 +13,9 @@ class Calendario{
     let s = Utilidades.objetoAParametrosGet(info);
     return await Utilidades.ajaxCall('/mostrarClasesJornada'+s, 'GET', {});
   }
+
+  async hayNotificacion(){
+    return await Utilidades.ajaxCall('/hayNotificacion', 'GET', {});
+  }
   
 }

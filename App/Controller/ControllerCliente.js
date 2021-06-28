@@ -34,9 +34,7 @@ class ControllerCliente{
   }
 
   async modificar(elem){
-    console.log(elem);
     var result = await this.#transaccionCliente.modificar(elem);
-    console.log(result);
     return result;
   }
 
@@ -47,6 +45,7 @@ class ControllerCliente{
     var listaClientes = [];
     for(i = 0; i < listaclientesresult.length; i++){
       var clienteresult = listaclientesresult[i];
+      var estadoPago = await this.#transaccionCliente.getEstadoCliente(clienteresult.email);
       var cliente = this.agregaMemoria({
       primerNombre:clienteresult.primer_nombre,
       segundoNombre:clienteresult.segundo_nombre,
@@ -55,7 +54,8 @@ class ControllerCliente{
       fechaNacimiento:clienteresult.fecha_nacimiento,
       telefono:clienteresult.telefono,
       email:clienteresult.email,
-      identificacion:clienteresult.identificacion
+      identificacion:clienteresult.identificacion,
+      estadoPago
     });
       listaClientes.push(cliente);
     }
@@ -100,6 +100,9 @@ class ControllerCliente{
       }
       if(elem.identificacion != null && c.getIdentificacion() != elem.identificacion){
         c.setIdentificacion(elem.identificacion);
+      }
+      if(elem.estadoPago != null && c.getEstadoPago() != elem.estadoPago){
+        c.setEstadoPago(elem.estadoPago);
       }
     }
     return this.#clientes[elem.email];

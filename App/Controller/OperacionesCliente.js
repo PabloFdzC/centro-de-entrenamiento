@@ -4,6 +4,11 @@ const OperacionesCliente = Router({caseSensitive:true});
 const ctrlSng = ControllersSng.getInstance();
 const ctrlCliente = ctrlSng.getControllerCliente();
 
+OperacionesCliente.get('/*', function (req, res, next) {
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next();
+});
+
 OperacionesCliente.post('/crearCliente', async function(req, res){
   try{
     var r = await ctrlCliente.agregar(req.body);

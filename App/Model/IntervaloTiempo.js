@@ -4,13 +4,15 @@ class IntervaloTiempo {
   #minutoInicio = null;
   #horaFinal = null;
   #minutoFinal = null;
+  #dia = null;
 
-  constructor(id,horaInicio, minutoInicio, horaFinal, minutoFinal){
+  constructor(id,horaInicio, minutoInicio, horaFinal, minutoFinal, dia){
     this.#id = id;
     this.#horaInicio = horaInicio;
     this.#minutoInicio = minutoInicio;
     this.#horaFinal = horaFinal;
     this.#minutoFinal = minutoFinal;
+    this.#dia = dia;
   }
 
   getHoraInicio(){
@@ -43,6 +45,14 @@ class IntervaloTiempo {
 
   setMinutoFinal(minutoFinal){
     this.#minutoFinal = minutoFinal;
+  }
+
+  getDia(){
+    return this.#dia;
+  }
+
+  setDia(dia){
+    this.#dia = dia;
   }
 
   getHoraMinutosInicio(){

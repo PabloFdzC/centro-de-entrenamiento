@@ -48,6 +48,7 @@ class ControllersSng{
     if(this.#controllerClase == null){
       this.#controllerClase = new ControllerClase(
         this.getControllerInstructor(),
+        this.getControllerAdministrador(),
         this.getControllerIntervaloTiempo(),
         this.getControllerMatriculaClase(),
         this.getControllerServicio()

@@ -4,13 +4,26 @@ const ControllersSng = require('./ControllersSng.js');
 const ctrlSng = ControllersSng.getInstance();
 const ctrlJornada = ctrlSng.getControllerJornada();
 
+OperacionesJornada.get('/*', function (req, res, next) {
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next();
+});
+
 OperacionesJornada.get('/mostrarClasesJornada', async function(req, res){
   try{
     var jornada = null;
     if(req.query.idJornada && req.query.idJornada != ""){
-      jornada = await ctrlJornada.consultar({id:req.query.idJornada});
+      jornada = await ctrlJornada.consultar({
+        idJornada:req.query.idJornada,
+        email:req.session.email,
+        tipo:req.session.tipo
+      });
     }
-    res.render('ClasesDiaCalendario.ejs', {jornada, tipo:req.session.tipo}, function(err, html){
+    res.render('ClasesDiaCalendario.ejs', {
+      jornada,
+      tipo:req.session.tipo,
+      email:req.session.email
+    }, function(err, html){
       if(err){
         console.log(err);
         res.status(400);
@@ -33,7 +46,12 @@ OperacionesJornada.get('/mostrarClasesJornada', async function(req, res){
 OperacionesJornada.get('/mostrarCalendario', async function(req, res){
   try{
     let mes = parseInt(req.query.mesUsuario);
-    var jornadas = await ctrlJornada.mostrarCalendario({mes:mes+1, idSala:req.query.idSala});
+    var jornadas = await ctrlJornada.mostrarCalendario({
+      mes:mes+1,
+      idSala:req.query.idSala,
+      email:req.session.email,
+      tipo:req.session.tipo
+    });
     res.render('DiasCalendario.ejs',{
       jornadas, 
       annoUsuario:parseInt(req.query.annoUsuario),

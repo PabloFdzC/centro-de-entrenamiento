@@ -7,7 +7,7 @@ class Clase {
   #instructorTemporal = null;
   #servicio = null;
   #instructor = null;
-  #matriculas = null;
+  #matriculas = [];
 
   constructor(id, capacidad, estado, horario, instructorTemporal, servicio,
     instructor, matriculas){
@@ -112,6 +112,10 @@ class Clase {
     }
     obj.horario = a2;
     return obj;
+  }
+
+  accionDeClase(){
+    return AccionClase.VER;
   }
 }
 

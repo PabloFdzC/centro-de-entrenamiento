@@ -1,6 +1,7 @@
 const TransaccionJornada = require("./TransaccionJornada.js");
 const Jornada = require("./../Model/Jornada.js");
 const ArreglaFechas = require("./ArreglaFechas.js");
+const VisitorJornada = require('./VisitorJornada.js');
 
 class ControllerJornada{
   #ctrlInstructor = null;
@@ -10,6 +11,7 @@ class ControllerJornada{
   #ctrlServicio = null;
   #ctrlClase = null;
   #jornadas = null;
+  #visitorJornada = null;
 
   constructor(ctrlInstructor, ctrlMatriculaClase, ctrlIntervaloTiempo, ctrlServicio, ctrlClase){
     this.#ctrlInstructor = ctrlInstructor;
@@ -19,53 +21,18 @@ class ControllerJornada{
     this.#ctrlClase = ctrlClase;
     this.#transaccionJornada = new TransaccionJornada();
     this.#jornadas = {};
+    this.#visitorJornada = new VisitorJornada();
   }
 
   async consultar(elem){
-    var listaclasesresult = await this.#transaccionJornada.mostrarClasesJornada(elem.id);
-    var listaClases = [];
+    var listaclasesresult = await this.#transaccionJornada.mostrarClasesJornada(elem.idJornada);
+    var listaClases = {};
     for(var i = 0; i < listaclasesresult.length; i++){
       var claseresult = listaclasesresult[i];
-      var instructor = this.#ctrlInstructor.agregaMemoria({
-        primerNombre:claseresult.primer_nombre,
-        segundoNombre:claseresult.segundo_nombre,
-        primerApellido:claseresult.primer_apellido,
-        segundoApellido:claseresult.segundo_apellido,
-        fechaNacimiento:claseresult.fecha_nacimiento,
-        telefono:claseresult.telefono,
-        email:claseresult.email,
-        identificacion:claseresult.identificacion,
-      });
-      var instructorTemporal = claseresult.email_instructor_temporal;
-      if(instructorTemporal){
-        instructorTemporal = await this.#ctrlInstructor.consultar(claseresult.email_instructor_temporal);
-      }
-      var servicio = this.#ctrlServicio.agregaMemoria({
-        nombre:claseresult.nombre_servicio,
-        costoMatricula:claseresult.costo_matricula
-      });
-      var horarioClase = {};
-      horarioClase[claseresult.id_jornada] = this.#ctrlIntervaloTiempo.agregaMemoria({
-        id:claseresult.id_intervalo,
-        horaInicio:claseresult.hora_inicio,
-        minutoInicio:claseresult.minuto_inicio,
-        horaFinal:claseresult.hora_final,
-        minutoFinal:claseresult.minuto_final
-      });
-      var matriculas = await this.#ctrlMatriculaClase.mostrarPersonasMatriculadas(claseresult.id_clase_jornada);
-      var clase = this.#ctrlClase.agregaMemoria({
-        id:claseresult.id_clase,
-        capacidad:claseresult.capacidad,
-        estado:claseresult.estado_clase,
-        horario:horarioClase,
-        instructorTemporal,
-        servicio,
-        instructor,
-        matriculas
-      });
-      listaClases.push(clase);
+      var clase = await this.#ctrlClase.formatoClase(claseresult, {conHorario:true,conMatricula:true});
+      listaClases[claseresult.id_clase_jornada] = clase;
     }
-    var j = await this.#transaccionJornada.consultar(elem.id);
+    var j = await this.#transaccionJornada.consultar(elem.idJornada);
     var ha = this.#ctrlIntervaloTiempo.agregaMemoria({
       id:j.id_intervalo,
       horaInicio:j.hora_inicio,
@@ -78,9 +45,20 @@ class ControllerJornada{
       dia:j.dia,
       horarioAtencion:ha,
       clases:listaClases,
-      cantidadClases:listaClases.length
+      cantidadClases:Object.keys(listaClases).length
     });
-    return jornada;
+    jornada.aceptar(this.#visitorJornada);
+    this.#visitorJornada.setEmail(elem.email);
+    this.#visitorJornada.setTipoUsuario(elem.tipo);
+    var clasesJ = this.#visitorJornada.getClases();
+    var jornada2 = new Jornada(
+      j.id_jornada,
+      ArreglaFechas.stringAFecha(j.dia),
+      ha,
+      clasesJ,
+      Object.keys(clasesJ).length
+    );
+    return jornada2;
   }
 
   #crearJornadasCalendario(valores, id, dia, idSala, suma){
@@ -150,20 +128,8 @@ class ControllerJornada{
     var listajornadas =[];
     for(i = 0; i < listajornadasresult.length; i++){
       var j = listajornadasresult[i];
-      var ha = this.#ctrlIntervaloTiempo.agregaMemoria({
-        id:j.id_intervalo,
-        horaInicio:j.hora_inicio,
-        minutoInicio:j.minuto_inicio,
-        horaFinal:j.hora_final,
-        minutoFinal:j.minuto_final
-      });
-      var cantidadClases = await this.#transaccionJornada.cantidadClasesDeJornada(j.id_jornada);
-      var jornada = this.agregaMemoria({
-        id:j.id_jornada,
-        dia:j.dia,
-        horarioAtencion:ha,
-        cantidadClases:cantidadClases
-      });
+      elem.idJornada = j.id_jornada;
+      var jornada = await this.consultar(elem);
       listajornadas.push(jornada);
     }
     return listajornadas;

@@ -4,6 +4,11 @@ const OperacionesSala = Router({caseSensitive:true});
 const ctrlSng = ControllersSng.getInstance();
 const ctrlSala = ctrlSng.getControllerSala();
 
+OperacionesSala.get('/*', function (req, res, next) {
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next();
+});
+
 OperacionesSala.post('/crearSala', async function(req, res){
   try{
     req.body.servicios = await JSON.parse(req.body.servicios);

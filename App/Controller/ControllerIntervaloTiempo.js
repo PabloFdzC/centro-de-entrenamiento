@@ -1,4 +1,5 @@
 const IntervaloTiempo = require("../Model/IntervaloTiempo.js");
+const ArreglaFechas = require("./ArreglaFechas.js");
 const TransaccionIntervaloTiempo = require("./TransaccionIntervaloTiempo.js");
 
 class ControllerIntervaloTiempo{
@@ -55,7 +56,8 @@ class ControllerIntervaloTiempo{
         horaInicio:i.hora_inicio,
         minutoInicio:i.minuto_inicio,
         horaFinal:i.hora_final,
-        minutoFinal:i.minuto_final
+        minutoFinal:i.minuto_final,
+        dia:i.dia
       });
       valores[i.id_jornada] = intervaloTiempo;
     }
@@ -70,14 +72,15 @@ class ControllerIntervaloTiempo{
     return intervalos;
   }
 
-  agregaMemoria(elem = {id:null,horaInicio:null,minutoInicio:null,horaFinal:null,minutoFinal:null}){
+  agregaMemoria(elem = {id:null,horaInicio:null,minutoInicio:null,horaFinal:null,minutoFinal:null,dia:null}){
     if(!(elem.id in this.#intervalosTiempo)){
       this.#intervalosTiempo[elem.id] = new IntervaloTiempo(
         elem.id,
         elem.horaInicio,
         elem.minutoInicio,
         elem.horaFinal,
-        elem.minutoFinal);
+        elem.minutoFinal,
+        elem.dia);
     } else {
       let it = this.#intervalosTiempo[elem.id];
       if(elem.horaInicio != null && it.getHoraInicio() != elem.horaInicio){
@@ -91,6 +94,9 @@ class ControllerIntervaloTiempo{
       }
       if(elem.minutoFinal != null && it.getMinutoFinal() != elem.minutoFinal){
         it.setMinutoFinal(elem.minutoFinal);
+      }
+      if(elem.dia != null && it.getDia() != elem.dia){
+        it.setDia(elem.dia);
       }
     }
     return this.#intervalosTiempo[elem.id];

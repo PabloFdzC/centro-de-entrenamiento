@@ -5,10 +5,10 @@ Persona = require('./Persona.js');
 class Instructor extends Persona{
 
   #servicios = null;
-  #clasesAutorizadas = null;
+  #clasesAutorizadas = [];
 
   constructor(primerNombre, segundoNombre, primerApellido, segundoApellido,
-    fechaNacimiento, telefono, email, identificacion, servicios, clasesAutorizadas){
+    fechaNacimiento, telefono, email, identificacion, servicios, clasesAutorizadas=[]){
     super(primerNombre, segundoNombre, primerApellido, segundoApellido,
       fechaNacimiento, telefono, email, identificacion);
     this.#servicios = servicios;
@@ -31,8 +31,17 @@ class Instructor extends Persona{
     this.#clasesAutorizadas = clasesAutorizadas;
   }
 
-  actualizar(){
-    
+  actualizar(clase, elimina){
+    if(elimina){
+      let i = this.#clasesAutorizadas.indexOf(clase);
+      if (i > -1) {
+        this.#clasesAutorizadas.splice(i, 1);
+      }
+    } else {
+      if(!this.#clasesAutorizadas.includes(clase)){
+        this.#clasesAutorizadas.push(clase);
+      }
+    }
   }
 
   convertirAVista(){

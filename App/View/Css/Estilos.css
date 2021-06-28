@@ -109,3 +109,25 @@ body{
 .form-control.is-invalid, .was-validated .form-control:invalid{
   border-color: #FFCCCE;
 }
+
+.modal-grande{
+  max-width: 650px;
+}
+
+.punto{
+  padding: 4px;
+  border-radius: 50%;
+  background-color: #383D3E;
+  max-width: 4px;
+  max-height: 4px;
+  margin: auto;
+}
+
+.puntoAmarillo{
+  padding: 4px;
+  border-radius: 50%;
+  background-color: #FFEC00;
+  max-width: 4px;
+  max-height: 4px;
+  margin: auto;
+}

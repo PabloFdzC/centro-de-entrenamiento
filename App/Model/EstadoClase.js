@@ -1,7 +1,6 @@
 const EstadoClase = {
   AGENDADA: "AGENDADA",
-  PUBLICADA: "PUBLICADA",
-  DESHABILITDA: "DESHABILITDA"
+  PUBLICADA: "PUBLICADA"
 }
 
 module.exports = EstadoClase;

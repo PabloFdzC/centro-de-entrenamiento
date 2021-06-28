@@ -7,6 +7,11 @@ const ctrlMatriculaClase = ctrlSng.getControllerMatriculaClase();
 const RegistroClaseInst = require('./RegistroClaseInst.js');
 const RegistroClaseAdm = require('./RegistroClaseAdm.js');
 
+OperacionesClase.get('/*', function (req, res, next) {
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+  next();
+});
+
 OperacionesClase.post('/crearClase', async function(req, res){
   try{
     var strategy;
@@ -53,6 +58,12 @@ OperacionesClase.post('/modificarClase', async function(req, res){
       case "ER_NO_ID_JORNADA":
         res.send("La sala está cerrada en el horario escogido");
         break;
+      case "ER_NO_ID_JORNADA":
+        res.send("La sala está cerrada en el horario escogido");
+        break;
+      case "ER_NO_DISPONIBLE":
+        res.send("No se pudo cambiar al horario escogido");
+        break;
       default:
         res.send("Algo salió mal");
         break;  
@@ -95,7 +106,8 @@ OperacionesClase.get('/mostrarPersonasMatriculadas', async function(req, res){
 
 OperacionesClase.post('/matricularClase', async function(req, res){
   try{
-    var r = await ctrlMatriculaClase.matricularClase(req.body);
+    req.body.email = req.session.email;
+    var r = await ctrlMatriculaClase.agregar(req.body);
     res.send(r);
   }catch(err){
     console.log(err);
@@ -107,9 +119,33 @@ OperacionesClase.post('/matricularClase', async function(req, res){
   }
 });
 
-OperacionesClase.post('/cancelarMatricula', async function(req, res){
+OperacionesClase.post('/desmatricularClase', async function(req, res){
   try{
-    var r = await ctrlMatriculaClase.cancelarMatricula(req.body);
+    req.body.email = req.session.email;
+    var r = await ctrlMatriculaClase.eliminar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
+OperacionesClase.post('/publicarClase', async function(req, res){
+  try{
+    var r = await ctrlClase.publicarClase(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
+OperacionesClase.post('/publicarTodasClases', async function(req, res){
+  try{
+    req.body.clases = await JSON.parse(req.body.clases);
+    var r = await ctrlClase.publicarTodas(req.body);
     res.send(r);
   }catch(err){
     console.log(err);

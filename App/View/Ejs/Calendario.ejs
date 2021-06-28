@@ -1,6 +1,6 @@
 <%- include('Header.ejs'); %>
   <body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/mathieu-chassara-0b3Nkg9oisc-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
-    <%- include('Navegacion.ejs', {ventana:"CALENDARIO", tipo_usuario:tipo}); %>
+    <%- include('Navegacion.ejs', {ventana:"CALENDARIO", tipo_usuario:tipo, notificacion}); %>
     <div class="row align-items-center">
       <div class="col-1 text-center">
         <button class="btn botonesCalendario" id="mesAnterior"><i class="fas fa-arrow-left"></i></button>
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="modal fade" id="modalVerDia" tabindex="-1" aria-labelledby="verDiaModal" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-grande">
         <div class="modal-content background">
           <div class="modal-body d-grid gap-4">
             <h3 class="text-center" id="verDiaModal">19 de abril 2021</h3>

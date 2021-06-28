@@ -31,7 +31,7 @@ OperacionesPago.post('/realizarPago', async function(req, res){
 
 OperacionesPago.get('/mostrarPendientes', async function(req, res){
   try{
-    var lista = await ctrlPago.mostrarPendientes(req.query.email);
+    var lista = await ctrlPago.mostrarPendientes(req.session.email);
     res.render('PagosCards.ejs', {lista});
   }catch(err){
     console.log(err);

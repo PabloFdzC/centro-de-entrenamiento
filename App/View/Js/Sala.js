@@ -22,6 +22,18 @@ $('body').ready(function(){
     "Domingo",
     );
 
+  fechaEnInput = function(a){
+    var d;
+    if(a != null){
+      d = new Date(a);
+    } else {
+      d = new Date();
+    }
+    var dia = ("0" + d.getDate()).slice(-2);
+    var mes = ("0" + (d.getMonth() + 1)).slice(-2);
+    return d.getFullYear()+"-"+mes+"-"+dia;
+  }
+
   const cargar = async function(){
     try{
       var res = await servicios.mostrarListadoServicios(true);
@@ -201,85 +213,94 @@ $('body').ready(function(){
   $('#formCrearCalendario').submit(function(event){
     event.preventDefault();
     let form = $('#formCrearCalendario')[0];
-    if(form.checkValidity()){
-      let ultimo;
-      let info = new FormData(form);
-      info = separarHoraForm(info, "horaInicio", "minutoInicio");
-      info = separarHoraForm(info, "horaFinal", "minutoFinal");
-      if(esModificar){
-        ultimo = calendarioA.length;
-        calendarioA.push(Utilidades.convertirAJSON(info));
-      } else {
-        ultimo = calendario.length;
-        calendario.push(Utilidades.convertirAJSON(info));
-      }
-      var rep = info.get("repeticion");
-      var e;
-      var d = new Date(info.get("dia"));
-      var hi = info.get("horaInicio");
-      var mi = info.get("minutoInicio");
-      var hf = info.get("horaFinal");
-      var mf = info.get("minutoFinal");
-      var mDia;
-      var mDia2;
-      if(hi == 12){
-        mDia = "md";
-      } else if(hi < 12) {
-        mDia = "am";
-      } else {
-        hi = hi-12;
-        mDia = "pm";
-      }
-      if(hf == 12){
-        mDia2 = "md";
-      } else if(hf < 12) {
-        mDia2 = "am";
-      } else {
-        hf = hf-12;
-        mDia2 = "pm";
-      }
-      if(hi < 10){
-        hi = "0"+hi;
-      }
-      if(mi < 10){
-        mi = "0"+mi;
-      }
-      if(hf < 10){
-        hf = "0"+hf;
-      }
-      if(mf < 10){
-        mf = "0"+mf;
-      }
-      if(rep == "CADASEMANADELMES"){
-        if(esModificar){
-          e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
-        }else{
-          e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+    try{
+      if(form.checkValidity()){
+        let ultimo;
+        let info = new FormData(form);
+        info = separarHoraForm(info, "horaInicio", "minutoInicio");
+        info = separarHoraForm(info, "horaFinal", "minutoFinal");
+        if(parseInt(info.get("horaInicio")) > parseInt(info.get("horaFinal")) || (parseInt(info.get("horaInicio")) === parseInt(info.get("horaFinal")) && parseInt(info.get("minutoInicio")) >= parseInt(info.get("minutoFinal")))){
+          throw {responseText:"La hora de inicio debe ser antes que la hora final"}
         }
-        e += `title="Cada `+dias[d.getDay()]+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">Cada `+dias[d.getDay()]+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+` </a>`;
-      } else if(rep == "TODOSLOSDIASDELMES"){
         if(esModificar){
-          e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
-        }else{
-          e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+          ultimo = calendarioA.length;
+          calendarioA.push(Utilidades.convertirAJSON(info));
+        } else {
+          ultimo = calendario.length;
+          calendario.push(Utilidades.convertirAJSON(info));
         }
-        e += `title="Todos los días del mes, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">Todos los días del mes, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`</a>`;
-      } else if(rep == "NOSEREPITE"){
-        if(esModificar){
-          e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
-        }else{
-          e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+        var rep = info.get("repeticion");
+        var e;
+        var d = new Date(info.get("dia"));
+        var hi = info.get("horaInicio");
+        var mi = info.get("minutoInicio");
+        var hf = info.get("horaFinal");
+        var mf = info.get("minutoFinal");
+        var mDia;
+        var mDia2;
+        if(hi == 12){
+          mDia = "md";
+        } else if(hi < 12) {
+          mDia = "am";
+        } else {
+          hi = hi-12;
+          mDia = "pm";
         }
-        e += `title="`+info.get("dia")+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">`+info.get("dia")+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`</a>`;
+        if(hf == 12){
+          mDia2 = "md";
+        } else if(hf < 12) {
+          mDia2 = "am";
+        } else {
+          hf = hf-12;
+          mDia2 = "pm";
+        }
+        if(hi < 10){
+          hi = "0"+hi;
+        }
+        if(mi < 10){
+          mi = "0"+mi;
+        }
+        if(hf < 10){
+          hf = "0"+hf;
+        }
+        if(mf < 10){
+          mf = "0"+mf;
+        }
+        if(rep == "CADASEMANADELMES"){
+          if(esModificar){
+            e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
+          }else{
+            e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+          }
+          e += `title="Cada `+dias[d.getDay()]+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">Cada `+dias[d.getDay()]+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+` </a>`;
+        } else if(rep == "TODOSLOSDIASDELMES"){
+          if(esModificar){
+            e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
+          }else{
+            e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+          }
+          e += `title="Todos los días del mes, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">Todos los días del mes, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`</a>`;
+        } else if(rep == "NOSEREPITE"){
+          if(esModificar){
+            e = `<a class="fechaCalendario link" id="A`+ultimo+`" `;
+          }else{
+            e = `<a class="fechaCalendario link" id="`+ultimo+`" `;
+          }
+          e += `title="`+info.get("dia")+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`">`+info.get("dia")+`, `+hi+`:`+mi+mDia+`-`+hf+`:`+mf+mDia2+`</a>`;
+        }
+        
+        $('#listaDiasCalendario').append(e);
+        modalCc.hide();
       }
-      
-      $('#listaDiasCalendario').append(e);
-      modalCc.hide();
+    }catch(err){
+      muestraMensaje("Fallo", err.responseText);
     }
   });
 
   $('#annadirCalendario').on('click',function(event){
-    $('#dia').val("");
+    var hoy = fechaEnInput(null);
+    $('#dia').val(hoy);
+    $('#dia').attr('min',hoy);
     $('#horaInicio').val("");
     $('#horaFinal').val("");
     $('#repeticion').val("");

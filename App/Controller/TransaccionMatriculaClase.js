@@ -11,7 +11,7 @@ class TransaccionMatriculaClase{
   async agregar(elem){
     var r = await this.#conexionBaseDatos.query(
       'CALL MatricularClase(?,?)',
-      [elem.idClase, elem.email]
+      [elem.idClaseJornada, elem.email]
       );
     return r;
   }
@@ -19,7 +19,7 @@ class TransaccionMatriculaClase{
   async eliminar(elem){
     var r = await this.#conexionBaseDatos.query(
       'CALL CancelarMatricula(?,?)',
-      [elem.idClase, elem.email]
+      [elem.idClaseJornada, elem.email]
       );
     return r[0];
   }

@@ -50,6 +50,12 @@ $('body').ready(async function(){
         let jornadasDelMes = await cal.mostrarCalendario({idSala:salas[0].id,annoUsuario, mesUsuario, annoActual, mesActual, diaActual});
         jornadas = jornadasDelMes.jornadas;
         $('#calendarioCont').append(jornadasDelMes.html);
+        var r = await cal.hayNotificacion();
+        if(r.notificacion){
+          if($('#notificacion').children().length === 0){
+            $('#notificacion').append('<div class="puntoAmarillo"></div>');
+          }
+        }
       }catch(err){
         muestraMensaje("Fallo", err.responseText);
       }
@@ -129,6 +135,40 @@ $('body').ready(async function(){
     return d.getFullYear()+"-"+mes+"-"+dia;
   }
 
+  $('body').on('click', '.matricular', async function(event){
+    let idClaseJornada = $(this).attr('value');
+    console.log(idClaseJornada);
+    try{
+      await cla.matricularClase({idClaseJornada});
+      $(this).addClass("desmatricular");
+      $(this).addClass("btn-secondary");
+      $(this).removeClass("matricular");
+      $(this).removeClass("btn-tertiary");
+      $(this).empty();
+      $(this).append("Desmatricular");
+    }catch(err){
+      console.log(err);
+      muestraMensaje("Fallo", err.responseText);
+    }
+  });
+
+  $('body').on('click', '.desmatricular', async function(event){
+    let idClaseJornada = $(this).attr('value');
+    console.log(idClaseJornada);
+    try{
+      await cla.desmatricularClase({idClaseJornada});
+      $(this).addClass("matricular");
+      $(this).addClass("btn-tertiary");
+      $(this).removeClass("desmatricular");
+      $(this).removeClass("btn-secondary");
+      $(this).empty();
+      $(this).append("Matricular");
+    }catch(err){
+      console.log(err);
+      muestraMensaje("Fallo", err.responseText);
+    }
+  });
+
   $('body').on('click', '.activaModal', async function(event){
     let val = $(this).attr('value');
     var hoy = fechaEnInput(null);
@@ -179,17 +219,20 @@ $('body').ready(async function(){
   $('#formClase').submit(async function(event){
     event.preventDefault();
     let form = $('#formClase')[0];
+    let info = new FormData(form);
     if(form.checkValidity()){
-      let info = new FormData(form);
-      info.set("idSala", salas[0].id);
-      info = separarHoraForm(info, "horaInicio", "minutoInicio");
-      info = separarHoraForm(info, "horaFinal", "minutoFinal");
-      if(info.has("instructorTemporal")){
-        if(info.get("instructorTemporal") == ""){
-          info.delete("instructorTemporal");
-        }
-      }
       try{
+        info.set("idSala", salas[0].id);
+        info = separarHoraForm(info, "horaInicio", "minutoInicio");
+        info = separarHoraForm(info, "horaFinal", "minutoFinal");
+        if(parseInt(info.get("horaInicio")) > parseInt(info.get("horaFinal")) || (parseInt(info.get("horaInicio")) === parseInt(info.get("horaFinal")) && parseInt(info.get("minutoInicio")) >= parseInt(info.get("minutoFinal")))){
+          throw {responseText:"La hora de inicio debe ser antes que la hora final"}
+        }
+        if(info.has("instructorTemporal")){
+          if(info.get("instructorTemporal") == ""){
+            info.delete("instructorTemporal");
+          }
+        }
         if(esModificar){
           let hc = claseActual.horario[jornadaActual.id];
           info.set("idIntervalo", hc.id);
@@ -208,7 +251,6 @@ $('body').ready(async function(){
       }
     }
     form.classList.add('was-validated');
-    
   });
 
   cargar = async function(){

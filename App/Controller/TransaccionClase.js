@@ -20,16 +20,8 @@ class TransaccionClase{
 
   async consultarEstado(elem){
     var r = await this.#conexionBaseDatos.query(
-      'CALL GetClasesEstado(?)',
-      [elem.estado]
-      );
-    return r[0];
-  }
-
-  async consultarPublicadasInstructor(elem){
-    var r = await this.#conexionBaseDatos.query(
-      'CALL GetClasesPublicadasInstructor(?)',
-      [elem.email]
+      'CALL GetClasesEstado(?,?)',
+      [elem.estado, elem.instructor]
       );
     return r[0];
   }
@@ -99,6 +91,13 @@ class TransaccionClase{
       hora_final = VALUES(hora_final),
       minuto_inicio = VALUES(minuto_inicio),
       minuto_final = VALUES(minuto_final);`,
+      [valores], true
+      );
+  }
+
+  async publicarTodas(valores){
+    return await this.#conexionBaseDatos.query(
+      `UPDATE Clase SET estado_clase = 'PUBLICADA' WHERE id_clase IN (?);`,
       [valores], true
       );
   }

@@ -1,7 +1,7 @@
 
 <%- include('Header.ejs'); %>
 <body id="body" class="d-flex flex-column min-vh-100" style="background-image: url('../Images/nathan-dumlao-pzLbV-NFT40-unsplash.jpg');/* height: 100%; */background-size: cover;background-repeat: no-repeat;background-attachment: fixed;background-position-y: center;background-position-x: center;"></body>
-  <%- include('Navegacion.ejs', {ventana:"PAGOS", tipo_usuario:"Cliente"}); %>
+  <%- include('Navegacion.ejs', {ventana:"PAGOS", tipo_usuario:"Cliente", notificacion}); %>
   <div class="card mx-auto background cardLista mb-2">
     <div class="card-body" id="cardB">
       <div class="row justify-content-between">
@@ -23,7 +23,6 @@
             <div>
               <label for="formaDePago" class="form-label">Forma de pago</label>
               <select name="formaDePago" id="formaDePago" class="form-control" aria-describedby="formaDePago" required>
-                <option value="" disabled selected hidden>Forma de pago</option>
                 <option value="SINPE">SINPE</option>
                 <option value="EFECTIVO">Efectivo</option>
               </select>

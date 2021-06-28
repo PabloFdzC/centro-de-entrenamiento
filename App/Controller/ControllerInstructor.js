@@ -87,6 +87,7 @@ class ControllerInstructor{
 
   agregaMemoria(elem = {primerNombre:null,segundoNombre:null,primerApellido:null,segundoApellido:null,fechaNacimiento:null,telefono:null,email:null,identificacion:null,servicios:null}){
     if(!(elem.email in this.#instructores)){
+      
       this.#instructores[elem.email] = new Instructor(
         elem.primerNombre,
         elem.segundoNombre,
@@ -125,6 +126,14 @@ class ControllerInstructor{
       }
     }
     return this.#instructores[elem.email];
+  }
+
+  mostrarClasesAutorizadas(email){
+    return this.#instructores[email].getClasesAutorizadas();
+  }
+
+  hayNotificacion(email){
+    return this.#instructores[email].getClasesAutorizadas().length > 0;
   }
 
 }

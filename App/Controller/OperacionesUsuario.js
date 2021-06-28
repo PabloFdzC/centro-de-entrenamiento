@@ -9,6 +9,7 @@ OperacionesUsuario.post('/ingresar', async function(req, res){
     var usuario = await ctrlUsuario.iniciarSesion(req.body);
     req.session.email = usuario.email;
     req.session.tipo = usuario.tipo_usuario;
+    req.session.notificacion = false;
     res.send(usuario);
   }catch(err){
     console.log(err);

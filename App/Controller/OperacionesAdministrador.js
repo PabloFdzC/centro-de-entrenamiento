@@ -30,4 +30,29 @@ OperacionesAdministrador.post('/modificarContrasennaAdministrador', async functi
   }
 });
 
+OperacionesAdministrador.get('/mostrarClasesEnEspera', async function(req, res){
+  try{
+    var clases = await ctrlAdm.mostrarClasesEnEspera(req.session.email);
+    res.render('ClasesCards.ejs',
+    {clases, tipo: req.session.tipo},
+    function(err, html){
+      if(err){
+        console.log(err);
+        res.status(400);
+        res.send("Algo salió mal");    
+      } else {
+        claseIds = [];
+        for(let c of clases){
+          claseIds.push(c.getId());
+        }
+        res.send({html, clases:claseIds});
+      }
+    });
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
 module.exports = OperacionesAdministrador;

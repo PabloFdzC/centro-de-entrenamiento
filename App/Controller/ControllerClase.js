@@ -6,6 +6,7 @@ const ArreglaFechas = require("./ArreglaFechas.js");
 
 class ControllerClase{
   #ctrlInstructor = null;
+  #ctrlAdministrador = null;
   #ctrlIntervaloTiempo = null;
   #ctrlMatriculaClase = null;
   #ctrlServicio = null;
@@ -14,8 +15,9 @@ class ControllerClase{
   #clases = null;
   #strategyRegistro = null;
   
-  constructor(ctrlInstructor, ctrlIntervaloTiempo, ctrlMatriculaClase, ctrlServicio){
+  constructor(ctrlInstructor, ctrlAdministrador, ctrlIntervaloTiempo, ctrlMatriculaClase, ctrlServicio){
     this.#ctrlInstructor = ctrlInstructor;
+    this.#ctrlAdministrador = ctrlAdministrador;
     this.#ctrlIntervaloTiempo = ctrlIntervaloTiempo;
     this.#ctrlMatriculaClase = ctrlMatriculaClase;
     this.#ctrlServicio = ctrlServicio;
@@ -56,7 +58,6 @@ class ControllerClase{
   }
 
   async agregar(elem){
-    console.log(elem);
     elem = this.#strategyRegistro.agregar(elem);
     let cantidadIds = {cantidad:0, idsJornada:[]};
     if(elem.repeticion == "CADASEMANADELMES"){
@@ -83,11 +84,10 @@ class ControllerClase{
 
   async consultar(elem){
     var claseresult = await this.#transaccionClase.consultar(elem);
-    return await this.#formatoClase(claseresult, {conHorario:true,conMatricula:true});
+    return await this.formatoClase(claseresult, {conHorario:true,conMatricula:true});
   }
 
   async modificar(elem){
-    var r = await this.#transaccionClase.modificar(elem);
     var disponible = await this.#transaccionClase.mostrarJornadasDisponibles(elem);
     var intervalosClase = await this.#transaccionClase.mostrarIntervalosClase(elem);
     if("aplicarTodas" in elem){
@@ -113,21 +113,27 @@ class ControllerClase{
         throw {code:"ER_NO_DISPONIBLE"}
       }
     } else {
-      var r2 = null;
-      for(let jd of disponible){
-        for(let ic of intervalosClase){
-          if(jd.id_jornada == ic.id_jornada && elem.idIntervalo == ic.id_intervalo && 
-            (ic.hora_inicio != elem.horaInicio || ic.hora_final != elem.horaFinal ||
-              ic.minuto_inicio != elem.minutoInicio || ic.minuto_final != elem.minutoFinal)){
-              r2 = await this.#ctrlIntervaloTiempo.modificar(elem);
-            break;
+      if("idIntervalo" in elem){
+        var r2 = null;
+        for(let jd of disponible){
+          for(let ic of intervalosClase){
+            if(jd.id_jornada == ic.id_jornada && elem.idIntervalo == ic.id_intervalo){
+              if(ic.hora_inicio != elem.horaInicio || ic.hora_final != elem.horaFinal ||
+                ic.minuto_inicio != elem.minutoInicio || ic.minuto_final != elem.minutoFinal){
+                  r2 = await this.#ctrlIntervaloTiempo.modificar(elem);
+                } else{
+                  r2 = true;
+                }
+              break;
+            }
           }
         }
-      }
-      if(r2 == null){
-        throw {code:'ER_NO_DISPONIBLE'}
+        if(r2 == null){
+          throw {code:'ER_NO_DISPONIBLE'}
+        }
       }
     }
+    var r = await this.#transaccionClase.modificar(elem);
     return r;
   }
 
@@ -142,7 +148,7 @@ class ControllerClase{
     var listaClases = [];
     for(i = 0; i < listaclasesresult.length; i++){
       var claseresult = listaclasesresult[i];
-      var clase = await this.#formatoClase(claseresult);
+      var clase = await this.formatoClase(claseresult);
       listaClases.push(clase);
     }
     return listaClases;
@@ -153,7 +159,7 @@ class ControllerClase{
     return r;
   }
 
-  async #formatoClase(claseresult, opciones={conHorario:false,conMatricula:false}){
+  async formatoClase(claseresult, opciones={conHorario:false,conMatricula:false}){
     var instructor = this.#ctrlInstructor.agregaMemoria({
       primerNombre:claseresult.primer_nombre,
       segundoNombre:claseresult.segundo_nombre,
@@ -200,7 +206,7 @@ class ControllerClase{
       instructor,
       matriculas
     });
-      return clase
+    return clase;
   }
 
   listaClaseJornadaObj(idClase, jornadaIds, primerIdIntervalo, ultimoIdIntervalo){
@@ -228,7 +234,7 @@ class ControllerClase{
       if(elem.capacidad != null && c.getCapacidad() != elem.capacidad){
         c.setCapacidad(elem.capacidad);
       }
-      if(elem.estadoClase != null && c.getEstado() != elem.estado){
+      if(elem.estado != null && c.getEstado() != elem.estado){
         c.setEstado(elem.estado);
       }
       if(elem.horario != null){
@@ -255,11 +261,42 @@ class ControllerClase{
         c.setMatriculas(elem.matriculas);
       }
     }
+    this.notificar(this.#clases[elem.id]);
     return this.#clases[elem.id];
   }
 
   setStrategyRegistro(strategy){
     this.#strategyRegistro = strategy;
+  }
+
+  notificar(clase){
+    var administradores = this.#ctrlAdministrador.getAdministradores();
+    var instructor = clase.getInstructor();
+    var eliminaEnA = clase.getEstado() === EstadoClase.PUBLICADA;
+    var eliminaEnI = !eliminaEnA;
+    instructor.actualizar(clase, eliminaEnI);
+    for(let a in administradores){
+      administradores[a].actualizar(clase, eliminaEnA);
+    }
+  }
+
+  async publicarTodas(elem){
+    var r = await this.#transaccionClase.publicarTodas(elem.clases);
+    for(let c of elem.clases){
+      let clase = this.#clases[c];
+      clase.setEstado(EstadoClase.PUBLICADA);
+      this.notificar(clase);
+    }
+    return r;
+  }
+
+  async publicarClase(elem){
+    elem.estado = EstadoClase.PUBLICADA;
+    var r = await this.modificar(elem);
+    let clase = this.#clases[elem.idClase];
+    clase.setEstado(EstadoClase.PUBLICADA);
+    this.notificar(clase);
+    return r;
   }
 
 }

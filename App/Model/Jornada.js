@@ -65,6 +65,14 @@ class Jornada {
     }
     return obj;
   }
+
+  aceptar(vj){
+    vj.visit(this);
+  }
+
+  puedeEditarse(){
+    return true;
+  }
 }
 
 module.exports = Jornada;

@@ -50,6 +50,17 @@ class ControllerAdministrador{
     return this.#administradores[elem.email];
   }
 
+  getAdministradores(){
+    return this.#administradores;
+  }
+
+  mostrarClasesEnEspera(email){
+    return this.#administradores[email].getClasesEnEspera();
+  }
+
+  hayNotificacion(email){
+    return this.#administradores[email].getClasesEnEspera().length > 0;
+  }
 }
 
 module.exports = ControllerAdministrador;
