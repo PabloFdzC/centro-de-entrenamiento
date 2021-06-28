@@ -35,13 +35,26 @@ class TransaccionClase{
   }
 
   async modificar(elem){
-    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?,?)', [
+    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?,?,?)', [
       elem.idClase,
       elem.capacidad,
       elem.servicio,
       elem.estado,
       elem.instructor,
-      elem.instructorTemporal
+      elem.instructorTemporal,
+      elem.vistoPorInstructor
+    ]);
+  }
+
+  async eliminar(elem){
+    return await this.#conexionBaseDatos.query('CALL EliminarClase(?)', [
+      elem.idClase
+    ]);
+  }
+
+  async eliminarClaseEnJornada(elem){
+    return await this.#conexionBaseDatos.query('CALL EliminarClaseEnJornada(?)', [
+      elem.idClaseJornada
     ]);
   }
 

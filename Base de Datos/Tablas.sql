@@ -98,6 +98,7 @@ CREATE TABLE Clase(
     nombre_servicio VARCHAR(50) NOT NULL,
     email_instructor VARCHAR(50) NOT NULL,
     email_instructor_temporal VARCHAR(50),
+    visto_por_instructor INT DEFAULT 0,
     FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio),
     FOREIGN KEY (email_instructor) REFERENCES Instructor(email),
     FOREIGN KEY (email_instructor_temporal) REFERENCES Instructor(email)

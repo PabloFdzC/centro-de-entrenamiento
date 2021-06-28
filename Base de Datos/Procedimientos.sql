@@ -628,15 +628,42 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS ModificarClase;
 DELIMITER //
 
-CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50))
+CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50), IN piVistoPorInstructor INT)
 BEGIN
     UPDATE Clase
     SET capacidad = COALESCE(piCapacidad,capacidad),
     estado_clase = COALESCE(pvEstadoClase,estado_clase),
     nombre_servicio = COALESCE(pvNombreServicio,nombre_servicio),
     email_instructor = COALESCE(pvEmailInstructor,email_instructor),
-    email_instructor_temporal = COALESCE(pvEmailInstructorT, email_instructor_temporal)
+    email_instructor_temporal = COALESCE(pvEmailInstructorT, email_instructor_temporal),
+    visto_por_instructor = COALESCE(piVistoPorInstructor, visto_por_instructor)
     WHERE id_clase = piIdClase;
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS EliminarClase;
+DELIMITER //
+
+CREATE PROCEDURE EliminarClase(IN piIdClase INT)
+BEGIN
+	DELETE FROM Clases_en_Jornada
+    WHERE id_clase = piIdClase;
+    DELETE FROM Clase
+    WHERE id_clase = piIdClase;
+    COMMIT;
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS EliminarClaseEnJornada;
+DELIMITER //
+
+CREATE PROCEDURE EliminarClaseEnJornada(IN piIdClaseJornada INT)
+BEGIN
+	DELETE FROM Clases_en_Jornada
+    WHERE id_clase_jornada = piIdClaseJornada;
     COMMIT;
 END //
 
@@ -662,7 +689,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesEstado(IN pvEstadoClase VARCHAR(50),IN pvEmailInstructor VARCHAR(50))
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
 		FROM Clase
 		WHERE estado_clase = pvEstadoClase AND email_instructor = COALESCE(pvEmailInstructor, email_instructor) AND MONTH(j.dia) >= MONTH(CURDATE())) AS c
@@ -682,7 +709,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesMes(IN piMes INT, IN piIdSala INT)
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_jornada
 		FROM Jornada
 		WHERE id_sala = piIdSala AND MONTH(dia) = piMes) AS j
@@ -699,7 +726,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClase(IN pvIdClase INT)
 BEGIN
-	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
+	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
     FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
 		FROM Clase
 		WHERE id_clase = pvIdClase) AS c
@@ -730,7 +757,7 @@ DELIMITER //
 
 CREATE PROCEDURE GetClasesEnJornada(IN piIdJornada INT)
 BEGIN
-	SELECT cej.id_clase_jornada, cej.id_jornada, c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
+	SELECT cej.id_clase_jornada, cej.id_jornada, c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
     FROM Clases_en_Jornada AS cej
     INNER JOIN Clase c
     ON cej.id_clase = c.id_clase
