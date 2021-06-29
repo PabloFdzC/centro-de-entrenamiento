@@ -237,10 +237,11 @@ $('body').ready(async function(){
         $('#dia').val(jornadaActual.dia);
         $('#dia').attr('min',hoy);
         $('#dia').prop('disabled', true);
-        let hs = claseActual.horarios;
         let hc;
-        for(let h of hs){
-          hc = claseActual.horarios;
+        for(let h of claseActual.horarios){
+          if(h.idJornada === jornadaActual.id){
+            hc = h.horario;
+          }
         }
         $("#horaInicio").val(hc.horaInicio+":"+hc.minutoInicio).change();
         $("#horaFinal").val(hc.horaFinal+":"+hc.minutoFinal).change();
