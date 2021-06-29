@@ -636,7 +636,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS ModificarClase;
 DELIMITER //
 
-CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50), IN piVistoPorInstructor INT)
+CREATE PROCEDURE ModificarClase(IN piIdSala INT, IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50), IN piVistoPorInstructor INT)
 BEGIN
     DECLARE servicioInstructor INT;
     DECLARE capacidadSala INT;
