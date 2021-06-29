@@ -34,21 +34,13 @@ class ControllerPago{
   }
 
   async mostrarPendientes(email){
-    let elem = {email, estado:EstadoPago.PENDIENTE};
-    var result = await this.#transaccionPago.mostrarPendientes(elem);
+    var result = await this.#transaccionPago.mostrarPendientes({email});
     var pagoslistaresult = result[0];
     var i;
     var listaPagos = [];
     for(i = 0; i < pagoslistaresult.length; i++){
       var p = pagoslistaresult[i];
-      var servicio = this.#ctrlServicio.agregaMemoria({
-        nombre:p.nombre_servicio,
-        costoMatricula:p.costo_matricula
-      });
-      var clase = this.#ctrlClase.agregaMemoria({
-        id: p.id_clase,
-        servicio
-      });
+      var clase = await this.#ctrlClase.formatoClase(p, false);
       var pago = this.agregaMemoria({
         id:p.id_pago,
         fecha:p.fecha,

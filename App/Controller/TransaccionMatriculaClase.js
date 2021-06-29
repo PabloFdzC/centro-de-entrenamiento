@@ -24,19 +24,12 @@ class TransaccionMatriculaClase{
     return r[0];
   }
 
-  async mostrarPersonasMatriculadas(id){
+  async mostrarPersonasMatriculadas(idClaseJornada){
     var r = await this.#conexionBaseDatos.query(
       'CALL GetMatriculasClase(?)',
-      [id]
+      [idClaseJornada]
       );
     return r[0];
-  }
-
-  async mostrarTodosXIdClase(idClase){
-    var r = await this.#conexionBaseDatos.query(
-      'CALL GetHorarioClase(?)',
-      [idClase]);
-      return r[0];
   }
 
 }

@@ -3,23 +3,21 @@ class Clase {
   #id = null;
   #capacidad = null;
   #estado = null;
-  #horario = null;
+  #horarios = null;
   #instructorTemporal = null;
   #servicio = null;
   #instructor = null;
-  #matriculas = [];
   #vistoPorInstructor = null;
 
-  constructor(id, capacidad, estado, horario, instructorTemporal, servicio,
-    instructor, matriculas, vistoPorInstructor){
+  constructor(id, capacidad, estado, horarios, instructorTemporal, servicio,
+    instructor, vistoPorInstructor){
     this.#id = id;
     this.#capacidad = capacidad;
     this.#estado = estado;
-    this.#horario = horario;
+    this.#horarios = horarios;
     this.#instructorTemporal = instructorTemporal;
     this.#servicio = servicio;
     this.#instructor = instructor;
-    this.#matriculas = matriculas;
     this.#vistoPorInstructor = vistoPorInstructor;
   }
 
@@ -47,12 +45,12 @@ class Clase {
     this.#estado = estado;
   }
 
-  getHorario(){
-    return this.#horario;
+  getHorarios(){
+    return this.#horarios;
   }
 
-  setHorario(horario){
-    this.#horario = horario;
+  setHorarios(horarios){
+    this.#horarios = horarios;
   }
 
   getInstructorTemporal(){
@@ -79,14 +77,6 @@ class Clase {
     this.#instructor = instructor;
   }
 
-  getMatriculas(){
-    return this.#matriculas;
-  }
-
-  setMatriculas(matriculas){
-    this.#matriculas = matriculas;
-  }
-
   getVistoPorInstructor(){
     return this.#vistoPorInstructor;
   }
@@ -94,8 +84,18 @@ class Clase {
   setVistoPorInstructor(vistoPorInstructor){
     this.#vistoPorInstructor = vistoPorInstructor;
   }
+
+  getHorarioDeJornada(idJornada){
+    for(let h of this.#horarios){
+      if(h.getIdJornada() === idJornada){
+        return h;
+      }
+    }
+    return null;
+  }
   
   convertirAVista(){
+    console.log(this.#instructor);
     var obj = {
       id: this.#id,
       capacidad: this.#capacidad,
@@ -108,19 +108,12 @@ class Clase {
       obj.instructorTemporal = this.#instructorTemporal.convertirAVista()
     }
     var a = [];
-    if(Array.isArray(this.#matriculas)){
-      for(let c of this.#matriculas){
-        a.push(c.convertirAVista());
+    if(Array.isArray(this.#horarios)){
+      for(let h of this.#horarios){
+        a.push(h.convertirAVista());
       }
     }
-    obj.matriculas = a;
-    var a2 = {};
-    if(typeof(this.#horario) === 'object' && this.#horario !== null){
-      for(let hc in this.#horario){
-        a2[hc] = this.#horario[hc].convertirAVista();
-      }
-    }
-    obj.horario = a2;
+    obj.horarios = a;
     return obj;
   }
 

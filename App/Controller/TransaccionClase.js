@@ -117,6 +117,14 @@ class TransaccionClase{
       );
   }
 
+  async mostrarHorariosClase(elem){
+    var r = await this.#conexionBaseDatos.query(
+      'CALL GetHorariosClase(?)',
+      [elem.idClase]
+      );
+      return r[0];
+  }
+
 }
 
 module.exports = TransaccionClase;

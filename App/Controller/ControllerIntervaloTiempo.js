@@ -47,23 +47,6 @@ class ControllerIntervaloTiempo{
     return null;
   }
 
-  async mostrarIntervaloXIdClase(idClase){
-    let valores = {};
-    let intervalos = await this.#transaccionIntervaloTiempo.mostrarIntervaloXIdClase(idClase);
-    for(let i of intervalos){
-      var intervaloTiempo = this.agregaMemoria({
-        id:i.id_intervalo,
-        horaInicio:i.hora_inicio,
-        minutoInicio:i.minuto_inicio,
-        horaFinal:i.hora_final,
-        minutoFinal:i.minuto_final,
-        dia:i.dia
-      });
-      valores[i.id_jornada] = intervaloTiempo;
-    }
-    return valores;
-  }
-
   listaIntervalosObj(elem, cantidad){
     var intervalos = [];
     for(let i = 0; i < cantidad; i++){

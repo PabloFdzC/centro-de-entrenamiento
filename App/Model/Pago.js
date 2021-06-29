@@ -56,6 +56,17 @@ class Pago{
     this.#clase = clase;
   }
 
+  convertirAVista(){
+    var obj = {
+      id: this.#id,
+      fecha: this.#fecha,
+      formaPago:this.#formaPago,
+      cantidad:this.#cantidad,
+      clase:this.#clase.convertirAVista()
+    }
+    return obj;
+  }
+
 }
 
 module.exports = Pago;

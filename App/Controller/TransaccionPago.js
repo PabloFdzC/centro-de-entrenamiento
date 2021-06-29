@@ -34,8 +34,8 @@ class TransaccionPago{
 
   async mostrarPendientes(elem){
     return await this.#conexionBaseDatos.query(
-      'CALL GetPagosPendientes(?,?)',
-      [elem.email, elem.estado]
+      'CALL GetPagosPendientes(?)',
+      [elem.email]
       );
   }
 

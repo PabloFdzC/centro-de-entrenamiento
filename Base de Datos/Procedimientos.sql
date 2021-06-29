@@ -808,11 +808,12 @@ END //
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS GetHorarioClase;
+DROP PROCEDURE IF EXISTS GetHorariosClase;
 DELIMITER //
 
-CREATE PROCEDURE GetHorarioClase(IN piIdClase INT)
+CREATE PROCEDURE GetHorariosClase(IN piIdClase INT)
 BEGIN
-	SELECT cej.id_jornada, j.dia, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
+	SELECT cej.id_clase_jornada, cej.id_jornada, j.dia, it.id_intervalo, it.hora_inicio, it.hora_final, it.minuto_inicio, it.minuto_final
     FROM Intervalo_Tiempo AS it
     INNER JOIN Clases_en_Jornada AS cej
     ON it.id_intervalo = cej.id_intervalo
@@ -1091,12 +1092,12 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS GetPagosPendientes;
 DELIMITER //
 
-CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50), IN pvEstadoPago VARCHAR(50))
+CREATE PROCEDURE GetPagosPendientes(IN pvEmailCliente VARCHAR(50))
 BEGIN
 	SELECT p.id_pago, p.cantidad, p.estado_pago, p.fecha, p.id_clase_jornada, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono, s.costo_matricula
     FROM (SELECT id_pago, cantidad, estado_pago, id_clase_jornada, fecha
     FROM Pago
-    WHERE estado_pago = pvEstadoPago AND email_usuario = pvEmailCliente) AS p
+    WHERE (estado_pago = 'PENDIENTE' OR estado_pago = 'MOROSO') AND email_usuario = pvEmailCliente) AS p
     INNER JOIN Clases_en_Jornada cej
     ON cej.id_clase_jornada = p.id_clase_jornada
     INNER JOIN Clase c

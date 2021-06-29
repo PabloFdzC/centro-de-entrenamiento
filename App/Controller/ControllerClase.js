@@ -3,6 +3,7 @@ const TransaccionClaseJornada = require("./TransaccionClaseJornada.js");
 const Clase = require("./../Model/Clase");
 const EstadoClase = require("./../Model/EstadoClase");
 const ArreglaFechas = require("./ArreglaFechas.js");
+const HorarioClase = require("../Model/HorarioClase.js");
 
 class ControllerClase{
   #ctrlInstructor = null;
@@ -13,6 +14,7 @@ class ControllerClase{
   #transaccionClase = null;
   #transaccionClaseJornada = null;
   #clases = null;
+  #horariosClase = null;
   #strategyRegistro = null;
   
   constructor(ctrlInstructor, ctrlAdministrador, ctrlIntervaloTiempo, ctrlMatriculaClase, ctrlServicio){
@@ -22,6 +24,7 @@ class ControllerClase{
     this.#ctrlMatriculaClase = ctrlMatriculaClase;
     this.#ctrlServicio = ctrlServicio;
     this.#clases = {};
+    this.#horariosClase = {};
     this.#transaccionClase = new TransaccionClase();
     this.#transaccionClaseJornada = new TransaccionClaseJornada();
   }
@@ -84,7 +87,7 @@ class ControllerClase{
 
   async consultar(elem){
     var claseresult = await this.#transaccionClase.consultar(elem);
-    return await this.formatoClase(claseresult, {conHorario:true,conMatricula:true});
+    return await this.formatoClase(claseresult, true);
   }
 
   async modificar(elem){
@@ -153,7 +156,7 @@ class ControllerClase{
     var listaClases = [];
     for(i = 0; i < listaclasesresult.length; i++){
       var claseresult = listaclasesresult[i];
-      var clase = await this.formatoClase(claseresult);
+      var clase = await this.formatoClase(claseresult, false);
       listaClases.push(clase);
     }
     return listaClases;
@@ -164,7 +167,7 @@ class ControllerClase{
     return r;
   }
 
-  async formatoClase(claseresult, opciones={conHorario:false,conMatricula:false}){
+  async formatoClase(claseresult, conHorario){
     var instructor = this.#ctrlInstructor.agregaMemoria({
       primerNombre:claseresult.primer_nombre,
       segundoNombre:claseresult.segundo_nombre,
@@ -193,24 +196,18 @@ class ControllerClase{
       nombre:claseresult.nombre_servicio,
       costoMatricula:claseresult.costo_matricula
     });
-    var matriculas = [];
-    var horario = {};
-    if(opciones.conHorario){
-      horario = await this.#ctrlIntervaloTiempo.mostrarIntervaloXIdClase(claseresult.id_clase);
+    var horarios = [];
+    if(conHorario){
+      horarios = await this.mostrarHorariosClase(claseresult); 
     }
-    if(opciones.conMatricula){
-      matriculas = await this.#ctrlMatriculaClase.mostrarPersonasMatriculadas(claseresult.id_clase);
-    }
-    console.log(claseresult);
     var clase = this.agregaMemoria({
-      id: claseresult.id_clase,
+      id:claseresult.id_clase,
       capacidad:claseresult.capacidad,
       estado:claseresult.estado_clase,
-      horario:horario,
+      horarios,
       instructorTemporal,
       servicio,
       instructor,
-      matriculas,
       vistoPorInstructor:claseresult.visto_por_instructor
     });
     return clase;
@@ -226,17 +223,16 @@ class ControllerClase{
     return lista;
   }
 
-  agregaMemoria(elem = {id:null,capacidad:null,estado:null,horario:null,instructorTemporal:null,servicio:null,instructor:null,matriculas:null,vistoPorInstructor:null}){
-    console.log(elem);
+  agregaMemoria(elem = {id:null,capacidad:null,estado:null,horarios:null,instructorTemporal:null,servicio:null,instructor:null,vistoPorInstructor:null}){
     if(!(elem.id in this.#clases)){
-      this.#clases[elem.id] = new Clase(elem.id,
+      this.#clases[elem.id] = new Clase(
+        elem.id,
         elem.capacidad,
         elem.estado,
-        elem.horario,
+        elem.horarios,
         elem.instructorTemporal,
         elem.servicio,
         elem.instructor,
-        elem.matriculas,
         elem.vistoPorInstructor);
     } else {
       let c = this.#clases[elem.id];
@@ -246,16 +242,8 @@ class ControllerClase{
       if(elem.estado != null && c.getEstado() != elem.estado){
         c.setEstado(elem.estado);
       }
-      if(elem.horario != null){
-        var horario = c.getHorario();
-        if(typeof(elem.horario) === 'object'){
-          for(let eh in elem.horario){
-            if(!(eh in horario)){
-              horario[eh] = elem.horario[eh];
-            }
-          }
-          c.setHorario(horario);
-        }
+      if(elem.horarios != null){
+        c.setHorarios(elem.horarios);
       }
       if(elem.instructorTemporal != null && c.getInstructorTemporal() != elem.instructorTemporal){
         c.setInstructorTemporal(elem.instructorTemporal);
@@ -266,15 +254,11 @@ class ControllerClase{
       if(elem.instructor != null && c.getInstructor() != elem.instructor){
         c.setInstructor(elem.instructor);
       }
-      if(elem.matriculas != null){
-        c.setMatriculas(elem.matriculas);
-      }
       if(elem.vistoPorInstructor != null  && c.getVistoPorInstructor() != elem.vistoPorInstructor){
         c.setVistoPorInstructor(elem.vistoPorInstructor);
       }
     }
     let condicion = this.#clases[elem.id].getEstado() === EstadoClase.PUBLICADA;
-    console.log(condicion);
     this.notificarInstructor(this.#clases[elem.id], !condicion);
     this.notificarAdministradores(this.#clases[elem.id], condicion);
     return this.#clases[elem.id];
@@ -331,6 +315,49 @@ class ControllerClase{
       this.notificarInstructor(clase, true);
     }
     return r;
+  }
+
+  async mostrarHorariosClase(elem){
+    let valores = [];
+    let horarios = await this.#transaccionClase.mostrarHorariosClase({idClase:elem.id_clase});
+    for(let h of horarios){
+      var intervaloTiempo = this.#ctrlIntervaloTiempo.agregaMemoria({
+        id:h.id_intervalo,
+        horaInicio:h.hora_inicio,
+        minutoInicio:h.minuto_inicio,
+        horaFinal:h.hora_final,
+        minutoFinal:h.minuto_final
+      });
+      let matriculas = await this.#ctrlMatriculaClase.mostrarPersonasMatriculadas(elem.id_clase_jornada);
+      var horario = this.agregaMemoriaHorarioClase({id:h.id_clase_jornada, idJornada:h.id_jornada, dia:h.dia, horario:intervaloTiempo, matriculas});
+      valores.push(horario);
+    }
+    return valores;
+  }
+
+  agregaMemoriaHorarioClase(elem={id:null,idJornada:null,dia:null,horario:null,matriculas:null}){
+    if(!(elem.id in this.#horariosClase)){
+      this.#horariosClase[elem.id] = new HorarioClase(
+        elem.id,
+        elem.idJornada,
+        elem.dia,
+        elem.horario,
+        elem.matriculas
+        );
+        this.#horariosClase[elem.id].get
+    } else {
+      let c = this.#horariosClase[elem.id];
+      if(elem.dia != null && c.getDia() != elem.dia){
+        c.setDia(elem.dia);
+      }
+      if(elem.horario != null && c.getHorario() != elem.horario){
+        c.setHorario(elem.horario);
+      }
+      if(elem.matriculas != null){
+        c.setMatriculas(elem.matriculas);
+      }
+    }
+    return this.#horariosClase[elem.id];
   }
 
 }

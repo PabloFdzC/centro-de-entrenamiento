@@ -18,8 +18,8 @@
           </div>
           <div class="col-6">
             <div class="row justify-content-end">
-              <% let hc = clase.getHorario();%>
-              <%= hc[jornada.getId()].getHoraMinutosInicio() %> - <%= hc[jornada.getId()].getHoraMinutosFinal() %>
+              <% let horarios = clase.getHorarios(); let hc = clase.getHorarioDeJornada(jornada.getId()); %>
+              <%= hc.getHorario().getHoraMinutosInicio() %> - <%= hc.getHorario().getHoraMinutosFinal() %>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@
               <div>
                 <h3 class="tituloDatos">Personas matriculadas:</h3>
               </div>
-              <% var matriculado = false; let clientes = clase.getMatriculas();
+              <% var matriculado = false; let clientes = hc.getMatriculas();
               for(let cliente of clientes) {
                 matriculado = cliente.getEmail() === email;
                 %>

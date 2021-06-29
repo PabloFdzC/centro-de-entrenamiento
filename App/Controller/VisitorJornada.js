@@ -8,10 +8,12 @@ class VisitorJornada{
   #tipoUsuario = null;
   #email = null;
   #dia = null;
+  #idJornada = null;
 
   visit(j){
     this.#clases = j.getClases();
     this.#dia = j.getDia();
+    this.#idJornada = j.getId();
   }
 
   getClases(){
@@ -22,22 +24,26 @@ class VisitorJornada{
       pasada = true;
     }
     for(let c in this.#clases){
+      let hc = this.#clases[c].getHorarioDeJornada(this.#idJornada);
+      if(hc == null){
+        continue;
+      }
       if(this.#tipoUsuario === "Administrador" && !pasada){
-        if(this.#clases[c].getMatriculas().length === 0){
+        if(hc.getMatriculas().length === 0){
           clases[c] = new ClaseEditable(this.#clases[c]);
         } else {
           clases[c] = new ClaseSoloLectura(this.#clases[c]);
         }
       } else if(this.#tipoUsuario === "Instructor" && !pasada){
         if(this.#clases[c].getInstructor().getEmail() === this.#email &&
-        this.#clases[c].getMatriculas().length === 0){
+        hc.getMatriculas().length === 0){
           clases[c] = new ClaseEditable(this.#clases[c]);
         } else {
           clases[c] = new ClaseSoloLectura(this.#clases[c]);
         }
       } else if(this.#tipoUsuario === "Cliente"){
         if(this.#clases[c].getEstado() === EstadoClase.PUBLICADA){
-          if(!pasada){
+          if(!pasada || this.#clases[c].getCapacidad() > hc.getMatriculas().length){
             clases[c] = new ClaseMatricula(this.#clases[c]);
           } else {
             clases[c] = new ClaseSoloLectura(this.#clases[c]);  

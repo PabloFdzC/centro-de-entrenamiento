@@ -26,18 +26,10 @@ class TransaccionIntervaloTiempo{
   }
 
   async eliminarMultiples(valores){
-    console.log(valores);
     return await this.#conexionBaseDatos.query(
       'DELETE FROM Intervalo_Tiempo WHERE (id_intervalo) IN (?)',
       [valores], true
       );
-  }
-  
-  async mostrarIntervaloXIdClase(idClase){
-    var r = await this.#conexionBaseDatos.query(
-      'CALL GetHorarioClase(?)',
-      [idClase]);
-    return r[0];
   }
 
   async modificar(elem){

@@ -29,7 +29,7 @@ class ControllerJornada{
     var listaClases = {};
     for(var i = 0; i < listaclasesresult.length; i++){
       var claseresult = listaclasesresult[i];
-      var clase = await this.#ctrlClase.formatoClase(claseresult, {conHorario:true,conMatricula:true});
+      var clase = await this.#ctrlClase.formatoClase(claseresult, true);
       listaClases[claseresult.id_clase_jornada] = clase;
     }
     var j = await this.#transaccionJornada.consultar(elem.idJornada);
