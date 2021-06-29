@@ -233,10 +233,15 @@ $('body').ready(async function(){
         $('#eliminarTodasClase').val(val2[0]);
         $('#eliminarClase').val(val2[1]);
         claseActual = await cla.mostrarClase(val2[0]);
+        console.log(claseActual);
         $('#dia').val(jornadaActual.dia);
         $('#dia').attr('min',hoy);
         $('#dia').prop('disabled', true);
-        let hc = claseActual.horario[jornadaActual.id];
+        let hs = claseActual.horarios;
+        let hc;
+        for(let h of hs){
+          hc = claseActual.horarios;
+        }
         $("#horaInicio").val(hc.horaInicio+":"+hc.minutoInicio).change();
         $("#horaFinal").val(hc.horaFinal+":"+hc.minutoFinal).change();
         $("#servicio").val(claseActual.servicio).change();

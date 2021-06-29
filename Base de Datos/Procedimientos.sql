@@ -732,7 +732,7 @@ BEGIN
     WHERE id_clase = idClase;
     IF tot = 0 THEN 
         DELETE FROM Clase
-        WHERE id_clase = piIdClase;
+        WHERE id_clase = idClase;
     END IF;
 
     COMMIT;

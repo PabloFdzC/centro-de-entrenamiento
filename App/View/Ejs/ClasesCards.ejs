@@ -44,8 +44,8 @@
         <div class="col-6">
           <h3 class="tituloDatos">Horario:</h3>
           <div class="row justify-content-center">
-            <%let horario = clase.getHorario(); for(let d in horario){ console.log(horario[d].getDia()); %>
-              <div class="ms-2"><%= horario[d].getDia() %> | <%= horario[d].getHoraMinutosInicio() %> - <%= horario[d].getHoraMinutosFinal() %></div>
+            <%let horarios = clase.getHorarios(); for(let h of horarios){ console.log(h.getDia()); %>
+              <div class="ms-2"><%= h.getDia() %> | <%= h.getHorario().getHoraMinutosInicio() %> - <%= h.getHorario().getHoraMinutosFinal() %></div>
             <% } %>
           </div>
         </div>

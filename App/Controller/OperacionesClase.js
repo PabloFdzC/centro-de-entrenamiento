@@ -88,8 +88,15 @@ OperacionesClase.post('/eliminarClase', async function(req, res){
     res.send(r);
   }catch(err){
     console.log(err);
-    res.status(400);
-    res.send("Algo salió mal");
+    switch(err.code){
+      case 'ER_ROW_IS_REFERENCED_2':
+        res.send("No se pueden eliminar todas las clases");
+        break;
+      default:
+        res.status(400);
+        res.send("Algo salió mal");
+        break;
+    }
   }
 });
 
