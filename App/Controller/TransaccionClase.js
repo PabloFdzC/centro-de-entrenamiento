@@ -9,7 +9,8 @@ class TransaccionClase{
   }
 
   async agregar(elem){
-    var r = await this.#conexionBaseDatos.query('CALL CrearClase(?,?,?,?)', [
+    var r = await this.#conexionBaseDatos.query('CALL CrearClase(?,?,?,?,?)', [
+      elem.idSala,
       elem.capacidad,
       elem.servicio,
       elem.estado,
@@ -35,7 +36,8 @@ class TransaccionClase{
   }
 
   async modificar(elem){
-    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?,?,?)', [
+    return await this.#conexionBaseDatos.query('CALL ModificarClase(?,?,?,?,?,?,?,?)', [
+      elem.idSala,
       elem.idClase,
       elem.capacidad,
       elem.servicio,
@@ -52,7 +54,7 @@ class TransaccionClase{
     ]);
   }
 
-  async eliminarClaseEnJornada(elem){
+  async eliminarEnJornada(elem){
     return await this.#conexionBaseDatos.query('CALL EliminarClaseEnJornada(?)', [
       elem.idClaseJornada
     ]);
@@ -108,9 +110,9 @@ class TransaccionClase{
       );
   }
 
-  async publicarTodas(valores){
+  async modificarMuchas1Campo(valores, celda, valor){
     return await this.#conexionBaseDatos.query(
-      `UPDATE Clase SET estado_clase = 'PUBLICADA' WHERE id_clase IN (?);`,
+      `UPDATE Clase SET `+celda+` = `+valor+` WHERE id_clase IN (?);`,
       [valores], true
       );
   }

@@ -43,4 +43,20 @@ class Clase{
     return await Utilidades.ajaxCall('/publicarClase', 'POST', i, "Clase publicada con éxito");
   }
 
+  async eliminarClaseEnJornada(id){
+    let i = JSON.stringify({idClaseJornada:id});
+    return await Utilidades.ajaxCall('/eliminarClaseJornada', 'POST', i, "La clase se eliminó de esta jornada");
+  }
+
+  async eliminar(idClase){
+    let i = JSON.stringify({idClase});
+    return await Utilidades.ajaxCall('/eliminarClase', 'POST', i, "Clase eliminada con éxito");
+  }
+
+  async marcarVistasInstructor(clases){
+    let info = {clases:JSON.stringify(clases)};
+    let i = JSON.stringify(info);
+    return await Utilidades.ajaxCall('/marcarVistasInstructor', 'POST', i);
+  }
+
 }

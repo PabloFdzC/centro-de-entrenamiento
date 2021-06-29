@@ -8,9 +8,10 @@ class Clase {
   #servicio = null;
   #instructor = null;
   #matriculas = [];
+  #vistoPorInstructor = null;
 
   constructor(id, capacidad, estado, horario, instructorTemporal, servicio,
-    instructor, matriculas){
+    instructor, matriculas, vistoPorInstructor){
     this.#id = id;
     this.#capacidad = capacidad;
     this.#estado = estado;
@@ -19,6 +20,7 @@ class Clase {
     this.#servicio = servicio;
     this.#instructor = instructor;
     this.#matriculas = matriculas;
+    this.#vistoPorInstructor = vistoPorInstructor;
   }
 
   getId(){
@@ -83,6 +85,14 @@ class Clase {
 
   setMatriculas(matriculas){
     this.#matriculas = matriculas;
+  }
+
+  getVistoPorInstructor(){
+    return this.#vistoPorInstructor;
+  }
+
+  setVistoPorInstructor(vistoPorInstructor){
+    this.#vistoPorInstructor = vistoPorInstructor;
   }
   
   convertirAVista(){

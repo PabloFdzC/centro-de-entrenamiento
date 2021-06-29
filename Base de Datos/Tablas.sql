@@ -10,12 +10,12 @@ flush privileges;
 use sistemaentrenamiento;
 
 DROP TABLE IF EXISTS Matricula;
+DROP TABLE IF EXISTS Pago;
 DROP TABLE IF EXISTS Clases_en_Jornada;
 DROP TABLE IF EXISTS Jornada;
 DROP TABLE IF EXISTS Intervalo_Tiempo;
 DROP TABLE IF EXISTS Servicios_de_Sala;
 DROP TABLE IF EXISTS Servicios_de_Instructor;
-DROP TABLE IF EXISTS Pago;
 DROP TABLE IF EXISTS Sala;
 DROP TABLE IF EXISTS Clase;
 DROP TABLE IF EXISTS Servicio;
@@ -89,6 +89,7 @@ CREATE TABLE Jornada(
     id_sala INT NOT NULL,
     FOREIGN KEY (id_intervalo_tiempo) REFERENCES Intervalo_Tiempo(id_intervalo),
     FOREIGN KEY (id_sala) REFERENCES Sala(id_sala)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE Clase(
@@ -108,7 +109,8 @@ CREATE TABLE Servicios_de_Instructor(
 	email_instructor VARCHAR(50) NOT NULL,
     nombre_servicio VARCHAR(50) NOT NULL,
     PRIMARY KEY(email_instructor, nombre_servicio),
-    FOREIGN KEY (email_instructor) REFERENCES Instructor(email),
+    FOREIGN KEY (email_instructor) REFERENCES Instructor(email)
+        ON DELETE CASCADE,
     FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio)
 );
 
@@ -116,8 +118,10 @@ CREATE TABLE Servicios_de_Sala(
 	id_sala INT NOT NULL,
     nombre_servicio VARCHAR(50) NOT NULL,
     PRIMARY KEY(id_sala, nombre_servicio),
-    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala),
+    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala)
+        ON DELETE CASCADE,
     FOREIGN KEY (nombre_servicio) REFERENCES Servicio(nombre_servicio)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE Clases_en_Jornada(
@@ -125,9 +129,12 @@ CREATE TABLE Clases_en_Jornada(
 	id_clase INT NOT NULL,
     id_intervalo INT NOT NULL,
     id_jornada INT NOT NULL,
-    FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
-    FOREIGN KEY (id_intervalo) REFERENCES Intervalo_Tiempo(id_intervalo),
+    FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
+        ON DELETE CASCADE,
+    FOREIGN KEY (id_intervalo) REFERENCES Intervalo_Tiempo(id_intervalo)
+        ON DELETE CASCADE,
     FOREIGN KEY (id_jornada) REFERENCES Jornada(id_jornada)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE Pago(

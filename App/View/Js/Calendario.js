@@ -3,8 +3,8 @@ $('body').ready(async function(){
   var servicios = new Servicios();
   var instructores = new Instructores();
   var esModificar = false;
-  var cargado = false;
   var modalClase;
+  var idClaseJornada;
   let idModalClase = document.getElementById('modalClase');
   if(idModalClase){
     modalClase = new bootstrap.Modal(idModalClase);
@@ -136,8 +136,7 @@ $('body').ready(async function(){
   }
 
   $('body').on('click', '.matricular', async function(event){
-    let idClaseJornada = $(this).attr('value');
-    console.log(idClaseJornada);
+    idClaseJornada = $(this).attr('value');
     try{
       await cla.matricularClase({idClaseJornada});
       $(this).addClass("desmatricular");
@@ -153,8 +152,7 @@ $('body').ready(async function(){
   });
 
   $('body').on('click', '.desmatricular', async function(event){
-    let idClaseJornada = $(this).attr('value');
-    console.log(idClaseJornada);
+    idClaseJornada = $(this).attr('value');
     try{
       await cla.desmatricularClase({idClaseJornada});
       $(this).addClass("matricular");
@@ -169,6 +167,36 @@ $('body').ready(async function(){
     }
   });
 
+  $('#eliminarClase').on('click', async function(event){
+    if(esModificar){
+      try{
+        let val = $(this).val();
+        await cla.eliminarClaseEnJornada(val);
+        await muestraClases(jornadaActual.id);
+        await construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
+        modalClase.hide();
+      }catch(err){
+        console.log(err);
+        muestraMensaje("Fallo", err.responseText);
+      }
+    }
+  });
+
+  $('#eliminarTodasClase').on('click', async function(){
+    if(esModificar){
+      try{
+        let val = $(this).val();
+        await cla.eliminar(val);
+        await muestraClases(jornadaActual.id);
+        await construyeCalendario(annoUsuario, mesUsuario, annoActual, mesActual, diaActual);
+        modalClase.hide();
+      }catch(err){
+        console.log(err);
+        muestraMensaje("Fallo", err.responseText);
+      }
+    }
+  })
+
   $('body').on('click', '.activaModal', async function(event){
     let val = $(this).attr('value');
     var hoy = fechaEnInput(null);
@@ -178,6 +206,8 @@ $('body').ready(async function(){
       $('#dia').val(hoy);
       $('#dia').attr('min',hoy);
       esModificar = false;
+      $('#eliminarTodasClase').addClass("esconde");
+      $('#eliminarClase').addClass("esconde");
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Crear clase");
       $('#checkAplicarTodas').addClass('esconde');
@@ -187,17 +217,25 @@ $('body').ready(async function(){
     } else {
       limpiarModal();
       esModificar = true;
+      $('#eliminarTodasClase').removeClass("esconde");
+      $('#eliminarClase').removeClass("esconde");
       $('#crearEditarModal').empty();
       $('#crearEditarModal').append("Modificar clase");
       $('#contRepeticion').addClass('esconde');
       $('#checkAplicarTodas').removeClass('esconde');
       $('#contEstado').removeClass('esconde');
       try{
-        claseActual = await cla.mostrarClase(val);
+        let val2 = val.split("-");
+        if(val.length < 2){
+          throw {responseText: "Algo salió mal"}
+        }
+        idClaseJornada = val2[1];
+        $('#eliminarTodasClase').val(val2[0]);
+        $('#eliminarClase').val(val2[1]);
+        claseActual = await cla.mostrarClase(val2[0]);
         $('#dia').val(jornadaActual.dia);
         $('#dia').attr('min',hoy);
         $('#dia').prop('disabled', true);
-        console.log(claseActual);
         let hc = claseActual.horario[jornadaActual.id];
         $("#horaInicio").val(hc.horaInicio+":"+hc.minutoInicio).change();
         $("#horaFinal").val(hc.horaFinal+":"+hc.minutoFinal).change();

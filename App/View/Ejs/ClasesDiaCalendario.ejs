@@ -60,7 +60,7 @@
             </div>
             <div class="col-3">
               <% if(clasesCalendario[c].accionDeClase() === "MODIFICAR") { %>
-                <button class="btn btn-tertiary activaModal" value="<%=clase.getId() %>">Editar</button>
+                <button class="btn btn-tertiary activaModal" value="<%=clase.getId() %>-<%=c %>">Editar</button>
               <% } else if(clasesCalendario[c].accionDeClase() === "MATRICULAR") {
                   if(matriculado){ %>
                     <button class="btn btn-secondary desmatricular" value="<%=c%>">Desmatricular</button>

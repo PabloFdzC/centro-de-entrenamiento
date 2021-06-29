@@ -82,6 +82,28 @@ OperacionesClase.get('/mostrarClase', async function(req, res){
   }
 });
 
+OperacionesClase.post('/eliminarClase', async function(req, res){
+  try{
+    var r = await ctrlClase.eliminar(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
+OperacionesClase.post('/eliminarClaseJornada', async function(req, res){
+  try{
+    var r = await ctrlClase.eliminarEnJornada(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
 OperacionesClase.get('/mostrarClasesPorMes', async function(req, res){
   try{
     var lista = await ctrlClase.mostrarTodoXMes({mes:req.query.mes, idSala:req.query.mes});
@@ -146,6 +168,18 @@ OperacionesClase.post('/publicarTodasClases', async function(req, res){
   try{
     req.body.clases = await JSON.parse(req.body.clases);
     var r = await ctrlClase.publicarTodas(req.body);
+    res.send(r);
+  }catch(err){
+    console.log(err);
+    res.status(400);
+    res.send("Algo salió mal");
+  }
+});
+
+OperacionesClase.post('/marcarVistasInstructor', async function(req, res){
+  try{
+    req.body.clases = await JSON.parse(req.body.clases);
+    var r = await ctrlClase.marcarVistasInstructor(req.body);
     res.send(r);
   }catch(err){
     console.log(err);

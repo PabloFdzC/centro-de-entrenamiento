@@ -142,6 +142,11 @@ class ControllerClase{
     return r;
   }
 
+  async eliminarEnJornada(elem){
+    let r = await this.#transaccionClase.eliminarEnJornada(elem);
+    return r;
+  }
+
   async mostrarTodoXMes(elem){
     var listaclasesresult = await this.#transaccionClase.mostrarTodoXMes(elem);
     var i;
@@ -196,6 +201,7 @@ class ControllerClase{
     if(opciones.conMatricula){
       matriculas = await this.#ctrlMatriculaClase.mostrarPersonasMatriculadas(claseresult.id_clase);
     }
+    console.log(claseresult);
     var clase = this.agregaMemoria({
       id: claseresult.id_clase,
       capacidad:claseresult.capacidad,
@@ -204,7 +210,8 @@ class ControllerClase{
       instructorTemporal,
       servicio,
       instructor,
-      matriculas
+      matriculas,
+      vistoPorInstructor:claseresult.visto_por_instructor
     });
     return clase;
   }
@@ -219,7 +226,8 @@ class ControllerClase{
     return lista;
   }
 
-  agregaMemoria(elem = {id:null,capacidad:null,estado:null,horario:null,instructorTemporal:null,servicio:null,instructor:null,matriculas:null}){
+  agregaMemoria(elem = {id:null,capacidad:null,estado:null,horario:null,instructorTemporal:null,servicio:null,instructor:null,matriculas:null,vistoPorInstructor:null}){
+    console.log(elem);
     if(!(elem.id in this.#clases)){
       this.#clases[elem.id] = new Clase(elem.id,
         elem.capacidad,
@@ -228,7 +236,8 @@ class ControllerClase{
         elem.instructorTemporal,
         elem.servicio,
         elem.instructor,
-        elem.matriculas);
+        elem.matriculas,
+        elem.vistoPorInstructor);
     } else {
       let c = this.#clases[elem.id];
       if(elem.capacidad != null && c.getCapacidad() != elem.capacidad){
@@ -260,8 +269,14 @@ class ControllerClase{
       if(elem.matriculas != null){
         c.setMatriculas(elem.matriculas);
       }
+      if(elem.vistoPorInstructor != null  && c.getVistoPorInstructor() != elem.vistoPorInstructor){
+        c.setVistoPorInstructor(elem.vistoPorInstructor);
+      }
     }
-    this.notificar(this.#clases[elem.id]);
+    let condicion = this.#clases[elem.id].getEstado() === EstadoClase.PUBLICADA;
+    console.log(condicion);
+    this.notificarInstructor(this.#clases[elem.id], !condicion);
+    this.notificarAdministradores(this.#clases[elem.id], condicion);
     return this.#clases[elem.id];
   }
 
@@ -269,23 +284,28 @@ class ControllerClase{
     this.#strategyRegistro = strategy;
   }
 
-  notificar(clase){
-    var administradores = this.#ctrlAdministrador.getAdministradores();
+  notificarInstructor(clase, elimina){
     var instructor = clase.getInstructor();
-    var eliminaEnA = clase.getEstado() === EstadoClase.PUBLICADA;
-    var eliminaEnI = !eliminaEnA;
-    instructor.actualizar(clase, eliminaEnI);
+    instructor.actualizar(clase, elimina);
+  }
+
+  notificarAdministradores(clase, elimina){
+    var administradores = this.#ctrlAdministrador.getAdministradores();
     for(let a in administradores){
-      administradores[a].actualizar(clase, eliminaEnA);
+      administradores[a].actualizar(clase, elimina);
     }
   }
 
   async publicarTodas(elem){
-    var r = await this.#transaccionClase.publicarTodas(elem.clases);
+    var r = await this.#transaccionClase.modificarMuchas1Campo(
+      elem.clases,
+      "estado_clase",
+      "'PUBLICADA'");
     for(let c of elem.clases){
       let clase = this.#clases[c];
       clase.setEstado(EstadoClase.PUBLICADA);
-      this.notificar(clase);
+      this.notificarInstructor(clase, false);
+      this.notificarAdministradores(clase, true);
     }
     return r;
   }
@@ -295,7 +315,21 @@ class ControllerClase{
     var r = await this.modificar(elem);
     let clase = this.#clases[elem.idClase];
     clase.setEstado(EstadoClase.PUBLICADA);
-    this.notificar(clase);
+    this.notificarInstructor(clase, false);
+    this.notificarAdministradores(clase, true);
+    return r;
+  }
+
+  async marcarVistasInstructor(elem){
+    var r = await this.#transaccionClase.modificarMuchas1Campo(
+      elem.clases,
+      "visto_por_instructor",
+      "1");
+    for(let c of elem.clases){
+      let clase = this.#clases[c];
+      clase.setVistoPorInstructor(1);
+      this.notificarInstructor(clase, true);
+    }
     return r;
   }
 

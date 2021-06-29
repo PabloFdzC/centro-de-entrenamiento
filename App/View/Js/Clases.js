@@ -36,6 +36,16 @@ $('body').ready(async function(){
     }
   });
 
+  $('body').on('click', '.marcarTodas', async function(){
+    try{
+      await cla.marcarVistasInstructor(clases);
+      await cargar();
+    }catch(err){
+      console.log(err);
+      muestraMensaje("Fallo", err.responseText);
+    }
+  });
+
   $('body').on('click', '.publicar', async function(){
     try{
     let val = parseInt($(this).val());

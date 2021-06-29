@@ -47,7 +47,7 @@
       let d = new Date();
       %>
     <div class="modal fade" id="modalClase" tabindex="-1" aria-labelledby="crearEditarModal" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 620px;">
         <div class="modal-content background">
           <div class="modal-body d-grid gap-4">
             <h3 class="text-center" id="crearEditarModal">Crear clase</h3>
@@ -188,12 +188,26 @@
                   </select>
                 </div>
                 <% } %>
-              <div class="row justify-content-end">
-                <div class="col-3">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+              <div class="row justify-content-between">
+                <div class="col-7">
+                  <div class="row">
+                    <div style="width: auto;">
+                      <button type="button" class="btn btn-quaternary eliminarTodasClase" id="eliminarTodasClase" form="formClase">Eliminar todas</button>
+                    </div>
+                    <div style="width: auto;">
+                      <button type="button" class="btn btn-quinternary eliminarClase" id="eliminarClase" form="formClase">Eliminar</button>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-3">
-                  <button type="submit" class="btn btn-primary" form="formClase">Enviar</button>
+                <div class="col-5">
+                  <div class="row justify-content-end">
+                    <div style="width: auto;">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                    </div>
+                    <div style="width: auto;">
+                      <button type="submit" class="btn btn-primary" form="formClase">Enviar</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>

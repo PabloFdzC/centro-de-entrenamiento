@@ -579,18 +579,26 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS CrearClase;
 DELIMITER //
 
-CREATE PROCEDURE CrearClase(IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
+CREATE PROCEDURE CrearClase(IN piIdSala INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50))
 BEGIN
     DECLARE servicioInstructor INT;
+    DECLARE capacidadSala INT;
+    SELECT FLOOR(capacidad*aforo/100) INTO capacidadSala
+    FROM Sala
+    WHERE id_sala = piIdSala;
     SELECT Count(*) INTO servicioInstructor FROM Servicios_de_Instructor
 	WHERE email_instructor = pvEmailInstructor AND nombre_servicio = pvNombreServicio;
-    IF servicioInstructor > 0 THEN
+    IF servicioInstructor > 0 AND capacidadSala >= piCapacidad THEN
         INSERT INTO Clase(capacidad, estado_clase, nombre_servicio, email_instructor)
         VALUES(piCapacidad, pvEstadoClase, pvNombreServicio, pvEmailInstructor);
         COMMIT;
         SELECT LAST_INSERT_ID() AS id_clase;
-    ELSE
+    ELSEIF (capacidadSala < piCapacidad AND servicioInstructor = 0) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El instructor no tiene ese servicio y la sala no permite la capacidad indicada';
+    ELSEIF servicioInstructor = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El instructor no tiene ese servicio';
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La sala no permite la capacidad indicada';
     END IF;
 END //
 
@@ -630,15 +638,32 @@ DELIMITER //
 
 CREATE PROCEDURE ModificarClase(IN piIdClase INT, IN piCapacidad INT, IN pvNombreServicio VARCHAR(50), IN pvEstadoClase VARCHAR(50), IN pvEmailInstructor VARCHAR(50), IN pvEmailInstructorT VARCHAR(50), IN piVistoPorInstructor INT)
 BEGIN
-    UPDATE Clase
-    SET capacidad = COALESCE(piCapacidad,capacidad),
-    estado_clase = COALESCE(pvEstadoClase,estado_clase),
-    nombre_servicio = COALESCE(pvNombreServicio,nombre_servicio),
-    email_instructor = COALESCE(pvEmailInstructor,email_instructor),
-    email_instructor_temporal = COALESCE(pvEmailInstructorT, email_instructor_temporal),
-    visto_por_instructor = COALESCE(piVistoPorInstructor, visto_por_instructor)
-    WHERE id_clase = piIdClase;
-    COMMIT;
+    DECLARE servicioInstructor INT;
+    DECLARE capacidadSala INT;
+    SELECT FLOOR(capacidad*aforo/100) INTO capacidadSala
+    FROM Sala
+    WHERE id_sala = piIdSala;
+    SELECT Count(*) INTO servicioInstructor FROM Servicios_de_Instructor
+	WHERE email_instructor = pvEmailInstructor AND nombre_servicio = pvNombreServicio;
+    IF ((ISNULL(pvEmailInstructor) AND ISNULL(pvNombreServicio)) OR servicioInstructor > 0) AND (ISNULL(piCapacidad) OR capacidadSala >= piCapacidad) THEN
+        UPDATE Clase
+        SET capacidad = COALESCE(piCapacidad,capacidad),
+        estado_clase = COALESCE(pvEstadoClase,estado_clase),
+        nombre_servicio = COALESCE(pvNombreServicio,nombre_servicio),
+        email_instructor = COALESCE(pvEmailInstructor,email_instructor),
+        email_instructor_temporal = COALESCE(pvEmailInstructorT, email_instructor_temporal),
+        visto_por_instructor = COALESCE(piVistoPorInstructor, visto_por_instructor)
+        WHERE id_clase = piIdClase;
+        COMMIT;
+    ELSE
+        IF servicioInstructor = 0 AND capacidadSala < piCapacidad THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El instructor no tiene ese servicio y la sala no permite la capacidad indicada';
+        ELSEIF servicioInstructor = 0 THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El instructor no tiene ese servicio';
+        ELSE
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La sala no permite la capacidad indicada';
+        END IF;
+    END IF;
 END //
 
 DELIMITER ;
@@ -648,8 +673,34 @@ DELIMITER //
 
 CREATE PROCEDURE EliminarClase(IN piIdClase INT)
 BEGIN
-	DELETE FROM Clases_en_Jornada
+    DECLARE listo INT DEFAULT FALSE;
+    DECLARE idIntervalo INT DEFAULT FALSE;
+    DECLARE cur1 CURSOR FOR 
+    SELECT id_intervalo
+        FROM Clases_en_Jornada
     WHERE id_clase = piIdClase;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET listo = TRUE;
+
+    OPEN cur1;
+
+    read_loop: LOOP
+        FETCH cur1 INTO idIntervalo;
+
+        IF listo THEN
+            LEAVE read_loop;
+        END IF;
+
+        DELETE FROM Intervalo_Tiempo
+        WHERE id_intervalo = idIntervalo;
+
+    END LOOP;
+
+  CLOSE cur1;
+
+  DELETE FROM Clases_en_Jornada
+    WHERE id_clase = piIdClase;
+
     DELETE FROM Clase
     WHERE id_clase = piIdClase;
     COMMIT;
@@ -662,8 +713,28 @@ DELIMITER //
 
 CREATE PROCEDURE EliminarClaseEnJornada(IN piIdClaseJornada INT)
 BEGIN
+    DECLARE tot INT;
+    DECLARE idClase INT;
+    DECLARE idIntervalo INT;
+
+    SELECT id_clase, id_intervalo INTO idClase, idIntervalo
+    FROM Clases_en_Jornada
+    WHERE id_clase_jornada = piIdClaseJornada;
+
 	DELETE FROM Clases_en_Jornada
     WHERE id_clase_jornada = piIdClaseJornada;
+
+    DELETE FROM Intervalo_Tiempo
+    WHERE id_intervalo = idIntervalo;
+
+    SELECT COUNT(id_clase) INTO tot
+    FROM Clases_en_Jornada
+    WHERE id_clase = idClase;
+    IF tot = 0 THEN 
+        DELETE FROM Clase
+        WHERE id_clase = piIdClase;
+    END IF;
+
     COMMIT;
 END //
 
@@ -690,7 +761,7 @@ DELIMITER //
 CREATE PROCEDURE GetClasesEstado(IN pvEstadoClase VARCHAR(50),IN pvEmailInstructor VARCHAR(50))
 BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
-    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
+    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal,visto_por_instructor
 		FROM Clase
 		WHERE estado_clase = pvEstadoClase AND email_instructor = COALESCE(pvEmailInstructor, email_instructor) AND MONTH(j.dia) >= MONTH(CURDATE())) AS c
     INNER JOIN Clases_en_Jornada cej
@@ -727,7 +798,7 @@ DELIMITER //
 CREATE PROCEDURE GetClase(IN pvIdClase INT)
 BEGIN
 	SELECT c.id_clase, c.capacidad, c.estado_clase, c.nombre_servicio, c.email_instructor_temporal, c.visto_por_instructor, i.email, i.identificacion, i.primer_nombre, i.segundo_nombre, i.primer_apellido, i.segundo_apellido, i.fecha_nacimiento, i.telefono
-    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal
+    FROM (SELECT id_clase, capacidad, estado_clase, nombre_servicio, email_instructor, email_instructor_temporal,visto_por_instructor
 		FROM Clase
 		WHERE id_clase = pvIdClase) AS c
     INNER JOIN Instructor i

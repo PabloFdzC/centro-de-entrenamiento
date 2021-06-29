@@ -15,7 +15,7 @@ $('body').ready(function(){
   });
 
   const limpiarModal = function(){
-    $('#formClase').removeClass('was-validated');
+    $('#formServicio').removeClass('was-validated');
     $('#nombre').val("");
     $('#costo').val("");
     $('#costoServicio').prop('checked', true);

@@ -32,13 +32,14 @@ class Instructor extends Persona{
   }
 
   actualizar(clase, elimina){
+    console.log("SI");
     if(elimina){
       let i = this.#clasesAutorizadas.indexOf(clase);
       if (i > -1) {
         this.#clasesAutorizadas.splice(i, 1);
       }
     } else {
-      if(!this.#clasesAutorizadas.includes(clase)){
+      if(clase.getVistoPorInstructor() === 0 && !this.#clasesAutorizadas.includes(clase)){
         this.#clasesAutorizadas.push(clase);
       }
     }

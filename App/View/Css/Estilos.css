@@ -65,6 +65,40 @@ body{
   color: #383D3E;
 }
 
+.btn-quaternary{
+  background: #FF0007;
+  border-radius: 30px;
+  border: transparent;
+  color: #FFFFFF;
+}
+
+.btn-quaternary:hover{
+  background: #fa3138;
+  color: #FFFFFF;
+}
+
+.btn-quaternary:focus{
+  background: #FF0007;
+  color: #FFFFFF;
+}
+
+.btn-quinternary{
+  background: #8214FF;
+  border-radius: 30px;
+  border: transparent;
+  color: #FFFFFF;
+}
+
+.btn-quinternary:hover{
+  background: #9232ff;
+  color: #FFFFFF;
+}
+
+.btn-quinternary:focus{
+  background: #8214FF;
+  color: #FFFFFF;
+}
+
 .link{
   color: #FFEC00;
 }

@@ -10,8 +10,6 @@ class VisitorJornada{
   #dia = null;
 
   visit(j){
-    console.log("JORNADA");
-    console.log(j.convertirAVista());
     this.#clases = j.getClases();
     this.#dia = j.getDia();
   }
@@ -23,14 +21,12 @@ class VisitorJornada{
     if(hoy.getTime() > this.#dia.getTime()){
       pasada = true;
     }
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
     for(let c in this.#clases){
-      console.log(this.#clases[c].convertirAVista());
       if(this.#tipoUsuario === "Administrador" && !pasada){
         if(this.#clases[c].getMatriculas().length === 0){
-          clases[c] = new ClaseSoloLectura(this.#clases[c]);
-        } else {
           clases[c] = new ClaseEditable(this.#clases[c]);
+        } else {
+          clases[c] = new ClaseSoloLectura(this.#clases[c]);
         }
       } else if(this.#tipoUsuario === "Instructor" && !pasada){
         if(this.#clases[c].getInstructor().getEmail() === this.#email &&
